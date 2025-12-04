@@ -92,13 +92,135 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 }
 
 func (u *UserRepo) ReadByTeam(ctx context.Context, teamId int64) ([]*repo.UserDTO, error) {
-	//TODO implement me
-	panic("implement me")
+	sb := sqlbuilder.NewSelectBuilder()
+
+	sb.Select(
+		"u.id",
+		"u.first_name",
+		"u.last_name",
+		"u.photo_url",
+		"u.bio",
+		"f.experience",
+		"f.additional_info",
+		"COALESCE(array_agg(DISTINCT r.name) FILTER (WHERE r.name IS NOT NULL), '{}') as roles",
+	).
+		From("hackmate.team_form as tf").
+		Join("hackmate.form as f", "tf.form_id = f.id").
+		Join("hackmate.user as u", "f.user_id = u.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.form_role as fr", "f.id = fr.form_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.role as r", "fr.role_id = r.id").
+		Where(sb.Equal("tf.team_id", teamId)).
+		GroupBy("u.id", "u.first_name", "u.last_name", "u.photo_url", "u.bio",
+			"f.experience", "f.additional_info")
+
+	sql, args := sb.Build()
+
+	rows, err := u.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team members: %w", err)
+	}
+	defer rows.Close()
+
+	var users []*repo.UserDTO
+	for rows.Next() {
+		var user repo.UserDTO
+		var roles []string
+		var experience int
+		var additionalInfo string
+
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.LastName,
+			&user.PhotoURL,
+			&user.Bio,
+			&experience,
+			&additionalInfo,
+			&roles,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user: %w", err)
+		}
+
+		user.Skills = roles
+		user.TeamId = teamId // Устанавливаем ID команды
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating team members rows: %w", err)
+	}
+
+	return users, nil
 }
 
 func (u *UserRepo) ReadByHack(ctx context.Context, hackathonId int64) ([]*repo.UserDTO, error) {
-	//TODO implement me
-	panic("implement me")
+	sb := sqlbuilder.NewSelectBuilder()
+
+	sb.Select(
+		"u.id",
+		"u.first_name",
+		"u.last_name",
+		"u.photo",
+		"u.bio",
+		"COALESCE(array_agg(DISTINCT r.name) FILTER (WHERE r.name IS NOT NULL), '{}') as roles",
+		"COALESCE(tf.team_id, 0) as team_id",
+		"f.experience",
+		"f.additional_info",
+	).
+		From("hackmate.form as f").
+		Join("hackmate.user as u", "f.user_id = u.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.form_role as fr", "f.id = fr.form_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.role as r", "fr.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_form as tf", "f.id = tf.form_id").
+		Where(sb.Equal("f.hack_id", hackathonId)).
+		GroupBy("u.id", "u.first_name", "u.last_name", "u.photo_url", "u.bio",
+			"tf.team_id", "f.experience", "f.additional_info") // Сначала без команды
+
+	sql, args := sb.Build()
+
+	rows, err := u.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query hackathon participants: %w", err)
+	}
+	defer rows.Close()
+
+	var users []*repo.UserDTO
+	for rows.Next() {
+		var user repo.UserDTO
+		var roles []string
+		var experience int
+		var additionalInfo string
+		var teamID int64 // Используем NullInt64 для nullable поля
+
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.LastName,
+			&user.PhotoURL,
+			&user.Bio,
+			&roles,
+			&teamID,
+			&experience,
+			&additionalInfo,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user: %w", err)
+		}
+
+		user.Skills = roles
+		user.TeamId = teamID
+
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating participants rows: %w", err)
+	}
+
+	return users, nil
 }
 
 func (u *UserRepo) Update(ctx context.Context, user *repo.UserDTO) error {

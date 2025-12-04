@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS hackmate.hackathon (
     max_team_size INT NOT NULL
 );
 
-
-
 -- +goose StatementEnd
 
 -- +goose Down
