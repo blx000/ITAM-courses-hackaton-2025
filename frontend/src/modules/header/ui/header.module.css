@@ -1,0 +1,119 @@
+.container {
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.icons {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+.profileMenu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.sidebarOverlayVisible {
+  opacity: 1;
+  visibility: visible;
+}
+.menuDropdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.menuDropdownOpen {
+  transform: translateX(0);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+}
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+.menuItems {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  gap: 8px;
+}
+.menuItem {
+  text-align: left;
+  width: 100%;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+.menuItem:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: #ffffff;
+  transform: translateX(4px);
+}
+.icons img {
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .menuDropdown {
+    width: 260px;
+  }
+  .menuItems {
+    padding: 20px 12px;
+  }
+  .menuItem {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  .icons {
+    gap: 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .menuDropdown {
+    width: 240px;
+  }
+  .menuItem {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .closeButton {
+    top: 12px;
+    right: 12px;
+  }
+}

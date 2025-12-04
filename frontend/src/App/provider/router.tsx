@@ -4,6 +4,7 @@ import { NotFoundPage } from "../../pages/not-found-page";
 import { HomePage } from "../../pages/home-page";
 import { CalendarPage } from "../../pages/calendar-page";
 import { ProfilePage } from "../../pages/profile-page";
+import { CommandPage } from "../../pages/commands-page";
 
 export const appRouter = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const appRouter = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/commands",
+        element: <CommandPage />,
       },
       {
         path: "/calendar",

@@ -1,9 +1,11 @@
 import styles from "./navigation.module.css";
 import { NavLink } from "react-router";
+import homeIcon from "/home-icon.svg";
+import calendarIcon from "/calendar-icon.svg";
 
 const navItems = [
-  { to: "/", label: "Главная", end: true },
-  { to: "/calendar", label: "Календарь" },
+  { to: "/", icon: homeIcon, end: true },
+  { to: "/calendar", icon: calendarIcon },
 ];
 export function Navigation() {
   const getLinkClassName = ({ isActive }: { isActive: boolean }) => {
@@ -12,14 +14,16 @@ export function Navigation() {
   return (
     <nav className={styles.menu}>
       {navItems.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          className={getLinkClassName}
-        >
-          {item.label}
-        </NavLink>
+        <div className={styles.item}>
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={getLinkClassName}
+          >
+            <img src={item.icon} className={styles.icon} alt="icon" />
+          </NavLink>
+        </div>
       ))}
     </nav>
   );

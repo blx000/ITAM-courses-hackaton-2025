@@ -1,0 +1,15 @@
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 16px 0;
+}
+.item {
+  width: 40px;
+  height: 40px;
+  background: rgba(177, 177, 177, 1);
+  border-radius: 30px;
+}
+.icon {
+  padding: 10px;
+}
