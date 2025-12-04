@@ -63,6 +63,14 @@ paths:
   /users/{user_id}:
     get:
       summary: Get user information
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: [ ]
       responses:
         '200':
           description: Successful response
@@ -76,6 +84,12 @@ paths:
   /users/{user_id}/teams:
     get:
       summary: Get user information
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: Successful response
@@ -87,21 +101,6 @@ paths:
                   $ref: '#/components/schemas/TeamShort'
         '404':
           description: User not found
-
-  /teams/{user_id}:
-    get:
-      summary: Get user teams
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
-        '404':
-          description: User's teams not found
 
   /hacks:
     get:
@@ -123,6 +122,12 @@ paths:
   /hacks/{hack_id}:
     get:
       summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -140,6 +145,12 @@ paths:
   /hacks/{hack_id}/enter:
     post:
       summary: Enter hack
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: []
       requestBody:
@@ -157,6 +168,12 @@ paths:
   /hacks/{hack_id}/teams:
     get:
       summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: []
       responses:
@@ -195,6 +212,17 @@ paths:
   /hacks/{hack_id}/teams/{team_id}:
     get:
       summary: Get team info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -212,6 +240,12 @@ paths:
   /hacks/{hack_id}/participants:
     get:
       summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: []
       responses:
@@ -226,9 +260,41 @@ paths:
         '404':
           description: Hack id not found
 
+  /hacks/{hack_id}/participants/{participant_id}:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+        '404':
+          description: Hack id not found
+
   /hacks/{hack_id}/teams/{team_id}/request:
     post:
       summary: Попроситься в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -240,6 +306,12 @@ paths:
   /hacks/{hack_id}/requests:
     get:
       summary: Все запросы в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -255,6 +327,17 @@ paths:
   /hacks/{hack_id}/requests/{request_id}/accept:
     post:
       summary: Принять в команду участника
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -266,6 +349,12 @@ paths:
   /hacks/{hack_id}/participants/{participants_id}/invite:
     post:
       summary: Приласить в команду участника
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -276,16 +365,13 @@ paths:
 
   /hacks/{hack_id}/invitations:
     get:
-      description: New endpoint
-      responses:
-        200:
-          description: New response
-          content:
-            application/json:
-              schema:
-                : 
-    get:
       summary: Все приглашения в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -301,6 +387,17 @@ paths:
   /hacks/{hack_id}/invitations/{invite_id}/accept:
     get:
       summary: Принять приглашение
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: invite_id
+          in: path
+          required: true
+          schema:
+            type: integer
       security:
         - bearerAuth: [ ]
       responses:
@@ -394,6 +491,8 @@ components:
           type: array
           items:
             type: string
+        team_id:
+          type: integer
 
     HackathonShort:
       type: object
