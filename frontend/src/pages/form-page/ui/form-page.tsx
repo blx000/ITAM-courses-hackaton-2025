@@ -50,7 +50,9 @@ export function FormPage() {
           <h2>Дополнительная информация:</h2>
           <textarea name="" id=""></textarea>
         </div>
-        <button type="submit">Создать анкету</button>
+        <button className={styles.createBtn} type="submit">
+          Создать анкету
+        </button>
       </form>
     </div>
   );

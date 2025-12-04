@@ -1,0 +1,8 @@
+.container {
+  margin: 0 auto;
+}
+.item {
+  padding: 15px;
+  background-color: rgba(217, 217, 217, 1);
+  border-radius: 24px;
+}

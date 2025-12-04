@@ -5,6 +5,7 @@ import searchIcon from "/search-icon.svg";
 import questionIcon from "/question-icon.svg";
 import bellIcon from "/bell-icon.svg";
 import { useNavigate } from "react-router";
+import { NavLink } from "react-router";
 
 type MenuOption = {
   label: string;
@@ -31,7 +32,6 @@ export function RootHeader() {
         <div className={styles.profileMenu}>
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Открыть меню пользователя"
             aria-expanded={isMenuOpen}
           >
             <img src={profileIcon} alt="profile-icon" />
@@ -39,7 +39,9 @@ export function RootHeader() {
         </div>
         <div className={styles.icons}>
           <img src={searchIcon} alt="search-icon" />
-          <img src={questionIcon} alt="question-icon" />
+          <NavLink to={"/help"}>
+            <img src={questionIcon} alt="question-icon" />
+          </NavLink>
           <img src={bellIcon} alt="bell-icon" />
         </div>
       </div>
@@ -58,7 +60,6 @@ export function RootHeader() {
           <button
             className={styles.closeButton}
             onClick={() => setIsMenuOpen(false)}
-            aria-label="Закрыть меню"
           >
             ✕
           </button>

@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
 }
+
 .sidebarOverlay {
   position: fixed;
   top: 0;

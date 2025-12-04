@@ -45,7 +45,7 @@ textarea:focus {
   border: none;
   outline: none;
 }
-button {
+.createBtn {
   margin: 0 auto;
   width: fit-content;
   padding: 11px 13px;
