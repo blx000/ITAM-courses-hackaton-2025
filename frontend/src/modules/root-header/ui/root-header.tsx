@@ -42,7 +42,9 @@ export function RootHeader() {
           <NavLink to={"/help"}>
             <img src={questionIcon} alt="question-icon" />
           </NavLink>
-          <img src={bellIcon} alt="bell-icon" />
+          <NavLink to={"/notifications"}>
+            <img src={bellIcon} alt="bell-icon" />
+          </NavLink>
         </div>
       </div>
       <div

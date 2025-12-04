@@ -9,6 +9,7 @@ import { CalendarPage } from "../../pages/calendar-page";
 import { ProfilePage } from "../../pages/profile-page";
 import { FormPage } from "../../pages/form-page";
 import { HelpPage } from "../../pages/help-page";
+import { NotificationPage } from "../../pages/notification-page";
 import { CommandPage } from "../../pages/commands-page";
 
 export const appRouter = createBrowserRouter([
@@ -28,6 +29,10 @@ export const appRouter = createBrowserRouter([
       {
         path: "/calendar",
         element: <CalendarPage />,
+      },
+      {
+        path: "/notifications",
+        element: <NotificationPage />,
       },
       {
         path: "*",
