@@ -16,6 +16,11 @@ type FormRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (f *FormRepo) GetForm(ctx context.Context, userId int64) (*repo.FormDto, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (f *FormRepo) Create(ctx context.Context, userId int64, hackId int, exp int, addInfo string, roleIds []int, skillIds []int) error {
 	// Начинаем транзакцию, так как нужно вставить в несколько таблиц
 	tx, err := f.pool.Begin(ctx)
