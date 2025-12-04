@@ -14,7 +14,7 @@ type TeamRepo struct {
 	pool *pgxpool.Pool
 }
 
-func (t *TeamRepo) AddMember(ctx context.Context, teamId int64, formId int64) error {
+func (t *TeamRepo) AddMember(ctx context.Context, teamId int, formId int64) error {
 	ib := sqlbuilder.NewInsertBuilder()
 
 	ib.InsertInto("hackmate.team_form").
@@ -37,7 +37,7 @@ func (t TeamRepo) Create(ctx context.Context, name string, captainId int64, hack
 	panic("implement me")
 }
 
-func (t *TeamRepo) DeleteMember(ctx context.Context, teamID int64, memberID int64) error {
+func (t *TeamRepo) DeleteMember(ctx context.Context, teamID int, memberID int64) error {
 	db := sqlbuilder.NewDeleteBuilder()
 
 	db.DeleteFrom("hackmate.team_user").

@@ -24,6 +24,13 @@ CREATE TABLE IF NOT EXISTS hackmate.form_skill (
     CONSTRAINT fk_skill FOREIGN KEY(skill_id) REFERENCES hackmate.skill(id)
 );
 
+CREATE TABLE IF NOT EXISTS hackmate.team_form(
+    form_id BIGINT,
+    team_id INT,
+    PRIMARY KEY(form_id, team_id),
+    CONSTRAINT fk_form FOREIGN KEY(form_id) REFERENCES hackmate.form(id),
+    CONSTRAINT fk_team FOREIGN KEY(team_id) REFERENCES hackmate.team(id)
+);
 -- +goose StatementEnd
 
 -- +goose Down

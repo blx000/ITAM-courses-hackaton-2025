@@ -20,5 +20,7 @@ type Auth interface {
 type AuthDto struct {
 	Code       string
 	TelegramId int64
+	FirstName  string
+	LastName   string
 	ExpiresAt  time.Time
 }
