@@ -1,412 +1,18 @@
 openapi: 3.0.1
 info:
-  title: Scheduler API
+  title: Hackmate API
   version: 1.0.0
 servers:
   - url: http://localhost:8090/api
-paths:
-  /login:
-    post:
-      summary: login user with a code
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLogin'
-      responses:
-        '200':
-          description: Successful auth
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Token'
-        '400':
-          description: Auth failed
-
-  /admin/login:
-    post:
-      summary: login user with a login/password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminLogin'
-      responses:
-        '200':
-          description: Successful auth
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Token'
-        '400':
-          description: Auth failed
-
-  /admin/hacks:
-    post:
-      summary: Create hack
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HackCreate'
-      responses:
-        '201':
-          description: Successful create
-        '403':
-          description: Permission denied
-
-  /users/{user_id}:
-    get:
-      summary: Get user information
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-
-  /users/{user_id}/teams:
-    get:
-      summary: Get user information
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TeamShort'
-        '404':
-          description: User not found
-
-  /hacks:
-    get:
-      summary: Get hackathon list
-#      security:
-#        - bearerAuth: []
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/HackathonShort'
-        '404':
-          description: Hack's teams not found
-
-  /hacks/{hack_id}:
-    get:
-      summary: Get hackathon info
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/HackathonPage'
-        '404':
-          description: Hack's teams not found
-
-  /hacks/{hack_id}/enter:
-    post:
-      summary: Enter hack
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FormCreate'
-      responses:
-        '201':
-          description: Successful create
-        '400':
-          description: Invalid input
-
-  /hacks/{hack_id}/teams:
-    get:
-      summary: Get hackathon info
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
-        '404':
-          description: Hack id not found
-    post:
-      summary: Create team
-      security:
-        - bearerAuth: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TeamCreate'
-      responses:
-        '201':
-          description: Successful create
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
-        '400':
-          description: Invalid input
-
-  /hacks/{hack_id}/teams/{team_id}:
-    get:
-      summary: Get team info
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: team_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
-        '404':
-          description: Team id not found
-
-  /hacks/{hack_id}/participants:
-    get:
-      summary: Get hackathon info
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Participant'
-        '404':
-          description: Hack id not found
-
-  /hacks/{hack_id}/participants/{participant_id}:
-    get:
-      summary: Get hackathon info
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: participant_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Participant'
-        '404':
-          description: Hack id not found
-
-  /hacks/{hack_id}/teams/{team_id}/request:
-    post:
-      summary: Попроситься в команду
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '201':
-          description: Successful request
-        '403':
-          description: Permission denied
-
-  /hacks/{hack_id}/requests:
-    get:
-      summary: Все запросы в команду
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Request'
-
-  /hacks/{hack_id}/requests/{request_id}/accept:
-    post:
-      summary: Принять в команду участника
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: request_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-        '403':
-          description: Permission denied
-
-  /hacks/{hack_id}/participants/{participants_id}/invite:
-    post:
-      summary: Приласить в команду участника
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '201':
-          description: Successful invite
-        '403':
-          description: Permission denied
-
-  /hacks/{hack_id}/invitations:
-    get:
-      summary: Все приглашения в команду
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Invite'
-
-  /hacks/{hack_id}/invitations/{invite_id}/accept:
-    get:
-      summary: Принять приглашение
-      parameters:
-        - name: hack_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: invite_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: [ ]
-      responses:
-          '201':
-            description: Successful invite
-          '403':
-            description: Permission denied
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT токен в формате: Bearer {token}"
+      
   schemas:
     HackCreate:
       type: object
@@ -572,8 +178,8 @@ components:
           type: string
         captain_id:
           type: integer
-          
-          
+
+
     Role:
       type: object
       properties:
@@ -597,3 +203,422 @@ components:
           type: string
         refresh_token:
           type: string
+
+paths:
+  /login:
+    post:
+      summary: login user with a code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Successful auth
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Auth failed
+
+  /admin/login:
+    post:
+      summary: login user with a login/password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+      responses:
+        '200':
+          description: Successful auth
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Auth failed
+
+  /admin/hacks:
+    post:
+      summary: Create hack
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+      responses:
+        '201':
+          description: Successful create
+        '403':
+          description: Permission denied
+
+  /users/{user_id}:
+    get:
+      summary: Get user information
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+  /users/{user_id}/teams:
+    get:
+      summary: Get user information
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamShort'
+        '404':
+          description: User not found
+
+  /hacks:
+    get:
+      summary: Get hackathon list
+#      security:
+#        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HackathonShort'
+        '404':
+          description: Hack's teams not found
+
+  /hacks/{hack_id}:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HackathonPage'
+        '404':
+          description: Hack's teams not found
+
+  /hacks/{hack_id}/enter:
+    post:
+      summary: Enter hack
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormCreate'
+      responses:
+        '201':
+          description: Successful create
+        '400':
+          description: Invalid input
+
+  /hacks/{hack_id}/teams:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '404':
+          description: Hack id not found
+    post:
+      summary: Create team
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamCreate'
+      responses:
+        '201':
+          description: Successful create
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '400':
+          description: Invalid input
+
+  /hacks/{hack_id}/teams/{team_id}:
+    get:
+      summary: Get team info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '404':
+          description: Team id not found
+
+  /hacks/{hack_id}/participants:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+        '404':
+          description: Hack id not found
+
+  /hacks/{hack_id}/participants/{participant_id}:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+        '404':
+          description: Hack id not found
+
+  /hacks/{hack_id}/teams/{team_id}/request:
+    post:
+      summary: Попроситься в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Successful request
+        '403':
+          description: Permission denied
+
+  /hacks/{hack_id}/requests:
+    get:
+      summary: Все запросы в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+
+  /hacks/{hack_id}/requests/{request_id}/accept:
+    post:
+      summary: Принять в команду участника
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+        '403':
+          description: Permission denied
+
+  /hacks/{hack_id}/participants/{participants_id}/invite:
+    post:
+      summary: Приласить в команду участника
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participants_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Successful invite
+        '403':
+          description: Permission denied
+
+  /hacks/{hack_id}/invitations:
+    get:
+      summary: Все приглашения в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invite'
+
+  /hacks/{hack_id}/invitations/{invite_id}/accept:
+    get:
+      summary: Принять приглашение
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: invite_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+          '201':
+            description: Successful invite
+          '403':
+            description: Permission denied
+

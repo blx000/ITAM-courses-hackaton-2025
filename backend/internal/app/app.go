@@ -2,13 +2,20 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/adapter/repo/postgres"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/config"
+	"github.com/blx000/ITAM-courses-hackaton-2025/internal/input/http/gen"
+	"github.com/blx000/ITAM-courses-hackaton-2025/internal/input/http/handler"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/bot"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func Start(cfg config.Config) error {
@@ -33,6 +40,29 @@ func Start(cfg config.Config) error {
 	tgBot := bot.NewTgBot(cfg.TgBot, authRepo)
 
 	go tgBot.Start(ctx)
+
+	server := handler.NewServer()
+
+	strictHandler := gen.NewStrictHandler(server, nil)
+
+	router := chi.NewRouter()
+
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Timeout(60 * time.Second))
+
+	gen.HandlerWithOptions(strictHandler, gen.ChiServerOptions{
+		BaseRouter: router,
+	})
+
+	httpServer := &http.Server{
+		Addr:    fmt.Sprintf(":%d", cfg.Port),
+		Handler: router,
+	}
+
+	go httpServer.ListenAndServe()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
