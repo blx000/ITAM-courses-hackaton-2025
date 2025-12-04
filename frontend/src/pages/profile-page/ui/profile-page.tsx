@@ -13,7 +13,7 @@ export function ProfilePage() {
           <h3 className={styles.role}>Основная роль: </h3>
         </div>
       </div>
-      <div className={styles.phone}>Номер телефона:</div>
+      <div className={styles.phone}>Телеграмм: </div>
       <div className={styles.stack}>
         <h2>Стек:</h2>
       </div>

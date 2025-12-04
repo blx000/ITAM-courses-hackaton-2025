@@ -1,0 +1,56 @@
+form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.stack h2,
+.addInfo h2 {
+  margin-bottom: 8px;
+}
+input {
+  width: 100%;
+}
+.item {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 24px;
+  padding: 10px 12px;
+  background-color: rgba(217, 217, 217, 1);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stack img {
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.addInfo {
+  display: block;
+  height: 176px;
+}
+textarea {
+  resize: none;
+  width: 100%;
+  height: 125px;
+}
+textarea:focus {
+  border: none;
+  outline: none;
+}
+button {
+  margin: 0 auto;
+  width: fit-content;
+  padding: 11px 13px;
+  border-radius: 26px;
+  background-color: rgba(217, 217, 217, 1);
+  font-weight: 600;
+  font-size: 16px;
+}
