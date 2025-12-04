@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { RootLayout } from "../layouts/root-layout";
+import { ProfileLayout } from "../layouts/profile-layout";
 import { NotFoundPage } from "../../pages/not-found-page";
 import { HomePage } from "../../pages/home-page";
 import { CalendarPage } from "../../pages/calendar-page";
@@ -17,10 +18,6 @@ export const appRouter = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/profile",
-        element: <ProfilePage />,
-      },
-      {
         path: "/commands",
         element: <CommandPage />,
       },
@@ -31,6 +28,16 @@ export const appRouter = createBrowserRouter([
       {
         path: "*",
         element: <NotFoundPage />,
+      },
+    ],
+  },
+  {
+    path: "/profile",
+    element: <ProfileLayout />,
+    children: [
+      {
+        index: true,
+        element: <ProfilePage />,
       },
     ],
   },

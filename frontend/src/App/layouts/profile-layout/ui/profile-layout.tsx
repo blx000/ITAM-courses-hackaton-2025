@@ -1,12 +1,12 @@
-import styles from "./root-layout.module.css";
+import styles from "./profile-layout.module.css";
 import { Outlet } from "react-router";
 import { Navigation } from "../../../../modules/navigation";
-import { RootHeader } from "../../../../modules/root-header";
+import { ProfileHeader } from "../../../../modules/profile-header";
 
-export function RootLayout() {
+export function ProfileLayout() {
   return (
     <div className={styles.container}>
-      <RootHeader />
+      <ProfileHeader />
       <div className={styles.main}>
         <Outlet />
       </div>

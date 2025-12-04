@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./header.module.css";
+import styles from "./root-header.module.css";
 import profileIcon from "/profile-icon.svg";
 import searchIcon from "/search-icon.svg";
 import questionIcon from "/question-icon.svg";
@@ -16,7 +16,7 @@ const menuOptions: MenuOption[] = [
   { label: "Мои команды", path: "/commands" },
 ];
 
-export function Header() {
+export function RootHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
