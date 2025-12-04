@@ -21,6 +21,6 @@ CREATE TABLE IF NOT EXISTS hackmate.team_role (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS hackmate.team_user;
+DROP TABLE IF EXISTS hackmate.team_role;
 DROP TABLE IF EXISTS hackmate.team;
 -- +goose StatementEnd

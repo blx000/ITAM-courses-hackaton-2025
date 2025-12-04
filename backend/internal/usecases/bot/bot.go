@@ -71,6 +71,8 @@ func (t *TgBot) handleLoginCommand(ctx context.Context, message *tgbotapi.Messag
 		Code:       code,
 		ExpiresAt:  time.Now().Add(5 * time.Minute),
 		TelegramId: message.From.ID,
+		FirstName:  message.From.FirstName,
+		LastName:   message.From.LastName,
 	}
 
 	err := t.authRepo.Create(ctx, dto)

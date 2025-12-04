@@ -26,8 +26,8 @@ func NewAuthRepo(pool *pgxpool.Pool) *AutRepo {
 func (a *AutRepo) Create(ctx context.Context, auth *repo.AuthDto) error {
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 	ib.InsertInto("hackmate.auth").
-		Cols("code", "user_id", "expires_at").
-		Values(auth.Code, auth.TelegramId, auth.ExpiresAt)
+		Cols("code", "user_id", "expires_at", "first_name", "last_name").
+		Values(auth.Code, auth.TelegramId, auth.ExpiresAt, auth.FirstName, auth.LastName)
 	fmt.Println("Code ", auth.Code)
 	sql, args := ib.Build()
 	_, err := a.pool.Exec(ctx, sql, args...)

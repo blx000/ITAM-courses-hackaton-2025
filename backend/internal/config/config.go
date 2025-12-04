@@ -15,9 +15,10 @@ const (
 )
 
 type Config struct {
-	Postgres PostgresConfig `yaml:"postgres"`
-	Port     int            `yaml:"port"`
-	TgBot    TGBotConfig    `yaml:"tg"`
+	Postgres  PostgresConfig `yaml:"postgres"`
+	Port      int            `yaml:"port"`
+	SecretJWT string         `yaml:"secret_jwt"`
+	TgBot     TGBotConfig    `yaml:"tg"`
 }
 
 type PostgresConfig struct {

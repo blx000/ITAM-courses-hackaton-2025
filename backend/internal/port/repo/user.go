@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	ErrUserNotFound = errors.New("user not found")
+	ErrUserNotFound      = errors.New("user not found")
+	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
 type User interface {
@@ -28,6 +29,8 @@ type UserDTO struct {
 	Bio       string
 	Skills    []string
 	TeamId    int64
+	IsAdmin   bool
+	Login     string
 }
 
 type Skills struct {
