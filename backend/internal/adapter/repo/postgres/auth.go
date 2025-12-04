@@ -17,15 +17,23 @@ type AutRepo struct {
 	pool *pgxpool.Pool
 }
 
+func NewAuthRepo(pool *pgxpool.Pool) *AutRepo {
+	return &AutRepo{
+		pool: pool,
+	}
+}
+
 func (a *AutRepo) Create(ctx context.Context, auth *repo.AuthDto) error {
-	ib := sqlbuilder.NewInsertBuilder()
+	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 	ib.InsertInto("hackmate.auth").
 		Cols("code", "user_id", "expires_at").
 		Values(auth.Code, auth.TelegramId, auth.ExpiresAt)
-
+	fmt.Println("Code ", auth.Code)
 	sql, args := ib.Build()
 	_, err := a.pool.Exec(ctx, sql, args...)
 	if err != nil {
+		fmt.Println(sql)
+		fmt.Println(args...)
 		return fmt.Errorf("failed to create auth code: %w", err)
 	}
 
@@ -33,7 +41,7 @@ func (a *AutRepo) Create(ctx context.Context, auth *repo.AuthDto) error {
 }
 
 func (a *AutRepo) Read(ctx context.Context, code string) (*repo.AuthDto, error) {
-	sb := sqlbuilder.NewSelectBuilder()
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 	sb.Select("user_id, expires_at").From("hackmate.auth").Where(sb.Equal("code", code))
 
 	sql, args := sb.Build()
@@ -62,7 +70,7 @@ func (a *AutRepo) Read(ctx context.Context, code string) (*repo.AuthDto, error) 
 }
 
 func (a *AutRepo) DeleteAllExpired(ctx context.Context, diff time.Duration) error {
-	db := sqlbuilder.NewDeleteBuilder()
+	db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
 
 	deadLine := time.Now().Add(-diff)
 
@@ -78,7 +86,7 @@ func (a *AutRepo) DeleteAllExpired(ctx context.Context, diff time.Duration) erro
 }
 
 func (a *AutRepo) DeleteExpired(ctx context.Context, code string) error {
-	db := sqlbuilder.NewDeleteBuilder()
+	db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
 
 	db.DeleteFrom("hackmate.auth").Where(db.Equal("code", code))
 

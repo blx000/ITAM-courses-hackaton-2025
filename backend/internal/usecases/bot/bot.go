@@ -16,9 +16,10 @@ type TgBot struct {
 	timeout  int
 }
 
-func NewTgBot(cfg config.TGBotConfig) *TgBot {
-	bot, err := tgbotapi.NewBotAPI("MyAwesomeBotToken")
+func NewTgBot(cfg config.TGBotConfig, repos repo.Auth) *TgBot {
+	bot, err := tgbotapi.NewBotAPI(cfg.Token)
 	if err != nil {
+		fmt.Printf("token not found: %s\n", cfg.Token)
 		log.Panic(err)
 	}
 
@@ -27,8 +28,9 @@ func NewTgBot(cfg config.TGBotConfig) *TgBot {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	return &TgBot{
-		bot:     bot,
-		timeout: cfg.Timeout,
+		bot:      bot,
+		authRepo: repos,
+		timeout:  cfg.Timeout,
 	}
 
 }
