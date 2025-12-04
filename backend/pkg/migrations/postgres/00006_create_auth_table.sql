@@ -2,7 +2,9 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS hackmate.auth (
     code TEXT PRIMARY KEY,
-    user_id BIGINT REFERENCES hackmate.user(id),
+    user_id BIGINT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
     expires_at TIMESTAMP not null
 );
 -- +goose StatementEnd

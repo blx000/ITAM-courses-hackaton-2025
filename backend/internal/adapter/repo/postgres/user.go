@@ -8,6 +8,7 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"strings"
 )
 
 var _ repo.User = (*UserRepo)(nil)
@@ -17,8 +18,25 @@ type UserRepo struct {
 }
 
 func (u *UserRepo) Create(ctx context.Context, user *repo.UserDTO) error {
-	//TODO implement me
-	panic("implement me")
+	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	ib.InsertInto("hackmate.user").
+		Cols("id", "first_name", "last_name").
+		Values(user.ID, user.FirstName, user.LastName)
+
+	sql, args := ib.Build()
+
+	_, err := u.pool.Exec(ctx, sql, args...)
+	if err != nil {
+		errStr := err.Error()
+		if strings.Contains(errStr, "duplicate key") ||
+			strings.Contains(errStr, "23505") {
+			return repo.ErrUserAlreadyExists
+		}
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return nil
 }
 
 func NewUserRepo(pool *pgxpool.Pool) *UserRepo {
