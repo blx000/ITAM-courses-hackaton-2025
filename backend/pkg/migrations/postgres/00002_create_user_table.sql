@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS hackmate.user (
     id BIGINT PRIMARY KEY,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    photo_url TEXT NOT NULL,
+    photo pg_catalog.bytea NOT NULL,
     bio TEXT NOT NULL
 );
 

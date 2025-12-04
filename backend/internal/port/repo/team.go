@@ -8,7 +8,6 @@ type Team interface {
 	AddMember(ctx context.Context, id int64, memberId int64) error
 	Update(ctx context.Context, name string, captainId int64, hackId int64) error
 	ReadByHackId(ctx context.Context, hackId int64) ([]*TeamDTO, error)
-	ReadByUserId(ctx context.Context, userId int64) ([]*TeamDTO, error)
 }
 
 type TeamDTO struct {

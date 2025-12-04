@@ -1,11 +1,11 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS hackmate.skill (
+CREATE TABLE IF NOT EXISTS hackmate.role (
     id SERIAL PRIMARY KEY,
     name TEXT
 );
 
-INSERT INTO hackmate.skill(name)
+INSERT INTO hackmate.role(name)
 VALUES
 ('Backend'),
 ('Frontend'),
@@ -14,18 +14,16 @@ VALUES
 ('DevOps'),
 ('Product');
 
-CREATE TABLE IF NOT EXISTS hackmate.user_skill (
-    user_id BIGINT,
-    skill_id INT,
-    PRIMARY KEY(user_id, skill_id),
-    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES hackmate.user(id),
-    CONSTRAINT fk_skill FOREIGN KEY(user_id) REFERENCES hackmate.skill(id)
+
+CREATE TABLE IF NOT EXISTS hackmate.skill (
+    id SERIAL PRIMARY KEY,
+    name TEXT
 );
 
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS hackmate.user_skill;
+DROP TABLE IF EXISTS hackmate.role;
 DROP TABLE IF EXISTS hackmate.skill;
 -- +goose StatementEnd

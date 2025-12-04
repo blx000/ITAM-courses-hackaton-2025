@@ -5,19 +5,35 @@ import (
 	"time"
 )
 
+// список хакатонов
+// список участников хака
+// список команд хака
+
 type Hackathon interface {
-	List(ctx context.Context) ([]*HackathonDTO, error)
+	List(ctx context.Context) ([]*HackathonGeneralDTO, error)
+	Read(ctx context.Context, id int64) (*HackathonDTO, error)
 }
 
 type HackathonDTO struct {
-	Id            int64
-	AdminId       int64
-	Name          string
-	Desc          string
-	Start_date    time.Time
-	End_date      time.Time
-	max_teams     int64
-	max_team_size int64
-	Teams         []*Team
-	Users         []*User
+	Id          int64
+	AdminId     int64
+	Name        string
+	Desc        string
+	StartDate   time.Time
+	EndDate     time.Time
+	MaxTeams    int64
+	MaxTeamSize int64
+	Teams       []*Team
+	Users       []*User
+}
+
+type HackathonGeneralDTO struct {
+	Id          int64
+	AdminId     int64
+	Name        string
+	Desc        string
+	StartDate   time.Time
+	EndDate     time.Time
+	MaxTeams    int64
+	MaxTeamSize int64
 }
