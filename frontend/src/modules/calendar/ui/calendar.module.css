@@ -1,0 +1,56 @@
+.calendar {
+  margin: 30px auto 0;
+}
+.calendarHeader {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+}
+.currentMonth {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+}
+.navButton {
+  cursor: pointer;
+}
+.weekdays {
+  margin-top: 31px;
+  height: 32px;
+  gap: 17px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  justify-content: space-between;
+}
+.weekday {
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 17px;
+}
+.day {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 24px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.otherMonthDay {
+  color: rgba(90, 90, 90, 1);
+  cursor: default;
+}
+.today {
+  background: rgba(217, 217, 217, 1);
+  font-weight: 600;
+}
