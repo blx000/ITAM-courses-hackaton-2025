@@ -358,14 +358,20 @@ func (s Server) PostApiHacksHackIdTeams(ctx context.Context, request gen.PostApi
 		return nil, fmt.Errorf("Empty token")
 	}
 
-	_, err := jwt.ValidateToken(token, s.hmacSecret)
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
 
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("Unauthorized")
 	}
-	panic("implement me")
-	return nil, nil
+
+	err = s.service.CreateTeam(ctx, user.ID, request.HackId, request.Body.Name)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to create hack team: %w", err)
+	}
+
+	return gen.PostApiHacksHackIdTeams201JSONResponse{}, nil
 }
 
 func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.GetApiHacksHackIdTeamsTeamIdRequestObject) (gen.GetApiHacksHackIdTeamsTeamIdResponseObject, error) {

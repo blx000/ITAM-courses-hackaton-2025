@@ -23,4 +23,10 @@ type Service interface {
 	ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error)
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
 	GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error)
+	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
+}
+
+
+type ServiceImpl struct {
+	userRepo use
 }
