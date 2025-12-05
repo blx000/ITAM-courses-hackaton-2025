@@ -3,7 +3,7 @@
 create table if not exists hackmate.invite (
     id int primary key,
     team_id int references hackmate.team(id),
-    form_id int references hackmate.form(id)
+    form_id int references hackmate.participant(id)
 );
 -- +goose StatementEnd
 

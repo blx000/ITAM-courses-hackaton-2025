@@ -1,10 +1,15 @@
 package jwt
 
 import (
+	"crypto/rand"
+	"crypto/subtle"
+	"encoding/base64"
 	"fmt"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/port/repo"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/argon2"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -37,6 +42,7 @@ func NewToken(user *repo.UserDTO, duration time.Duration, hmacSecret string) (st
 }
 
 func ValidateToken(tokenString string, hmacSecret string) (*repo.UserDTO, error) {
+	fmt.Println("TOKEN:", tokenString)
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -81,4 +87,70 @@ func NewRefreshToken(user *repo.UserDTO, hmacSecret string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+type PasswordConfig struct {
+	time    uint32
+	memory  uint32
+	threads uint8
+	keyLen  uint32
+}
+
+// GeneratePassword is used to generate a new password hash for storing and
+// comparing at a later date.
+func GeneratePassword(password string) (string, error) {
+
+	c := &PasswordConfig{
+		time:    1,
+		memory:  64 * 1024,
+		threads: 4,
+		keyLen:  32,
+	}
+	// Generate a Salt
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return "", err
+	}
+
+	hash := argon2.IDKey([]byte(password), salt, c.time, c.memory, c.threads, c.keyLen)
+
+	// Base64 encode the salt and hashed password.
+	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
+	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
+
+	format := "$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s"
+	full := fmt.Sprintf(format, argon2.Version, c.memory, c.time, c.threads, b64Salt, b64Hash)
+	return full, nil
+}
+
+// ComparePassword is used to compare a user-inputted password to a hash to see
+// if the password matches or not.
+func ComparePassword(password, hash string) (bool, error) {
+
+	parts := strings.Split(hash, "$")
+
+	for _, part := range parts {
+		fmt.Println(part)
+	}
+
+	c := &PasswordConfig{}
+	_, err := fmt.Sscanf(parts[3], "m=%d,t=%d,p=%d", &c.memory, &c.time, &c.threads)
+	if err != nil {
+		return false, err
+	}
+
+	salt, err := base64.RawStdEncoding.DecodeString(parts[4])
+	if err != nil {
+		return false, err
+	}
+
+	decodedHash, err := base64.RawStdEncoding.DecodeString(parts[5])
+	if err != nil {
+		return false, err
+	}
+	c.keyLen = uint32(len(decodedHash))
+
+	comparisonHash := argon2.IDKey([]byte(password), salt, c.time, c.memory, c.threads, c.keyLen)
+
+	return (subtle.ConstantTimeCompare(decodedHash, comparisonHash) == 1), nil
 }

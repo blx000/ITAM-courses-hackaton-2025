@@ -16,6 +16,70 @@ type FormRepo struct {
 	pool *pgxpool.Pool
 }
 
+func NewFormRepo(pool *pgxpool.Pool) *FormRepo {
+	return &FormRepo{pool: pool}
+}
+
+func (f *FormRepo) ListSkills(ctx context.Context) ([]*repo.Skill, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select("id", "name").
+		From("hackmate.skill")
+
+	sql, args := sb.Build()
+
+	rows, err := f.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query skills: %w", err)
+	}
+	defer rows.Close()
+
+	var skills []*repo.Skill
+	for rows.Next() {
+		var skill repo.Skill
+		if err := rows.Scan(&skill.ID, &skill.Name); err != nil {
+			return nil, fmt.Errorf("failed to scan skill: %w", err)
+		}
+		skills = append(skills, &skill)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating skills rows: %w", err)
+	}
+
+	return skills, nil
+}
+
+func (f *FormRepo) ListRoles(ctx context.Context) ([]*repo.Role, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select("id", "name").
+		From("hackmate.role")
+
+	sql, args := sb.Build()
+
+	rows, err := f.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query roles: %w", err)
+	}
+	defer rows.Close()
+
+	var roles []*repo.Role
+	for rows.Next() {
+		var role repo.Role
+		if err := rows.Scan(&role.ID, &role.Name); err != nil {
+			return nil, fmt.Errorf("failed to scan role: %w", err)
+		}
+		roles = append(roles, &role)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating roles rows: %w", err)
+	}
+
+	return roles, nil
+}
+
 func (f *FormRepo) GetForm(ctx context.Context, userId int64) (*repo.FormDto, error) {
 	//TODO implement me
 	panic("implement me")

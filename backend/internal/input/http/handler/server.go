@@ -24,6 +24,12 @@ type Server struct {
 	hmacSecret string
 }
 
+func (s Server) GetApiHealthcheсk(ctx context.Context, request gen.GetApiHealthcheсkRequestObject) (gen.GetApiHealthcheсkResponseObject, error) {
+	return gen.GetApiHealthcheсk200JSONResponse{
+		Resp: "status ok",
+	}, nil
+}
+
 func NewServer(service service.Service, hmacSecret string) *Server {
 	return &Server{
 		service:    service,
@@ -38,7 +44,7 @@ func (s Server) GetApiUser(ctx context.Context, request gen.GetApiUserRequestObj
 		return gen.GetApiUser401Response{}, nil
 	}
 
-	token := strings.Split(bearer, " ")[0]
+	token := strings.Split(bearer, " ")[1]
 	if token == "" {
 		fmt.Println("Empty token")
 		return gen.GetApiUser401Response{}, nil
@@ -56,6 +62,8 @@ func (s Server) GetApiUser(ctx context.Context, request gen.GetApiUserRequestObj
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Bio:       user.Bio,
+		IsAdmin:   user.IsAdmin,
+		Login:     user.Login,
 	}
 
 	return gen.GetApiUser200JSONResponse(userResponse), nil
@@ -107,7 +115,7 @@ func (s Server) PostApiAdminLogin(ctx context.Context, request gen.PostApiAdminL
 	if request.Body.Login == "" {
 		return nil, fmt.Errorf("Wrong Login")
 	}
-	accessToken, refreshToken, err := s.service.LoginAdmin(ctx, request.Body.Login, request.Body.Password)
+	accessToken, refreshToken, err := s.service.LoginAdmin(ctx, request.Body.Login, request.Body.Password, s.hmacSecret)
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("LoginAdmin Error")
@@ -172,7 +180,7 @@ func (s Server) PostApiHacksHackIdEnter(ctx context.Context, request gen.PostApi
 		return nil, fmt.Errorf("Empty token")
 	}
 
-	token := strings.Split(bearer, " ")[0]
+	token := strings.Split(bearer, " ")[1]
 	if token == "" {
 		fmt.Println("Empty token")
 		return nil, fmt.Errorf("Empty token")
@@ -228,7 +236,7 @@ func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.G
 		return nil, fmt.Errorf("Empty token")
 	}
 
-	token := strings.Split(bearer, " ")[0]
+	token := strings.Split(bearer, " ")[1]
 	if token == "" {
 		fmt.Println("Empty token")
 		return nil, fmt.Errorf("Empty token")
@@ -296,7 +304,7 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 		return nil, fmt.Errorf("Empty token")
 	}
 
-	token := strings.Split(bearer, " ")[0]
+	token := strings.Split(bearer, " ")[1]
 	if token == "" {
 		fmt.Println("Empty token")
 		return nil, fmt.Errorf("Empty token")
@@ -352,7 +360,7 @@ func (s Server) PostApiHacksHackIdTeams(ctx context.Context, request gen.PostApi
 		return nil, fmt.Errorf("Empty token")
 	}
 
-	token := strings.Split(bearer, " ")[0]
+	token := strings.Split(bearer, " ")[1]
 	if token == "" {
 		fmt.Println("Empty token")
 		return nil, fmt.Errorf("Empty token")
@@ -381,7 +389,7 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 		return nil, fmt.Errorf("Empty token")
 	}
 
-	token := strings.Split(bearer, " ")[0]
+	token := strings.Split(bearer, " ")[1]
 	if token == "" {
 		fmt.Println("Empty token")
 		return nil, fmt.Errorf("Empty token")
@@ -434,18 +442,11 @@ func (s Server) PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, reques
 	panic("implement me")
 }
 
-func (s Server) GetApiHealthchek(ctx context.Context, request gen.GetApiHealthchekRequestObject) (gen.GetApiHealthchekResponseObject, error) {
-	//TODO implement me
-	return gen.GetApiHealthchek200JSONResponse{
-		Resp: "heaylth",
-	}, nil
-}
-
 func (s Server) PostApiLogin(ctx context.Context, request gen.PostApiLoginRequestObject) (gen.PostApiLoginResponseObject, error) {
 	if len(request.Body.Code) != 6 {
 		return nil, fmt.Errorf("Wrong code")
 	}
-	accessToken, refreshToken, err := s.service.LoginUser(ctx, request.Body.Code)
+	accessToken, refreshToken, err := s.service.LoginUser(ctx, request.Body.Code, s.hmacSecret)
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("LoginUser Error")

@@ -145,8 +145,8 @@ type ClientInterface interface {
 	// PostApiHacksHackIdTeamsTeamIdRequest request
 	PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiHealthchek request
-	GetApiHealthchek(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHealthcheсk request
+	GetApiHealthcheсk(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiLoginWithBody request with any body
 	PostApiLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -409,8 +409,8 @@ func (c *Client) PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackI
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiHealthchek(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiHealthchekRequest(c.Server)
+func (c *Client) GetApiHealthcheсk(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHealthcheсkRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1122,8 +1122,8 @@ func NewPostApiHacksHackIdTeamsTeamIdRequestRequest(server string, hackId int, t
 	return req, nil
 }
 
-// NewGetApiHealthchekRequest generates requests for GetApiHealthchek
-func NewGetApiHealthchekRequest(server string) (*http.Request, error) {
+// NewGetApiHealthcheсkRequest generates requests for GetApiHealthcheсk
+func NewGetApiHealthcheсkRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1131,7 +1131,7 @@ func NewGetApiHealthchekRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/healthchek")
+	operationPath := fmt.Sprintf("/api/healthcheсk")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1437,8 +1437,8 @@ type ClientWithResponsesInterface interface {
 	// PostApiHacksHackIdTeamsTeamIdRequestWithResponse request
 	PostApiHacksHackIdTeamsTeamIdRequestWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsTeamIdRequestResponse, error)
 
-	// GetApiHealthchekWithResponse request
-	GetApiHealthchekWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHealthchekResponse, error)
+	// GetApiHealthcheсkWithResponse request
+	GetApiHealthcheсkWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHealthcheсkResponse, error)
 
 	// PostApiLoginWithBodyWithResponse request with any body
 	PostApiLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiLoginResponse, error)
@@ -1807,14 +1807,14 @@ func (r PostApiHacksHackIdTeamsTeamIdRequestResponse) StatusCode() int {
 	return 0
 }
 
-type GetApiHealthchekResponse struct {
+type GetApiHealthcheсkResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Health
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiHealthchekResponse) Status() string {
+func (r GetApiHealthcheсkResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1822,7 +1822,7 @@ func (r GetApiHealthchekResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiHealthchekResponse) StatusCode() int {
+func (r GetApiHealthcheсkResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2137,13 +2137,13 @@ func (c *ClientWithResponses) PostApiHacksHackIdTeamsTeamIdRequestWithResponse(c
 	return ParsePostApiHacksHackIdTeamsTeamIdRequestResponse(rsp)
 }
 
-// GetApiHealthchekWithResponse request returning *GetApiHealthchekResponse
-func (c *ClientWithResponses) GetApiHealthchekWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHealthchekResponse, error) {
-	rsp, err := c.GetApiHealthchek(ctx, reqEditors...)
+// GetApiHealthcheсkWithResponse request returning *GetApiHealthcheсkResponse
+func (c *ClientWithResponses) GetApiHealthcheсkWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHealthcheсkResponse, error) {
+	rsp, err := c.GetApiHealthcheсk(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiHealthchekResponse(rsp)
+	return ParseGetApiHealthcheсkResponse(rsp)
 }
 
 // PostApiLoginWithBodyWithResponse request with arbitrary body returning *PostApiLoginResponse
@@ -2564,15 +2564,15 @@ func ParsePostApiHacksHackIdTeamsTeamIdRequestResponse(rsp *http.Response) (*Pos
 	return response, nil
 }
 
-// ParseGetApiHealthchekResponse parses an HTTP response from a GetApiHealthchekWithResponse call
-func ParseGetApiHealthchekResponse(rsp *http.Response) (*GetApiHealthchekResponse, error) {
+// ParseGetApiHealthcheсkResponse parses an HTTP response from a GetApiHealthcheсkWithResponse call
+func ParseGetApiHealthcheсkResponse(rsp *http.Response) (*GetApiHealthcheсkResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiHealthchekResponse{
+	response := &GetApiHealthcheсkResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

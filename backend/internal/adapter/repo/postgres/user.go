@@ -17,6 +17,40 @@ type UserRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (u *UserRepo) ReadAdmin(ctx context.Context, login string) (*repo.UserDTO, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select(
+		"a.id",
+		"a.login",
+		"a.password_hash",
+	).
+		From("hackmate.admin as a").
+		Where(sb.Equal("a.login", login))
+
+	sql, args := sb.Build()
+
+	var admin repo.UserDTO
+
+	err := u.pool.QueryRow(ctx, sql, args...).Scan(
+		&admin.ID,
+		&admin.Login,
+		&admin.PassHash,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to get admin by login: %w", err)
+	}
+
+	admin.IsAdmin = true
+	admin.TeamId = 0
+
+	return &admin, nil
+}
+
 func (u *UserRepo) Create(ctx context.Context, user *repo.UserDTO) error {
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 

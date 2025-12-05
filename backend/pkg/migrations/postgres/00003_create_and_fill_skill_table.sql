@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS hackmate.role (
     id SERIAL PRIMARY KEY,
-    name TEXT
+    name TEXT NOT NULL
 );
 
 INSERT INTO hackmate.role(name)
@@ -17,7 +17,7 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS hackmate.skill (
     id SERIAL PRIMARY KEY,
-    name TEXT
+    name TEXT NOT NULL
 );
 
 -- +goose StatementEnd

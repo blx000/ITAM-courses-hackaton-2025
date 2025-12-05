@@ -65,8 +65,8 @@ type ServerInterface interface {
 	// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
 	PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int)
 	// check if service if healthy
-	// (GET /api/healthchek)
-	GetApiHealthchek(w http.ResponseWriter, r *http.Request)
+	// (GET /api/healthcheсk)
+	GetApiHealthcheсk(w http.ResponseWriter, r *http.Request)
 	// login user with a code
 	// (POST /api/login)
 	PostApiLogin(w http.ResponseWriter, r *http.Request)
@@ -188,8 +188,8 @@ func (_ Unimplemented) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWrite
 }
 
 // check if service if healthy
-// (GET /api/healthchek)
-func (_ Unimplemented) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
+// (GET /api/healthcheсk)
+func (_ Unimplemented) GetApiHealthcheсk(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -743,11 +743,11 @@ func (siw *ServerInterfaceWrapper) PostApiHacksHackIdTeamsTeamIdRequest(w http.R
 	handler.ServeHTTP(w, r)
 }
 
-// GetApiHealthchek operation middleware
-func (siw *ServerInterfaceWrapper) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
+// GetApiHealthcheсk operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHealthcheсk(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetApiHealthchek(w, r)
+		siw.Handler.GetApiHealthcheсk(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1037,7 +1037,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/api/hacks/{hack_id}/teams/{team_id}/request", wrapper.PostApiHacksHackIdTeamsTeamIdRequest)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/api/healthchek", wrapper.GetApiHealthchek)
+		r.Get(options.BaseURL+"/api/healthcheсk", wrapper.GetApiHealthcheсk)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/login", wrapper.PostApiLogin)
@@ -1446,16 +1446,16 @@ func (response PostApiHacksHackIdTeamsTeamIdRequest403Response) VisitPostApiHack
 	return nil
 }
 
-type GetApiHealthchekRequestObject struct {
+type GetApiHealthcheсkRequestObject struct {
 }
 
-type GetApiHealthchekResponseObject interface {
-	VisitGetApiHealthchekResponse(w http.ResponseWriter) error
+type GetApiHealthcheсkResponseObject interface {
+	VisitGetApiHealthcheсkResponse(w http.ResponseWriter) error
 }
 
-type GetApiHealthchek200JSONResponse Health
+type GetApiHealthcheсk200JSONResponse Health
 
-func (response GetApiHealthchek200JSONResponse) VisitGetApiHealthchekResponse(w http.ResponseWriter) error {
+func (response GetApiHealthcheсk200JSONResponse) VisitGetApiHealthcheсkResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -1644,8 +1644,8 @@ type StrictServerInterface interface {
 	// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
 	PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, request PostApiHacksHackIdTeamsTeamIdRequestRequestObject) (PostApiHacksHackIdTeamsTeamIdRequestResponseObject, error)
 	// check if service if healthy
-	// (GET /api/healthchek)
-	GetApiHealthchek(ctx context.Context, request GetApiHealthchekRequestObject) (GetApiHealthchekResponseObject, error)
+	// (GET /api/healthcheсk)
+	GetApiHealthcheсk(ctx context.Context, request GetApiHealthcheсkRequestObject) (GetApiHealthcheсkResponseObject, error)
 	// login user with a code
 	// (POST /api/login)
 	PostApiLogin(ctx context.Context, request PostApiLoginRequestObject) (PostApiLoginResponseObject, error)
@@ -2139,23 +2139,23 @@ func (sh *strictHandler) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWri
 	}
 }
 
-// GetApiHealthchek operation middleware
-func (sh *strictHandler) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
-	var request GetApiHealthchekRequestObject
+// GetApiHealthcheсk operation middleware
+func (sh *strictHandler) GetApiHealthcheсk(w http.ResponseWriter, r *http.Request) {
+	var request GetApiHealthcheсkRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetApiHealthchek(ctx, request.(GetApiHealthchekRequestObject))
+		return sh.ssi.GetApiHealthcheсk(ctx, request.(GetApiHealthcheсkRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetApiHealthchek")
+		handler = middleware(handler, "GetApiHealthcheсk")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetApiHealthchekResponseObject); ok {
-		if err := validResponse.VisitGetApiHealthchekResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHealthcheсkResponseObject); ok {
+		if err := validResponse.VisitGetApiHealthcheсkResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

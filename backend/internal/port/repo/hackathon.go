@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"time"
 )
 
@@ -11,8 +12,15 @@ import (
 
 type Hackathon interface {
 	List(ctx context.Context) ([]*HackathonGeneralDTO, error)
-	Read(ctx context.Context, id int64) (*HackathonDTO, error)
+	Read(ctx context.Context, id int) (*HackathonGeneralDTO, error)
+	AddParticipant(ctx context.Context, hackId int, create FormCreate) error
+	GetParticipant(ctx context.Context, hackId int, userId int64) (*Participant, error)
 }
+
+var (
+	ErrHackathonNotFound   = errors.New("Hackathon Not Found")
+	ErrParticipantNotFound = errors.New("Participant Not Found")
+)
 
 type HackathonDTO struct {
 	Id          int

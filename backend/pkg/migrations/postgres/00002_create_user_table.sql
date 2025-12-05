@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS hackmate.user (
 CREATE TABLE IF NOT EXISTS hackmate.admin (
     id SERIAL PRIMARY KEY,
     login TEXT NOT NULL UNIQUE,
-    passowrd_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL
 );
 
 -- +goose StatementEnd

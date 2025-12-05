@@ -8,6 +8,8 @@ import (
 type Form interface {
 	Create(ctx context.Context, userId int64, hackId int, exp int, addInfo string, roleIds []int, skillIds []int) error
 	GetForm(ctx context.Context, userId int64) (*FormDto, error)
+	ListSkills(ctx context.Context) ([]*Skill, error)
+	ListRoles(ctx context.Context) ([]*Role, error)
 }
 
 var (

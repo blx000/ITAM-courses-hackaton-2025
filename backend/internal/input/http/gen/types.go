@@ -132,7 +132,9 @@ type User struct {
 	Bio       string `json:"bio"`
 	FirstName string `json:"first_name"`
 	Id        int64  `json:"id"`
+	IsAdmin   bool   `json:"is_admin"`
 	LastName  string `json:"last_name"`
+	Login     string `json:"login"`
 }
 
 // UserLogin defines model for UserLogin.
