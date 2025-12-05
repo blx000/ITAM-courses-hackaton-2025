@@ -16,6 +16,68 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select("p.id", "u.first_name", "u.last_name", "p.experience", "p.additional_info", "COALESCE(tp.team_id, -1) as team_id, r.id, r.name").
+		From("hackmate.participant p").
+		Where(sb.Equal("p.hack_id", hackId)).
+		Join("hackmate.user u", "u.id = p.user_id").
+		Join("hackmate.role r", "r.id = p.role_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant tp", "tp.participant_id = p.id")
+
+	sql, args := sb.Build()
+
+	rows, err := h.pool.Query(ctx, sql, args...)
+	defer rows.Close()
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrHackathonNotFound
+		}
+		return nil, err
+	}
+	participants := make([]*repo.Participant, 0)
+	var (
+		roleId   int
+		roleName string
+	)
+	for rows.Next() {
+		var participant repo.Participant
+		err := rows.Scan(&participant.Id,
+			&participant.FirstName,
+			&participant.LastName,
+			&participant.Experience,
+			&participant.AddInfo,
+			&participant.TeamId,
+			&roleId,
+			&roleName)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan hackathon: %w", err)
+		}
+
+		participant.Role = repo.Role{
+			ID:   roleId,
+			Name: roleName,
+		}
+
+		participants = append(participants, &participant)
+		fmt.Println(participant)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("error iterating hackathons rows: %w", err)
+	}
+
+	return participants, nil
+}
+
+func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.Team, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewHackRepo(pool *pgxpool.Pool) *HackRepo {
 	return &HackRepo{
 		pool: pool,
@@ -238,10 +300,10 @@ func (h *HackRepo) List(ctx context.Context) ([]*repo.HackathonGeneralDTO, error
 	sql, args := sb.Build()
 
 	rows, err := h.pool.Query(ctx, sql, args...)
+	defer rows.Close()
 	if err != nil {
 		return nil, fmt.Errorf("failed to query hackathons: %w", err)
 	}
-	defer rows.Close()
 
 	var hackathons []*repo.HackathonGeneralDTO
 	for rows.Next() {

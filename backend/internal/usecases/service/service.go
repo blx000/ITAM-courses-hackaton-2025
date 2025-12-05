@@ -157,8 +157,7 @@ func (s *ServiceImpl) EnterHackathon(ctx context.Context, create repo.FormCreate
 }
 
 func (s *ServiceImpl) ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.hackRepo.ListParticipants(ctx, hackId)
 }
 
 func (s *ServiceImpl) ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error) {
