@@ -25,7 +25,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d scheduler"]
+      test: ["CMD-SHELL", "pg_isready -U user -d hackmate"]
       interval: 3s
       timeout: 2s
       retries: 2
