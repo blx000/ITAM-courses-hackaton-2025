@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -66,8 +65,8 @@ type ServerInterface interface {
 	// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
 	PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int)
 	// check if service if healthy
-	// (GET /api/healthchek)
-	GetApiHealthchek(w http.ResponseWriter, r *http.Request)
+	// (GET /api/healthcheсk)
+	GetApiHealthcheсk(w http.ResponseWriter, r *http.Request)
 	// login user with a code
 	// (POST /api/login)
 	PostApiLogin(w http.ResponseWriter, r *http.Request)
@@ -77,6 +76,9 @@ type ServerInterface interface {
 	// Get all skills
 	// (GET /api/skills)
 	GetApiSkills(w http.ResponseWriter, r *http.Request)
+	// Get user info
+	// (GET /api/user)
+	GetApiUser(w http.ResponseWriter, r *http.Request)
 	// Get user information
 	// (GET /api/users/{user_id})
 	GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int)
@@ -186,8 +188,8 @@ func (_ Unimplemented) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWrite
 }
 
 // check if service if healthy
-// (GET /api/healthchek)
-func (_ Unimplemented) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
+// (GET /api/healthcheсk)
+func (_ Unimplemented) GetApiHealthcheсk(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -206,6 +208,12 @@ func (_ Unimplemented) GetApiRoles(w http.ResponseWriter, r *http.Request) {
 // Get all skills
 // (GET /api/skills)
 func (_ Unimplemented) GetApiSkills(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get user info
+// (GET /api/user)
+func (_ Unimplemented) GetApiUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -735,11 +743,11 @@ func (siw *ServerInterfaceWrapper) PostApiHacksHackIdTeamsTeamIdRequest(w http.R
 	handler.ServeHTTP(w, r)
 }
 
-// GetApiHealthchek operation middleware
-func (siw *ServerInterfaceWrapper) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
+// GetApiHealthcheсk operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHealthcheсk(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetApiHealthchek(w, r)
+		siw.Handler.GetApiHealthcheсk(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -782,6 +790,26 @@ func (siw *ServerInterfaceWrapper) GetApiSkills(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetApiSkills(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetApiUser operation middleware
+func (siw *ServerInterfaceWrapper) GetApiUser(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiUser(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1009,7 +1037,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/api/hacks/{hack_id}/teams/{team_id}/request", wrapper.PostApiHacksHackIdTeamsTeamIdRequest)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/api/healthchek", wrapper.GetApiHealthchek)
+		r.Get(options.BaseURL+"/api/healthcheсk", wrapper.GetApiHealthcheсk)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/login", wrapper.PostApiLogin)
@@ -1019,6 +1047,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/skills", wrapper.GetApiSkills)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/user", wrapper.GetApiUser)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/users/{user_id}", wrapper.GetApiUsersUserId)
@@ -1373,7 +1404,7 @@ type GetApiHacksHackIdTeamsTeamIdResponseObject interface {
 	VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error
 }
 
-type GetApiHacksHackIdTeamsTeamId200JSONResponse []Team
+type GetApiHacksHackIdTeamsTeamId200JSONResponse Team
 
 func (response GetApiHacksHackIdTeamsTeamId200JSONResponse) VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1415,16 +1446,16 @@ func (response PostApiHacksHackIdTeamsTeamIdRequest403Response) VisitPostApiHack
 	return nil
 }
 
-type GetApiHealthchekRequestObject struct {
+type GetApiHealthcheсkRequestObject struct {
 }
 
-type GetApiHealthchekResponseObject interface {
-	VisitGetApiHealthchekResponse(w http.ResponseWriter) error
+type GetApiHealthcheсkResponseObject interface {
+	VisitGetApiHealthcheсkResponse(w http.ResponseWriter) error
 }
 
-type GetApiHealthchek200JSONResponse Health
+type GetApiHealthcheсk200JSONResponse Health
 
-func (response GetApiHealthchek200JSONResponse) VisitGetApiHealthchekResponse(w http.ResponseWriter) error {
+func (response GetApiHealthcheсk200JSONResponse) VisitGetApiHealthcheсkResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -1439,23 +1470,13 @@ type PostApiLoginResponseObject interface {
 	VisitPostApiLoginResponse(w http.ResponseWriter) error
 }
 
-type PostApiLogin200ApplicaapitionjsonResponse struct {
-	Body          io.Reader
-	ContentLength int64
-}
+type PostApiLogin200JSONResponse Token
 
-func (response PostApiLogin200ApplicaapitionjsonResponse) VisitPostApiLoginResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "applica/apition/json")
-	if response.ContentLength != 0 {
-		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
-	}
+func (response PostApiLogin200JSONResponse) VisitPostApiLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-	if closer, ok := response.Body.(io.ReadCloser); ok {
-		defer closer.Close()
-	}
-	_, err := io.Copy(w, response.Body)
-	return err
+	return json.NewEncoder(w).Encode(response)
 }
 
 type PostApiLogin400Response struct {
@@ -1496,6 +1517,30 @@ func (response GetApiSkills200JSONResponse) VisitGetApiSkillsResponse(w http.Res
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiUserRequestObject struct {
+}
+
+type GetApiUserResponseObject interface {
+	VisitGetApiUserResponse(w http.ResponseWriter) error
+}
+
+type GetApiUser200JSONResponse User
+
+func (response GetApiUser200JSONResponse) VisitGetApiUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiUser401Response struct {
+}
+
+func (response GetApiUser401Response) VisitGetApiUserResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
 }
 
 type GetApiUsersUserIdRequestObject struct {
@@ -1599,8 +1644,8 @@ type StrictServerInterface interface {
 	// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
 	PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, request PostApiHacksHackIdTeamsTeamIdRequestRequestObject) (PostApiHacksHackIdTeamsTeamIdRequestResponseObject, error)
 	// check if service if healthy
-	// (GET /api/healthchek)
-	GetApiHealthchek(ctx context.Context, request GetApiHealthchekRequestObject) (GetApiHealthchekResponseObject, error)
+	// (GET /api/healthcheсk)
+	GetApiHealthcheсk(ctx context.Context, request GetApiHealthcheсkRequestObject) (GetApiHealthcheсkResponseObject, error)
 	// login user with a code
 	// (POST /api/login)
 	PostApiLogin(ctx context.Context, request PostApiLoginRequestObject) (PostApiLoginResponseObject, error)
@@ -1610,6 +1655,9 @@ type StrictServerInterface interface {
 	// Get all skills
 	// (GET /api/skills)
 	GetApiSkills(ctx context.Context, request GetApiSkillsRequestObject) (GetApiSkillsResponseObject, error)
+	// Get user info
+	// (GET /api/user)
+	GetApiUser(ctx context.Context, request GetApiUserRequestObject) (GetApiUserResponseObject, error)
 	// Get user information
 	// (GET /api/users/{user_id})
 	GetApiUsersUserId(ctx context.Context, request GetApiUsersUserIdRequestObject) (GetApiUsersUserIdResponseObject, error)
@@ -2091,23 +2139,23 @@ func (sh *strictHandler) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWri
 	}
 }
 
-// GetApiHealthchek operation middleware
-func (sh *strictHandler) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
-	var request GetApiHealthchekRequestObject
+// GetApiHealthcheсk operation middleware
+func (sh *strictHandler) GetApiHealthcheсk(w http.ResponseWriter, r *http.Request) {
+	var request GetApiHealthcheсkRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetApiHealthchek(ctx, request.(GetApiHealthchekRequestObject))
+		return sh.ssi.GetApiHealthcheсk(ctx, request.(GetApiHealthcheсkRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetApiHealthchek")
+		handler = middleware(handler, "GetApiHealthcheсk")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetApiHealthchekResponseObject); ok {
-		if err := validResponse.VisitGetApiHealthchekResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHealthcheсkResponseObject); ok {
+		if err := validResponse.VisitGetApiHealthcheсkResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -2187,6 +2235,30 @@ func (sh *strictHandler) GetApiSkills(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSkillsResponseObject); ok {
 		if err := validResponse.VisitGetApiSkillsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiUser operation middleware
+func (sh *strictHandler) GetApiUser(w http.ResponseWriter, r *http.Request) {
+	var request GetApiUserRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiUser(ctx, request.(GetApiUserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiUser")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiUserResponseObject); ok {
+		if err := validResponse.VisitGetApiUserResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

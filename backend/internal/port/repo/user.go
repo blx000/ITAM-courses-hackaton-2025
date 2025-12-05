@@ -13,6 +13,7 @@ var (
 type User interface {
 	Create(ctx context.Context, user *UserDTO) error
 	Read(ctx context.Context, id int64) (*UserDTO, error)
+	ReadAdmin(ctx context.Context, login string) (*UserDTO, error)
 
 	ReadByTeam(ctx context.Context, teamId int64) ([]*UserDTO, error)
 	ReadByHack(ctx context.Context, hackathonId int64) ([]*UserDTO, error)
@@ -31,9 +32,15 @@ type UserDTO struct {
 	TeamId    int64
 	IsAdmin   bool
 	Login     string
+	PassHash  string
 }
 
-type Skills struct {
-	ID   int64
+type Skill struct {
+	ID   int
+	Name string
+}
+
+type Role struct {
+	ID   int
 	Name string
 }

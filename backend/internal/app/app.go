@@ -8,6 +8,7 @@ import (
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/input/http/gen"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/input/http/handler"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/bot"
+	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
@@ -17,8 +18,6 @@ import (
 	"syscall"
 	"time"
 )
-
-const requestContextKey string = "http_request"
 
 func Start(cfg config.Config) error {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -39,11 +38,17 @@ func Start(cfg config.Config) error {
 	}
 
 	authRepo := postgres.NewAuthRepo(pgPool)
+	userRepo := postgres.NewUserRepo(pgPool)
+	hackRepo := postgres.NewHackRepo(pgPool)
+	formRepo := postgres.NewFormRepo(pgPool)
+
 	tgBot := bot.NewTgBot(cfg.TgBot, authRepo)
+
+	service := service.NewServiceImpl(formRepo, authRepo, hackRepo, userRepo)
 
 	go tgBot.Start(ctx)
 
-	server := handler.NewServer()
+	server := handler.NewServer(service, cfg.SecretJWT)
 
 	strictHandler := gen.NewStrictHandler(server, nil)
 

@@ -4,14 +4,13 @@ CREATE TABLE IF NOT EXISTS hackmate.user (
     id BIGINT PRIMARY KEY,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    photo pg_catalog.bytea NOT NULL,
     bio TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hackmate.admin (
     id SERIAL PRIMARY KEY,
     login TEXT NOT NULL UNIQUE,
-    passowrd_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL
 );
 
 -- +goose StatementEnd
