@@ -11,6 +11,8 @@ services:
       - "8090:8090"
     environment:
       - CONFIG_PATH=./config/local.yaml
+    networks:
+      - hackmate-network
 
   postgres:
     image: postgres:17
@@ -27,6 +29,25 @@ services:
       interval: 3s
       timeout: 2s
       retries: 2
+    networks:
+      - hackmate-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"  # Nginx слушает на 80 внутри контейнера
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=/api  # Используем прокси через nginx
+    networks:
+      - hackmate-network
 
 volumes:
   postgres:
+
+networks:
+  hackmate-network:
+    driver: bridge
