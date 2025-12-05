@@ -64,6 +64,18 @@ func (s *ServiceImpl) LoginUser(ctx context.Context, code string, secret string)
 		LastName:  authDTO.LastName,
 		IsAdmin:   false,
 	}
+
+	_, err = s.userRepo.Read(ctx, userDto.ID)
+	if errors.Is(err, repo.ErrUserNotFound) {
+		fmt.Println("New user login. Must create one")
+		errCreate := s.userRepo.Create(ctx, userDto)
+		if errCreate != nil {
+			return "", "", fmt.Errorf("failed to create user: %w", errCreate)
+		}
+	} else if err != nil {
+		return "", "", fmt.Errorf("failed to read user: %w", err)
+	}
+
 	accessToken, err := jwt.NewToken(userDto, time.Hour, secret)
 	if err != nil {
 		fmt.Println(err)

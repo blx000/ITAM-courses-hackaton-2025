@@ -70,13 +70,13 @@ func (h *HackRepo) insertParticipantSkills(ctx context.Context, tx pgx.Tx, parti
 
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 	ib.InsertInto("hackmate.participant_skill").
-		Cols("form_id", "skill_id")
+		Cols("participant_id", "skill_id")
 
 	for _, skill := range skills {
 		ib.Values(participantId, skill.ID)
 	}
 
-	ib.SQL("ON CONFLICT (form_id, skill_id) DO NOTHING")
+	ib.SQL("ON CONFLICT (participant_id, skill_id) DO NOTHING")
 
 	sql, args := ib.Build()
 
@@ -103,7 +103,7 @@ func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64)
 		From("hackmate.participant as p").
 		Join("hackmate.user as u", "p.user_id = u.id").
 		Join("hackmate.role as r", "p.role_id = r.id").
-		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant as tp", "p.id = tp.form_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant as tp", "p.id = tp.participant_id").
 		Where(sb.Equal("p.user_id", userId)).
 		Where(sb.Equal("p.hack_id", hackId))
 
@@ -151,7 +151,7 @@ func (h *HackRepo) getParticipantSkills(ctx context.Context, participantId int) 
 	sb.Select("s.id", "s.name").
 		From("hackmate.participant_skill as ps").
 		Join("hackmate.skill as s", "ps.skill_id = s.id").
-		Where(sb.Equal("ps.form_id", participantId))
+		Where(sb.Equal("ps.participant_id", participantId))
 
 	sql, args := sb.Build()
 
@@ -263,6 +263,7 @@ func (h *HackRepo) List(ctx context.Context) ([]*repo.HackathonGeneralDTO, error
 		}
 
 		hackathons = append(hackathons, &hackathon)
+		fmt.Println(hackathon)
 	}
 
 	if err = rows.Err(); err != nil {

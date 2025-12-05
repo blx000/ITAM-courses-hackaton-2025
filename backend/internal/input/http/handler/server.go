@@ -130,6 +130,7 @@ func (s Server) PostApiAdminLogin(ctx context.Context, request gen.PostApiAdminL
 }
 
 func (s Server) GetApiHacks(ctx context.Context, request gen.GetApiHacksRequestObject) (gen.GetApiHacksResponseObject, error) {
+	fmt.Println("FINDING HACKS")
 	hacks, err := s.service.ListHacks(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -137,6 +138,7 @@ func (s Server) GetApiHacks(ctx context.Context, request gen.GetApiHacksRequestO
 	}
 
 	hackResponse := make([]gen.HackathonShort, len(hacks))
+	fmt.Println("FINDING HACKS ", len(hacks))
 
 	for i := range hacks {
 		hackResponse[i] = gen.HackathonShort{

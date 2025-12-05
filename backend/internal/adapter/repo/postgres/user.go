@@ -55,8 +55,8 @@ func (u *UserRepo) Create(ctx context.Context, user *repo.UserDTO) error {
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 
 	ib.InsertInto("hackmate.user").
-		Cols("id", "first_name", "last_name").
-		Values(user.ID, user.FirstName, user.LastName)
+		Cols("id", "first_name", "last_name", "bio").
+		Values(user.ID, user.FirstName, user.LastName, user.Bio)
 
 	sql, args := ib.Build()
 
@@ -81,19 +81,21 @@ func NewUserRepo(pool *pgxpool.Pool) *UserRepo {
 
 func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 	//TODO implement me
-	sb := sqlbuilder.NewSelectBuilder()
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
-	sb.Select("first_name", "last_name", "photo_url", "bio").
-		From("hackmate.user u").Where(sb.Equal("hackmate.id", id))
+	sb.Select("first_name", "last_name", "bio").
+		From("hackmate.user").
+		Where(sb.Equal("id", id))
 
 	sql, args := sb.Build()
+
+	fmt.Println(sql)
+	fmt.Println(args...)
 
 	var (
 		firstName string
 		lastName  string
-		photoURL  string
 		bio       string
-		skills    []string
 	)
 
 	err := u.pool.
@@ -101,7 +103,6 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 		Scan(
 			&firstName,
 			&lastName,
-			&photoURL,
 			&bio,
 		)
 
@@ -112,34 +113,32 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 		return nil, fmt.Errorf("failed to read user %w", err)
 	}
 
-	sb.Select("name").
-		From("hackmate.user_skill as us").
-		Where(sb.Equal("us.user_id", id)).
-		Join("hackmate.skill as s", "us.skill_id = s.id")
-
-	sql, args = sb.Build()
-
-	rows, err := u.pool.Query(ctx, sql, args...)
-	defer rows.Close()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read user %w", err)
-	}
-
-	for rows.Next() {
-		var skillName string
-		if err := rows.Scan(&skillName); err != nil {
-			return nil, fmt.Errorf("failed to scan skill: %w", err)
-		}
-		skills = append(skills, skillName)
-	}
+	//sb.Select("name").
+	//	From("hackmate.user_skill as us").
+	//	Where(sb.Equal("us.user_id", id)).
+	//	Join("hackmate.skill as s", "us.skill_id = s.id")
+	//
+	//sql, args = sb.Build()
+	//
+	//rows, err := u.pool.Query(ctx, sql, args...)
+	//defer rows.Close()
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed to read user %w", err)
+	//}
+	//
+	//for rows.Next() {
+	//	var skillName string
+	//	if err := rows.Scan(&skillName); err != nil {
+	//		return nil, fmt.Errorf("failed to scan skill: %w", err)
+	//	}
+	//	skills = append(skills, skillName)
+	//}
 
 	return &repo.UserDTO{
 		ID:        id,
 		FirstName: firstName,
 		LastName:  lastName,
-		PhotoURL:  photoURL,
 		Bio:       bio,
-		Skills:    skills,
 	}, nil
 }
 
