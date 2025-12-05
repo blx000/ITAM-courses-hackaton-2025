@@ -7,6 +7,7 @@ import type { HackathonPage } from "../../../api";
 
 export function FormHeader() {
   const [hackathon, setHackathon] = useState<HackathonPage | null>(null);
+  setHackathon(null);
   return (
     <div className={styles.container}>
       <h1>Название хакатона</h1>
