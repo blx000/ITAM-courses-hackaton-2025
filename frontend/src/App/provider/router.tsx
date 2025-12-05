@@ -11,6 +11,7 @@ import { FormPage } from "../../pages/form-page";
 import { HelpPage } from "../../pages/help-page";
 import { NotificationPage } from "../../pages/notification-page";
 import { HackathonInfoPage } from "../../pages/hackathon-info-page";
+import { SearchPage } from "../../pages/search-page";
 import { MyComandPage } from "../../pages/my-comands-page";
 
 export const appRouter = createBrowserRouter([
@@ -74,5 +75,9 @@ export const appRouter = createBrowserRouter([
         element: <HelpPage />,
       },
     ],
+  },
+  {
+    path: "/search",
+    element: <SearchPage />,
   },
 ]);

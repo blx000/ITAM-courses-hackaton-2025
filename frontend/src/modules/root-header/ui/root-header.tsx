@@ -38,7 +38,10 @@ export function RootHeader() {
           </button>
         </div>
         <div className={styles.icons}>
-          <img src={searchIcon} alt="search-icon" />
+          <NavLink to={"/search"}>
+            <img src={searchIcon} alt="search-icon" />
+          </NavLink>
+
           <NavLink to={"/help"}>
             <img src={questionIcon} alt="question-icon" />
           </NavLink>
