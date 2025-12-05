@@ -18,6 +18,8 @@ import (
 	"time"
 )
 
+const requestContextKey string = "http_request"
+
 func Start(cfg config.Config) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -52,6 +54,7 @@ func Start(cfg config.Config) error {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(60 * time.Second))
+	router.Use(handler.RequestInContext)
 
 	gen.HandlerWithOptions(strictHandler, gen.ChiServerOptions{
 		BaseRouter: router,
@@ -61,6 +64,9 @@ func Start(cfg config.Config) error {
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: router,
 	}
+
+	fmt.Println("Listening on port", cfg.Port)
+	fmt.Println("Addr", httpServer.Addr)
 
 	go httpServer.ListenAndServe()
 

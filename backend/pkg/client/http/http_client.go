@@ -89,76 +89,85 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// PostAdminHacksWithBody request with any body
-	PostAdminHacksWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiAdminHacksWithBody request with any body
+	PostApiAdminHacksWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostAdminHacks(ctx context.Context, body PostAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiAdminHacks(ctx context.Context, body PostApiAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostAdminLoginWithBody request with any body
-	PostAdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiAdminLoginWithBody request with any body
+	PostApiAdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostAdminLogin(ctx context.Context, body PostAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiAdminLogin(ctx context.Context, body PostApiAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacks request
-	GetHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacks request
+	GetApiHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackId request
-	GetHacksHackId(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackId request
+	GetApiHacksHackId(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostHacksHackIdEnterWithBody request with any body
-	PostHacksHackIdEnterWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiHacksHackIdEnterWithBody request with any body
+	PostApiHacksHackIdEnterWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostHacksHackIdEnter(ctx context.Context, hackId int, body PostHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiHacksHackIdEnter(ctx context.Context, hackId int, body PostApiHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdInvitations request
-	GetHacksHackIdInvitations(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdInvitations request
+	GetApiHacksHackIdInvitations(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdInvitationsInviteIdAccept request
-	GetHacksHackIdInvitationsInviteIdAccept(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdInvitationsInviteIdAccept request
+	GetApiHacksHackIdInvitationsInviteIdAccept(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdParticipants request
-	GetHacksHackIdParticipants(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdParticipants request
+	GetApiHacksHackIdParticipants(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdParticipantsParticipantId request
-	GetHacksHackIdParticipantsParticipantId(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdParticipantsParticipantId request
+	GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostHacksHackIdParticipantsParticipantsIdInvite request
-	PostHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiHacksHackIdParticipantsParticipantsIdInvite request
+	PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdRequests request
-	GetHacksHackIdRequests(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdRequests request
+	GetApiHacksHackIdRequests(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostHacksHackIdRequestsRequestIdAccept request
-	PostHacksHackIdRequestsRequestIdAccept(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiHacksHackIdRequestsRequestIdAccept request
+	PostApiHacksHackIdRequestsRequestIdAccept(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdTeams request
-	GetHacksHackIdTeams(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdTeams request
+	GetApiHacksHackIdTeams(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostHacksHackIdTeamsWithBody request with any body
-	PostHacksHackIdTeamsWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiHacksHackIdTeamsWithBody request with any body
+	PostApiHacksHackIdTeamsWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostHacksHackIdTeams(ctx context.Context, hackId int, body PostHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiHacksHackIdTeams(ctx context.Context, hackId int, body PostApiHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHacksHackIdTeamsTeamId request
-	GetHacksHackIdTeamsTeamId(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHacksHackIdTeamsTeamId request
+	GetApiHacksHackIdTeamsTeamId(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostHacksHackIdTeamsTeamIdRequest request
-	PostHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiHacksHackIdTeamsTeamIdRequest request
+	PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostLoginWithBody request with any body
-	PostLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiHealthchek request
+	GetApiHealthchek(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostLogin(ctx context.Context, body PostLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiLoginWithBody request with any body
+	PostApiLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetUsersUserId request
-	GetUsersUserId(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiLogin(ctx context.Context, body PostApiLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetUsersUserIdTeams request
-	GetUsersUserIdTeams(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiRoles request
+	GetApiRoles(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSkills request
+	GetApiSkills(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiUsersUserId request
+	GetApiUsersUserId(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiUsersUserIdTeams request
+	GetApiUsersUserIdTeams(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) PostAdminHacksWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostAdminHacksRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostApiAdminHacksWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAdminHacksRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -169,8 +178,8 @@ func (c *Client) PostAdminHacksWithBody(ctx context.Context, contentType string,
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostAdminHacks(ctx context.Context, body PostAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostAdminHacksRequest(c.Server, body)
+func (c *Client) PostApiAdminHacks(ctx context.Context, body PostApiAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAdminHacksRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -181,8 +190,8 @@ func (c *Client) PostAdminHacks(ctx context.Context, body PostAdminHacksJSONRequ
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostAdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostAdminLoginRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostApiAdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAdminLoginRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -193,8 +202,8 @@ func (c *Client) PostAdminLoginWithBody(ctx context.Context, contentType string,
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostAdminLogin(ctx context.Context, body PostAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostAdminLoginRequest(c.Server, body)
+func (c *Client) PostApiAdminLogin(ctx context.Context, body PostApiAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAdminLoginRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -205,8 +214,8 @@ func (c *Client) PostAdminLogin(ctx context.Context, body PostAdminLoginJSONRequ
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksRequest(c.Server)
+func (c *Client) GetApiHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -217,8 +226,8 @@ func (c *Client) GetHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackId(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdRequest(c.Server, hackId)
+func (c *Client) GetApiHacksHackId(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdRequest(c.Server, hackId)
 	if err != nil {
 		return nil, err
 	}
@@ -229,8 +238,8 @@ func (c *Client) GetHacksHackId(ctx context.Context, hackId int, reqEditors ...R
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdEnterWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdEnterRequestWithBody(c.Server, hackId, contentType, body)
+func (c *Client) PostApiHacksHackIdEnterWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdEnterRequestWithBody(c.Server, hackId, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -241,8 +250,8 @@ func (c *Client) PostHacksHackIdEnterWithBody(ctx context.Context, hackId int, c
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdEnter(ctx context.Context, hackId int, body PostHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdEnterRequest(c.Server, hackId, body)
+func (c *Client) PostApiHacksHackIdEnter(ctx context.Context, hackId int, body PostApiHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdEnterRequest(c.Server, hackId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -253,8 +262,8 @@ func (c *Client) PostHacksHackIdEnter(ctx context.Context, hackId int, body Post
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdInvitations(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdInvitationsRequest(c.Server, hackId)
+func (c *Client) GetApiHacksHackIdInvitations(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdInvitationsRequest(c.Server, hackId)
 	if err != nil {
 		return nil, err
 	}
@@ -265,8 +274,8 @@ func (c *Client) GetHacksHackIdInvitations(ctx context.Context, hackId int, reqE
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdInvitationsInviteIdAccept(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdInvitationsInviteIdAcceptRequest(c.Server, hackId, inviteId)
+func (c *Client) GetApiHacksHackIdInvitationsInviteIdAccept(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdInvitationsInviteIdAcceptRequest(c.Server, hackId, inviteId)
 	if err != nil {
 		return nil, err
 	}
@@ -277,8 +286,8 @@ func (c *Client) GetHacksHackIdInvitationsInviteIdAccept(ctx context.Context, ha
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdParticipants(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdParticipantsRequest(c.Server, hackId)
+func (c *Client) GetApiHacksHackIdParticipants(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdParticipantsRequest(c.Server, hackId)
 	if err != nil {
 		return nil, err
 	}
@@ -289,8 +298,8 @@ func (c *Client) GetHacksHackIdParticipants(ctx context.Context, hackId int, req
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdParticipantsParticipantId(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdParticipantsParticipantIdRequest(c.Server, hackId, participantId)
+func (c *Client) GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdParticipantsParticipantIdRequest(c.Server, hackId, participantId)
 	if err != nil {
 		return nil, err
 	}
@@ -301,8 +310,8 @@ func (c *Client) GetHacksHackIdParticipantsParticipantId(ctx context.Context, ha
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdParticipantsParticipantsIdInviteRequest(c.Server, hackId, participantsId)
+func (c *Client) PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdParticipantsParticipantsIdInviteRequest(c.Server, hackId, participantsId)
 	if err != nil {
 		return nil, err
 	}
@@ -313,8 +322,8 @@ func (c *Client) PostHacksHackIdParticipantsParticipantsIdInvite(ctx context.Con
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdRequests(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdRequestsRequest(c.Server, hackId)
+func (c *Client) GetApiHacksHackIdRequests(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdRequestsRequest(c.Server, hackId)
 	if err != nil {
 		return nil, err
 	}
@@ -325,8 +334,8 @@ func (c *Client) GetHacksHackIdRequests(ctx context.Context, hackId int, reqEdit
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdRequestsRequestIdAccept(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdRequestsRequestIdAcceptRequest(c.Server, hackId, requestId)
+func (c *Client) PostApiHacksHackIdRequestsRequestIdAccept(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdRequestsRequestIdAcceptRequest(c.Server, hackId, requestId)
 	if err != nil {
 		return nil, err
 	}
@@ -337,8 +346,8 @@ func (c *Client) PostHacksHackIdRequestsRequestIdAccept(ctx context.Context, hac
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdTeams(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdTeamsRequest(c.Server, hackId)
+func (c *Client) GetApiHacksHackIdTeams(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdTeamsRequest(c.Server, hackId)
 	if err != nil {
 		return nil, err
 	}
@@ -349,8 +358,8 @@ func (c *Client) GetHacksHackIdTeams(ctx context.Context, hackId int, reqEditors
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdTeamsWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdTeamsRequestWithBody(c.Server, hackId, contentType, body)
+func (c *Client) PostApiHacksHackIdTeamsWithBody(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdTeamsRequestWithBody(c.Server, hackId, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -361,8 +370,8 @@ func (c *Client) PostHacksHackIdTeamsWithBody(ctx context.Context, hackId int, c
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdTeams(ctx context.Context, hackId int, body PostHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdTeamsRequest(c.Server, hackId, body)
+func (c *Client) PostApiHacksHackIdTeams(ctx context.Context, hackId int, body PostApiHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdTeamsRequest(c.Server, hackId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -373,8 +382,8 @@ func (c *Client) PostHacksHackIdTeams(ctx context.Context, hackId int, body Post
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHacksHackIdTeamsTeamId(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHacksHackIdTeamsTeamIdRequest(c.Server, hackId, teamId)
+func (c *Client) GetApiHacksHackIdTeamsTeamId(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksHackIdTeamsTeamIdRequest(c.Server, hackId, teamId)
 	if err != nil {
 		return nil, err
 	}
@@ -385,8 +394,8 @@ func (c *Client) GetHacksHackIdTeamsTeamId(ctx context.Context, hackId int, team
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostHacksHackIdTeamsTeamIdRequestRequest(c.Server, hackId, teamId)
+func (c *Client) PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiHacksHackIdTeamsTeamIdRequestRequest(c.Server, hackId, teamId)
 	if err != nil {
 		return nil, err
 	}
@@ -397,8 +406,8 @@ func (c *Client) PostHacksHackIdTeamsTeamIdRequest(ctx context.Context, hackId i
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostLoginRequestWithBody(c.Server, contentType, body)
+func (c *Client) GetApiHealthchek(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHealthchekRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -409,8 +418,8 @@ func (c *Client) PostLoginWithBody(ctx context.Context, contentType string, body
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostLogin(ctx context.Context, body PostLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostLoginRequest(c.Server, body)
+func (c *Client) PostApiLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiLoginRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -421,8 +430,8 @@ func (c *Client) PostLogin(ctx context.Context, body PostLoginJSONRequestBody, r
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetUsersUserId(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetUsersUserIdRequest(c.Server, userId)
+func (c *Client) PostApiLogin(ctx context.Context, body PostApiLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiLoginRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -433,8 +442,8 @@ func (c *Client) GetUsersUserId(ctx context.Context, userId int, reqEditors ...R
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetUsersUserIdTeams(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetUsersUserIdTeamsRequest(c.Server, userId)
+func (c *Client) GetApiRoles(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiRolesRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -445,19 +454,55 @@ func (c *Client) GetUsersUserIdTeams(ctx context.Context, userId int, reqEditors
 	return c.Client.Do(req)
 }
 
-// NewPostAdminHacksRequest calls the generic PostAdminHacks builder with application/json body
-func NewPostAdminHacksRequest(server string, body PostAdminHacksJSONRequestBody) (*http.Request, error) {
+func (c *Client) GetApiSkills(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSkillsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiUsersUserId(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiUsersUserIdRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiUsersUserIdTeams(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiUsersUserIdTeamsRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// NewPostApiAdminHacksRequest calls the generic PostApiAdminHacks builder with application/json body
+func NewPostApiAdminHacksRequest(server string, body PostApiAdminHacksJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostAdminHacksRequestWithBody(server, "application/json", bodyReader)
+	return NewPostApiAdminHacksRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewPostAdminHacksRequestWithBody generates requests for PostAdminHacks with any type of body
-func NewPostAdminHacksRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostApiAdminHacksRequestWithBody generates requests for PostApiAdminHacks with any type of body
+func NewPostApiAdminHacksRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -465,7 +510,7 @@ func NewPostAdminHacksRequestWithBody(server string, contentType string, body io
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/hacks")
+	operationPath := fmt.Sprintf("/api/admin/hacks")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -485,19 +530,19 @@ func NewPostAdminHacksRequestWithBody(server string, contentType string, body io
 	return req, nil
 }
 
-// NewPostAdminLoginRequest calls the generic PostAdminLogin builder with application/json body
-func NewPostAdminLoginRequest(server string, body PostAdminLoginJSONRequestBody) (*http.Request, error) {
+// NewPostApiAdminLoginRequest calls the generic PostApiAdminLogin builder with application/json body
+func NewPostApiAdminLoginRequest(server string, body PostApiAdminLoginJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostAdminLoginRequestWithBody(server, "application/json", bodyReader)
+	return NewPostApiAdminLoginRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewPostAdminLoginRequestWithBody generates requests for PostAdminLogin with any type of body
-func NewPostAdminLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostApiAdminLoginRequestWithBody generates requests for PostApiAdminLogin with any type of body
+func NewPostApiAdminLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -505,7 +550,7 @@ func NewPostAdminLoginRequestWithBody(server string, contentType string, body io
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/login")
+	operationPath := fmt.Sprintf("/api/admin/login")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -525,8 +570,8 @@ func NewPostAdminLoginRequestWithBody(server string, contentType string, body io
 	return req, nil
 }
 
-// NewGetHacksRequest generates requests for GetHacks
-func NewGetHacksRequest(server string) (*http.Request, error) {
+// NewGetApiHacksRequest generates requests for GetApiHacks
+func NewGetApiHacksRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -534,7 +579,7 @@ func NewGetHacksRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks")
+	operationPath := fmt.Sprintf("/api/hacks")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -552,8 +597,8 @@ func NewGetHacksRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetHacksHackIdRequest generates requests for GetHacksHackId
-func NewGetHacksHackIdRequest(server string, hackId int) (*http.Request, error) {
+// NewGetApiHacksHackIdRequest generates requests for GetApiHacksHackId
+func NewGetApiHacksHackIdRequest(server string, hackId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -568,7 +613,7 @@ func NewGetHacksHackIdRequest(server string, hackId int) (*http.Request, error) 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -586,19 +631,19 @@ func NewGetHacksHackIdRequest(server string, hackId int) (*http.Request, error) 
 	return req, nil
 }
 
-// NewPostHacksHackIdEnterRequest calls the generic PostHacksHackIdEnter builder with application/json body
-func NewPostHacksHackIdEnterRequest(server string, hackId int, body PostHacksHackIdEnterJSONRequestBody) (*http.Request, error) {
+// NewPostApiHacksHackIdEnterRequest calls the generic PostApiHacksHackIdEnter builder with application/json body
+func NewPostApiHacksHackIdEnterRequest(server string, hackId int, body PostApiHacksHackIdEnterJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostHacksHackIdEnterRequestWithBody(server, hackId, "application/json", bodyReader)
+	return NewPostApiHacksHackIdEnterRequestWithBody(server, hackId, "application/json", bodyReader)
 }
 
-// NewPostHacksHackIdEnterRequestWithBody generates requests for PostHacksHackIdEnter with any type of body
-func NewPostHacksHackIdEnterRequestWithBody(server string, hackId int, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostApiHacksHackIdEnterRequestWithBody generates requests for PostApiHacksHackIdEnter with any type of body
+func NewPostApiHacksHackIdEnterRequestWithBody(server string, hackId int, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -613,7 +658,7 @@ func NewPostHacksHackIdEnterRequestWithBody(server string, hackId int, contentTy
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/enter", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s/enter", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -633,8 +678,8 @@ func NewPostHacksHackIdEnterRequestWithBody(server string, hackId int, contentTy
 	return req, nil
 }
 
-// NewGetHacksHackIdInvitationsRequest generates requests for GetHacksHackIdInvitations
-func NewGetHacksHackIdInvitationsRequest(server string, hackId int) (*http.Request, error) {
+// NewGetApiHacksHackIdInvitationsRequest generates requests for GetApiHacksHackIdInvitations
+func NewGetApiHacksHackIdInvitationsRequest(server string, hackId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -649,7 +694,7 @@ func NewGetHacksHackIdInvitationsRequest(server string, hackId int) (*http.Reque
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/invitations", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s/invitations", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -667,8 +712,8 @@ func NewGetHacksHackIdInvitationsRequest(server string, hackId int) (*http.Reque
 	return req, nil
 }
 
-// NewGetHacksHackIdInvitationsInviteIdAcceptRequest generates requests for GetHacksHackIdInvitationsInviteIdAccept
-func NewGetHacksHackIdInvitationsInviteIdAcceptRequest(server string, hackId int, inviteId int) (*http.Request, error) {
+// NewGetApiHacksHackIdInvitationsInviteIdAcceptRequest generates requests for GetApiHacksHackIdInvitationsInviteIdAccept
+func NewGetApiHacksHackIdInvitationsInviteIdAcceptRequest(server string, hackId int, inviteId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -690,7 +735,7 @@ func NewGetHacksHackIdInvitationsInviteIdAcceptRequest(server string, hackId int
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/invitations/%s/accept", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/hacks/%s/invitations/%s/accept", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -708,8 +753,8 @@ func NewGetHacksHackIdInvitationsInviteIdAcceptRequest(server string, hackId int
 	return req, nil
 }
 
-// NewGetHacksHackIdParticipantsRequest generates requests for GetHacksHackIdParticipants
-func NewGetHacksHackIdParticipantsRequest(server string, hackId int) (*http.Request, error) {
+// NewGetApiHacksHackIdParticipantsRequest generates requests for GetApiHacksHackIdParticipants
+func NewGetApiHacksHackIdParticipantsRequest(server string, hackId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -724,7 +769,7 @@ func NewGetHacksHackIdParticipantsRequest(server string, hackId int) (*http.Requ
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/participants", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s/participants", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -742,8 +787,8 @@ func NewGetHacksHackIdParticipantsRequest(server string, hackId int) (*http.Requ
 	return req, nil
 }
 
-// NewGetHacksHackIdParticipantsParticipantIdRequest generates requests for GetHacksHackIdParticipantsParticipantId
-func NewGetHacksHackIdParticipantsParticipantIdRequest(server string, hackId int, participantId int) (*http.Request, error) {
+// NewGetApiHacksHackIdParticipantsParticipantIdRequest generates requests for GetApiHacksHackIdParticipantsParticipantId
+func NewGetApiHacksHackIdParticipantsParticipantIdRequest(server string, hackId int, participantId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -765,7 +810,7 @@ func NewGetHacksHackIdParticipantsParticipantIdRequest(server string, hackId int
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/participants/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/hacks/%s/participants/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -783,8 +828,8 @@ func NewGetHacksHackIdParticipantsParticipantIdRequest(server string, hackId int
 	return req, nil
 }
 
-// NewPostHacksHackIdParticipantsParticipantsIdInviteRequest generates requests for PostHacksHackIdParticipantsParticipantsIdInvite
-func NewPostHacksHackIdParticipantsParticipantsIdInviteRequest(server string, hackId int, participantsId int) (*http.Request, error) {
+// NewPostApiHacksHackIdParticipantsParticipantsIdInviteRequest generates requests for PostApiHacksHackIdParticipantsParticipantsIdInvite
+func NewPostApiHacksHackIdParticipantsParticipantsIdInviteRequest(server string, hackId int, participantsId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -806,7 +851,7 @@ func NewPostHacksHackIdParticipantsParticipantsIdInviteRequest(server string, ha
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/participants/%s/invite", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/hacks/%s/participants/%s/invite", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -824,8 +869,8 @@ func NewPostHacksHackIdParticipantsParticipantsIdInviteRequest(server string, ha
 	return req, nil
 }
 
-// NewGetHacksHackIdRequestsRequest generates requests for GetHacksHackIdRequests
-func NewGetHacksHackIdRequestsRequest(server string, hackId int) (*http.Request, error) {
+// NewGetApiHacksHackIdRequestsRequest generates requests for GetApiHacksHackIdRequests
+func NewGetApiHacksHackIdRequestsRequest(server string, hackId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -840,7 +885,7 @@ func NewGetHacksHackIdRequestsRequest(server string, hackId int) (*http.Request,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/requests", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s/requests", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -858,8 +903,8 @@ func NewGetHacksHackIdRequestsRequest(server string, hackId int) (*http.Request,
 	return req, nil
 }
 
-// NewPostHacksHackIdRequestsRequestIdAcceptRequest generates requests for PostHacksHackIdRequestsRequestIdAccept
-func NewPostHacksHackIdRequestsRequestIdAcceptRequest(server string, hackId int, requestId int) (*http.Request, error) {
+// NewPostApiHacksHackIdRequestsRequestIdAcceptRequest generates requests for PostApiHacksHackIdRequestsRequestIdAccept
+func NewPostApiHacksHackIdRequestsRequestIdAcceptRequest(server string, hackId int, requestId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -881,7 +926,7 @@ func NewPostHacksHackIdRequestsRequestIdAcceptRequest(server string, hackId int,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/requests/%s/accept", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/hacks/%s/requests/%s/accept", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -899,8 +944,8 @@ func NewPostHacksHackIdRequestsRequestIdAcceptRequest(server string, hackId int,
 	return req, nil
 }
 
-// NewGetHacksHackIdTeamsRequest generates requests for GetHacksHackIdTeams
-func NewGetHacksHackIdTeamsRequest(server string, hackId int) (*http.Request, error) {
+// NewGetApiHacksHackIdTeamsRequest generates requests for GetApiHacksHackIdTeams
+func NewGetApiHacksHackIdTeamsRequest(server string, hackId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -915,7 +960,7 @@ func NewGetHacksHackIdTeamsRequest(server string, hackId int) (*http.Request, er
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/teams", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s/teams", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -933,19 +978,19 @@ func NewGetHacksHackIdTeamsRequest(server string, hackId int) (*http.Request, er
 	return req, nil
 }
 
-// NewPostHacksHackIdTeamsRequest calls the generic PostHacksHackIdTeams builder with application/json body
-func NewPostHacksHackIdTeamsRequest(server string, hackId int, body PostHacksHackIdTeamsJSONRequestBody) (*http.Request, error) {
+// NewPostApiHacksHackIdTeamsRequest calls the generic PostApiHacksHackIdTeams builder with application/json body
+func NewPostApiHacksHackIdTeamsRequest(server string, hackId int, body PostApiHacksHackIdTeamsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostHacksHackIdTeamsRequestWithBody(server, hackId, "application/json", bodyReader)
+	return NewPostApiHacksHackIdTeamsRequestWithBody(server, hackId, "application/json", bodyReader)
 }
 
-// NewPostHacksHackIdTeamsRequestWithBody generates requests for PostHacksHackIdTeams with any type of body
-func NewPostHacksHackIdTeamsRequestWithBody(server string, hackId int, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostApiHacksHackIdTeamsRequestWithBody generates requests for PostApiHacksHackIdTeams with any type of body
+func NewPostApiHacksHackIdTeamsRequestWithBody(server string, hackId int, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -960,7 +1005,7 @@ func NewPostHacksHackIdTeamsRequestWithBody(server string, hackId int, contentTy
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/teams", pathParam0)
+	operationPath := fmt.Sprintf("/api/hacks/%s/teams", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -980,8 +1025,8 @@ func NewPostHacksHackIdTeamsRequestWithBody(server string, hackId int, contentTy
 	return req, nil
 }
 
-// NewGetHacksHackIdTeamsTeamIdRequest generates requests for GetHacksHackIdTeamsTeamId
-func NewGetHacksHackIdTeamsTeamIdRequest(server string, hackId int, teamId int) (*http.Request, error) {
+// NewGetApiHacksHackIdTeamsTeamIdRequest generates requests for GetApiHacksHackIdTeamsTeamId
+func NewGetApiHacksHackIdTeamsTeamIdRequest(server string, hackId int, teamId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1003,7 +1048,7 @@ func NewGetHacksHackIdTeamsTeamIdRequest(server string, hackId int, teamId int) 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/teams/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/hacks/%s/teams/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1021,8 +1066,8 @@ func NewGetHacksHackIdTeamsTeamIdRequest(server string, hackId int, teamId int) 
 	return req, nil
 }
 
-// NewPostHacksHackIdTeamsTeamIdRequestRequest generates requests for PostHacksHackIdTeamsTeamIdRequest
-func NewPostHacksHackIdTeamsTeamIdRequestRequest(server string, hackId int, teamId int) (*http.Request, error) {
+// NewPostApiHacksHackIdTeamsTeamIdRequestRequest generates requests for PostApiHacksHackIdTeamsTeamIdRequest
+func NewPostApiHacksHackIdTeamsTeamIdRequestRequest(server string, hackId int, teamId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1044,7 +1089,7 @@ func NewPostHacksHackIdTeamsTeamIdRequestRequest(server string, hackId int, team
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hacks/%s/teams/%s/request", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/hacks/%s/teams/%s/request", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1062,19 +1107,8 @@ func NewPostHacksHackIdTeamsTeamIdRequestRequest(server string, hackId int, team
 	return req, nil
 }
 
-// NewPostLoginRequest calls the generic PostLogin builder with application/json body
-func NewPostLoginRequest(server string, body PostLoginJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostLoginRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewPostLoginRequestWithBody generates requests for PostLogin with any type of body
-func NewPostLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewGetApiHealthchekRequest generates requests for GetApiHealthchek
+func NewGetApiHealthchekRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1082,7 +1116,45 @@ func NewPostLoginRequestWithBody(server string, contentType string, body io.Read
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/login")
+	operationPath := fmt.Sprintf("/api/healthchek")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiLoginRequest calls the generic PostApiLogin builder with application/json body
+func NewPostApiLoginRequest(server string, body PostApiLoginJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiLoginRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiLoginRequestWithBody generates requests for PostApiLogin with any type of body
+func NewPostApiLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/login")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1102,23 +1174,16 @@ func NewPostLoginRequestWithBody(server string, contentType string, body io.Read
 	return req, nil
 }
 
-// NewGetUsersUserIdRequest generates requests for GetUsersUserId
-func NewGetUsersUserIdRequest(server string, userId int) (*http.Request, error) {
+// NewGetApiRolesRequest generates requests for GetApiRoles
+func NewGetApiRolesRequest(server string) (*http.Request, error) {
 	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
-	if err != nil {
-		return nil, err
-	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/users/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/roles")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1136,8 +1201,35 @@ func NewGetUsersUserIdRequest(server string, userId int) (*http.Request, error) 
 	return req, nil
 }
 
-// NewGetUsersUserIdTeamsRequest generates requests for GetUsersUserIdTeams
-func NewGetUsersUserIdTeamsRequest(server string, userId int) (*http.Request, error) {
+// NewGetApiSkillsRequest generates requests for GetApiSkills
+func NewGetApiSkillsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/skills")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiUsersUserIdRequest generates requests for GetApiUsersUserId
+func NewGetApiUsersUserIdRequest(server string, userId int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1152,7 +1244,41 @@ func NewGetUsersUserIdTeamsRequest(server string, userId int) (*http.Request, er
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/users/%s/teams", pathParam0)
+	operationPath := fmt.Sprintf("/api/users/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiUsersUserIdTeamsRequest generates requests for GetApiUsersUserIdTeams
+func NewGetApiUsersUserIdTeamsRequest(server string, userId int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/users/%s/teams", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1213,81 +1339,90 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// PostAdminHacksWithBodyWithResponse request with any body
-	PostAdminHacksWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAdminHacksResponse, error)
+	// PostApiAdminHacksWithBodyWithResponse request with any body
+	PostApiAdminHacksWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAdminHacksResponse, error)
 
-	PostAdminHacksWithResponse(ctx context.Context, body PostAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAdminHacksResponse, error)
+	PostApiAdminHacksWithResponse(ctx context.Context, body PostApiAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAdminHacksResponse, error)
 
-	// PostAdminLoginWithBodyWithResponse request with any body
-	PostAdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAdminLoginResponse, error)
+	// PostApiAdminLoginWithBodyWithResponse request with any body
+	PostApiAdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAdminLoginResponse, error)
 
-	PostAdminLoginWithResponse(ctx context.Context, body PostAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAdminLoginResponse, error)
+	PostApiAdminLoginWithResponse(ctx context.Context, body PostApiAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAdminLoginResponse, error)
 
-	// GetHacksWithResponse request
-	GetHacksWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHacksResponse, error)
+	// GetApiHacksWithResponse request
+	GetApiHacksWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHacksResponse, error)
 
-	// GetHacksHackIdWithResponse request
-	GetHacksHackIdWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdResponse, error)
+	// GetApiHacksHackIdWithResponse request
+	GetApiHacksHackIdWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdResponse, error)
 
-	// PostHacksHackIdEnterWithBodyWithResponse request with any body
-	PostHacksHackIdEnterWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostHacksHackIdEnterResponse, error)
+	// PostApiHacksHackIdEnterWithBodyWithResponse request with any body
+	PostApiHacksHackIdEnterWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdEnterResponse, error)
 
-	PostHacksHackIdEnterWithResponse(ctx context.Context, hackId int, body PostHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostHacksHackIdEnterResponse, error)
+	PostApiHacksHackIdEnterWithResponse(ctx context.Context, hackId int, body PostApiHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdEnterResponse, error)
 
-	// GetHacksHackIdInvitationsWithResponse request
-	GetHacksHackIdInvitationsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdInvitationsResponse, error)
+	// GetApiHacksHackIdInvitationsWithResponse request
+	GetApiHacksHackIdInvitationsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdInvitationsResponse, error)
 
-	// GetHacksHackIdInvitationsInviteIdAcceptWithResponse request
-	GetHacksHackIdInvitationsInviteIdAcceptWithResponse(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdInvitationsInviteIdAcceptResponse, error)
+	// GetApiHacksHackIdInvitationsInviteIdAcceptWithResponse request
+	GetApiHacksHackIdInvitationsInviteIdAcceptWithResponse(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdInvitationsInviteIdAcceptResponse, error)
 
-	// GetHacksHackIdParticipantsWithResponse request
-	GetHacksHackIdParticipantsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdParticipantsResponse, error)
+	// GetApiHacksHackIdParticipantsWithResponse request
+	GetApiHacksHackIdParticipantsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdParticipantsResponse, error)
 
-	// GetHacksHackIdParticipantsParticipantIdWithResponse request
-	GetHacksHackIdParticipantsParticipantIdWithResponse(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdParticipantsParticipantIdResponse, error)
+	// GetApiHacksHackIdParticipantsParticipantIdWithResponse request
+	GetApiHacksHackIdParticipantsParticipantIdWithResponse(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdParticipantsParticipantIdResponse, error)
 
-	// PostHacksHackIdParticipantsParticipantsIdInviteWithResponse request
-	PostHacksHackIdParticipantsParticipantsIdInviteWithResponse(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*PostHacksHackIdParticipantsParticipantsIdInviteResponse, error)
+	// PostApiHacksHackIdParticipantsParticipantsIdInviteWithResponse request
+	PostApiHacksHackIdParticipantsParticipantsIdInviteWithResponse(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdParticipantsParticipantsIdInviteResponse, error)
 
-	// GetHacksHackIdRequestsWithResponse request
-	GetHacksHackIdRequestsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdRequestsResponse, error)
+	// GetApiHacksHackIdRequestsWithResponse request
+	GetApiHacksHackIdRequestsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdRequestsResponse, error)
 
-	// PostHacksHackIdRequestsRequestIdAcceptWithResponse request
-	PostHacksHackIdRequestsRequestIdAcceptWithResponse(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*PostHacksHackIdRequestsRequestIdAcceptResponse, error)
+	// PostApiHacksHackIdRequestsRequestIdAcceptWithResponse request
+	PostApiHacksHackIdRequestsRequestIdAcceptWithResponse(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdRequestsRequestIdAcceptResponse, error)
 
-	// GetHacksHackIdTeamsWithResponse request
-	GetHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdTeamsResponse, error)
+	// GetApiHacksHackIdTeamsWithResponse request
+	GetApiHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdTeamsResponse, error)
 
-	// PostHacksHackIdTeamsWithBodyWithResponse request with any body
-	PostHacksHackIdTeamsWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostHacksHackIdTeamsResponse, error)
+	// PostApiHacksHackIdTeamsWithBodyWithResponse request with any body
+	PostApiHacksHackIdTeamsWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsResponse, error)
 
-	PostHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, body PostHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostHacksHackIdTeamsResponse, error)
+	PostApiHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, body PostApiHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsResponse, error)
 
-	// GetHacksHackIdTeamsTeamIdWithResponse request
-	GetHacksHackIdTeamsTeamIdWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdTeamsTeamIdResponse, error)
+	// GetApiHacksHackIdTeamsTeamIdWithResponse request
+	GetApiHacksHackIdTeamsTeamIdWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdTeamsTeamIdResponse, error)
 
-	// PostHacksHackIdTeamsTeamIdRequestWithResponse request
-	PostHacksHackIdTeamsTeamIdRequestWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*PostHacksHackIdTeamsTeamIdRequestResponse, error)
+	// PostApiHacksHackIdTeamsTeamIdRequestWithResponse request
+	PostApiHacksHackIdTeamsTeamIdRequestWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsTeamIdRequestResponse, error)
 
-	// PostLoginWithBodyWithResponse request with any body
-	PostLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostLoginResponse, error)
+	// GetApiHealthchekWithResponse request
+	GetApiHealthchekWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHealthchekResponse, error)
 
-	PostLoginWithResponse(ctx context.Context, body PostLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostLoginResponse, error)
+	// PostApiLoginWithBodyWithResponse request with any body
+	PostApiLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiLoginResponse, error)
 
-	// GetUsersUserIdWithResponse request
-	GetUsersUserIdWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetUsersUserIdResponse, error)
+	PostApiLoginWithResponse(ctx context.Context, body PostApiLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLoginResponse, error)
 
-	// GetUsersUserIdTeamsWithResponse request
-	GetUsersUserIdTeamsWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetUsersUserIdTeamsResponse, error)
+	// GetApiRolesWithResponse request
+	GetApiRolesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiRolesResponse, error)
+
+	// GetApiSkillsWithResponse request
+	GetApiSkillsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSkillsResponse, error)
+
+	// GetApiUsersUserIdWithResponse request
+	GetApiUsersUserIdWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdResponse, error)
+
+	// GetApiUsersUserIdTeamsWithResponse request
+	GetApiUsersUserIdTeamsWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdTeamsResponse, error)
 }
 
-type PostAdminHacksResponse struct {
+type PostApiAdminHacksResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r PostAdminHacksResponse) Status() string {
+func (r PostApiAdminHacksResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1295,21 +1430,21 @@ func (r PostAdminHacksResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostAdminHacksResponse) StatusCode() int {
+func (r PostApiAdminHacksResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostAdminLoginResponse struct {
+type PostApiAdminLoginResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Token
 }
 
 // Status returns HTTPResponse.Status
-func (r PostAdminLoginResponse) Status() string {
+func (r PostApiAdminLoginResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1317,21 +1452,21 @@ func (r PostAdminLoginResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostAdminLoginResponse) StatusCode() int {
+func (r PostApiAdminLoginResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksResponse struct {
+type GetApiHacksResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]HackathonShort
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksResponse) Status() string {
+func (r GetApiHacksResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1339,21 +1474,21 @@ func (r GetHacksResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksResponse) StatusCode() int {
+func (r GetApiHacksResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdResponse struct {
+type GetApiHacksHackIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]HackathonPage
+	JSON200      *HackathonPage
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdResponse) Status() string {
+func (r GetApiHacksHackIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1361,20 +1496,20 @@ func (r GetHacksHackIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdResponse) StatusCode() int {
+func (r GetApiHacksHackIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostHacksHackIdEnterResponse struct {
+type PostApiHacksHackIdEnterResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r PostHacksHackIdEnterResponse) Status() string {
+func (r PostApiHacksHackIdEnterResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1382,21 +1517,21 @@ func (r PostHacksHackIdEnterResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostHacksHackIdEnterResponse) StatusCode() int {
+func (r PostApiHacksHackIdEnterResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdInvitationsResponse struct {
+type GetApiHacksHackIdInvitationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]Invite
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdInvitationsResponse) Status() string {
+func (r GetApiHacksHackIdInvitationsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1404,20 +1539,20 @@ func (r GetHacksHackIdInvitationsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdInvitationsResponse) StatusCode() int {
+func (r GetApiHacksHackIdInvitationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdInvitationsInviteIdAcceptResponse struct {
+type GetApiHacksHackIdInvitationsInviteIdAcceptResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdInvitationsInviteIdAcceptResponse) Status() string {
+func (r GetApiHacksHackIdInvitationsInviteIdAcceptResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1425,21 +1560,21 @@ func (r GetHacksHackIdInvitationsInviteIdAcceptResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdInvitationsInviteIdAcceptResponse) StatusCode() int {
+func (r GetApiHacksHackIdInvitationsInviteIdAcceptResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdParticipantsResponse struct {
+type GetApiHacksHackIdParticipantsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]Participant
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdParticipantsResponse) Status() string {
+func (r GetApiHacksHackIdParticipantsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1447,21 +1582,21 @@ func (r GetHacksHackIdParticipantsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdParticipantsResponse) StatusCode() int {
+func (r GetApiHacksHackIdParticipantsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdParticipantsParticipantIdResponse struct {
+type GetApiHacksHackIdParticipantsParticipantIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Participant
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdParticipantsParticipantIdResponse) Status() string {
+func (r GetApiHacksHackIdParticipantsParticipantIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1469,20 +1604,20 @@ func (r GetHacksHackIdParticipantsParticipantIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdParticipantsParticipantIdResponse) StatusCode() int {
+func (r GetApiHacksHackIdParticipantsParticipantIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostHacksHackIdParticipantsParticipantsIdInviteResponse struct {
+type PostApiHacksHackIdParticipantsParticipantsIdInviteResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r PostHacksHackIdParticipantsParticipantsIdInviteResponse) Status() string {
+func (r PostApiHacksHackIdParticipantsParticipantsIdInviteResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1490,21 +1625,21 @@ func (r PostHacksHackIdParticipantsParticipantsIdInviteResponse) Status() string
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostHacksHackIdParticipantsParticipantsIdInviteResponse) StatusCode() int {
+func (r PostApiHacksHackIdParticipantsParticipantsIdInviteResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdRequestsResponse struct {
+type GetApiHacksHackIdRequestsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]Request
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdRequestsResponse) Status() string {
+func (r GetApiHacksHackIdRequestsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1512,20 +1647,20 @@ func (r GetHacksHackIdRequestsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdRequestsResponse) StatusCode() int {
+func (r GetApiHacksHackIdRequestsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostHacksHackIdRequestsRequestIdAcceptResponse struct {
+type PostApiHacksHackIdRequestsRequestIdAcceptResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r PostHacksHackIdRequestsRequestIdAcceptResponse) Status() string {
+func (r PostApiHacksHackIdRequestsRequestIdAcceptResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1533,21 +1668,21 @@ func (r PostHacksHackIdRequestsRequestIdAcceptResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostHacksHackIdRequestsRequestIdAcceptResponse) StatusCode() int {
+func (r PostApiHacksHackIdRequestsRequestIdAcceptResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdTeamsResponse struct {
+type GetApiHacksHackIdTeamsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]Team
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdTeamsResponse) Status() string {
+func (r GetApiHacksHackIdTeamsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1555,21 +1690,21 @@ func (r GetHacksHackIdTeamsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdTeamsResponse) StatusCode() int {
+func (r GetApiHacksHackIdTeamsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostHacksHackIdTeamsResponse struct {
+type PostApiHacksHackIdTeamsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *[]Team
 }
 
 // Status returns HTTPResponse.Status
-func (r PostHacksHackIdTeamsResponse) Status() string {
+func (r PostApiHacksHackIdTeamsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1577,21 +1712,21 @@ func (r PostHacksHackIdTeamsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostHacksHackIdTeamsResponse) StatusCode() int {
+func (r PostApiHacksHackIdTeamsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetHacksHackIdTeamsTeamIdResponse struct {
+type GetApiHacksHackIdTeamsTeamIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]Team
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHacksHackIdTeamsTeamIdResponse) Status() string {
+func (r GetApiHacksHackIdTeamsTeamIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1599,20 +1734,20 @@ func (r GetHacksHackIdTeamsTeamIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHacksHackIdTeamsTeamIdResponse) StatusCode() int {
+func (r GetApiHacksHackIdTeamsTeamIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostHacksHackIdTeamsTeamIdRequestResponse struct {
+type PostApiHacksHackIdTeamsTeamIdRequestResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r PostHacksHackIdTeamsTeamIdRequestResponse) Status() string {
+func (r PostApiHacksHackIdTeamsTeamIdRequestResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1620,21 +1755,21 @@ func (r PostHacksHackIdTeamsTeamIdRequestResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostHacksHackIdTeamsTeamIdRequestResponse) StatusCode() int {
+func (r PostApiHacksHackIdTeamsTeamIdRequestResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostLoginResponse struct {
+type GetApiHealthchekResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Token
+	JSON200      *Health
 }
 
 // Status returns HTTPResponse.Status
-func (r PostLoginResponse) Status() string {
+func (r GetApiHealthchekResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1642,21 +1777,86 @@ func (r PostLoginResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostLoginResponse) StatusCode() int {
+func (r GetApiHealthchekResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetUsersUserIdResponse struct {
+type PostApiLoginResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiLoginResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiLoginResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiRolesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Role
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiRolesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiRolesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSkillsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Skill
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSkillsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSkillsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiUsersUserIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *User
 }
 
 // Status returns HTTPResponse.Status
-func (r GetUsersUserIdResponse) Status() string {
+func (r GetApiUsersUserIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1664,21 +1864,21 @@ func (r GetUsersUserIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetUsersUserIdResponse) StatusCode() int {
+func (r GetApiUsersUserIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetUsersUserIdTeamsResponse struct {
+type GetApiUsersUserIdTeamsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]TeamShort
 }
 
 // Status returns HTTPResponse.Status
-func (r GetUsersUserIdTeamsResponse) Status() string {
+func (r GetApiUsersUserIdTeamsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1686,233 +1886,260 @@ func (r GetUsersUserIdTeamsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetUsersUserIdTeamsResponse) StatusCode() int {
+func (r GetApiUsersUserIdTeamsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-// PostAdminHacksWithBodyWithResponse request with arbitrary body returning *PostAdminHacksResponse
-func (c *ClientWithResponses) PostAdminHacksWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAdminHacksResponse, error) {
-	rsp, err := c.PostAdminHacksWithBody(ctx, contentType, body, reqEditors...)
+// PostApiAdminHacksWithBodyWithResponse request with arbitrary body returning *PostApiAdminHacksResponse
+func (c *ClientWithResponses) PostApiAdminHacksWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAdminHacksResponse, error) {
+	rsp, err := c.PostApiAdminHacksWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostAdminHacksResponse(rsp)
+	return ParsePostApiAdminHacksResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostAdminHacksWithResponse(ctx context.Context, body PostAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAdminHacksResponse, error) {
-	rsp, err := c.PostAdminHacks(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostApiAdminHacksWithResponse(ctx context.Context, body PostApiAdminHacksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAdminHacksResponse, error) {
+	rsp, err := c.PostApiAdminHacks(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostAdminHacksResponse(rsp)
+	return ParsePostApiAdminHacksResponse(rsp)
 }
 
-// PostAdminLoginWithBodyWithResponse request with arbitrary body returning *PostAdminLoginResponse
-func (c *ClientWithResponses) PostAdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAdminLoginResponse, error) {
-	rsp, err := c.PostAdminLoginWithBody(ctx, contentType, body, reqEditors...)
+// PostApiAdminLoginWithBodyWithResponse request with arbitrary body returning *PostApiAdminLoginResponse
+func (c *ClientWithResponses) PostApiAdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAdminLoginResponse, error) {
+	rsp, err := c.PostApiAdminLoginWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostAdminLoginResponse(rsp)
+	return ParsePostApiAdminLoginResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostAdminLoginWithResponse(ctx context.Context, body PostAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAdminLoginResponse, error) {
-	rsp, err := c.PostAdminLogin(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostApiAdminLoginWithResponse(ctx context.Context, body PostApiAdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAdminLoginResponse, error) {
+	rsp, err := c.PostApiAdminLogin(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostAdminLoginResponse(rsp)
+	return ParsePostApiAdminLoginResponse(rsp)
 }
 
-// GetHacksWithResponse request returning *GetHacksResponse
-func (c *ClientWithResponses) GetHacksWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHacksResponse, error) {
-	rsp, err := c.GetHacks(ctx, reqEditors...)
+// GetApiHacksWithResponse request returning *GetApiHacksResponse
+func (c *ClientWithResponses) GetApiHacksWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHacksResponse, error) {
+	rsp, err := c.GetApiHacks(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksResponse(rsp)
+	return ParseGetApiHacksResponse(rsp)
 }
 
-// GetHacksHackIdWithResponse request returning *GetHacksHackIdResponse
-func (c *ClientWithResponses) GetHacksHackIdWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdResponse, error) {
-	rsp, err := c.GetHacksHackId(ctx, hackId, reqEditors...)
+// GetApiHacksHackIdWithResponse request returning *GetApiHacksHackIdResponse
+func (c *ClientWithResponses) GetApiHacksHackIdWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdResponse, error) {
+	rsp, err := c.GetApiHacksHackId(ctx, hackId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdResponse(rsp)
+	return ParseGetApiHacksHackIdResponse(rsp)
 }
 
-// PostHacksHackIdEnterWithBodyWithResponse request with arbitrary body returning *PostHacksHackIdEnterResponse
-func (c *ClientWithResponses) PostHacksHackIdEnterWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostHacksHackIdEnterResponse, error) {
-	rsp, err := c.PostHacksHackIdEnterWithBody(ctx, hackId, contentType, body, reqEditors...)
+// PostApiHacksHackIdEnterWithBodyWithResponse request with arbitrary body returning *PostApiHacksHackIdEnterResponse
+func (c *ClientWithResponses) PostApiHacksHackIdEnterWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdEnterResponse, error) {
+	rsp, err := c.PostApiHacksHackIdEnterWithBody(ctx, hackId, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdEnterResponse(rsp)
+	return ParsePostApiHacksHackIdEnterResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostHacksHackIdEnterWithResponse(ctx context.Context, hackId int, body PostHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostHacksHackIdEnterResponse, error) {
-	rsp, err := c.PostHacksHackIdEnter(ctx, hackId, body, reqEditors...)
+func (c *ClientWithResponses) PostApiHacksHackIdEnterWithResponse(ctx context.Context, hackId int, body PostApiHacksHackIdEnterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdEnterResponse, error) {
+	rsp, err := c.PostApiHacksHackIdEnter(ctx, hackId, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdEnterResponse(rsp)
+	return ParsePostApiHacksHackIdEnterResponse(rsp)
 }
 
-// GetHacksHackIdInvitationsWithResponse request returning *GetHacksHackIdInvitationsResponse
-func (c *ClientWithResponses) GetHacksHackIdInvitationsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdInvitationsResponse, error) {
-	rsp, err := c.GetHacksHackIdInvitations(ctx, hackId, reqEditors...)
+// GetApiHacksHackIdInvitationsWithResponse request returning *GetApiHacksHackIdInvitationsResponse
+func (c *ClientWithResponses) GetApiHacksHackIdInvitationsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdInvitationsResponse, error) {
+	rsp, err := c.GetApiHacksHackIdInvitations(ctx, hackId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdInvitationsResponse(rsp)
+	return ParseGetApiHacksHackIdInvitationsResponse(rsp)
 }
 
-// GetHacksHackIdInvitationsInviteIdAcceptWithResponse request returning *GetHacksHackIdInvitationsInviteIdAcceptResponse
-func (c *ClientWithResponses) GetHacksHackIdInvitationsInviteIdAcceptWithResponse(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdInvitationsInviteIdAcceptResponse, error) {
-	rsp, err := c.GetHacksHackIdInvitationsInviteIdAccept(ctx, hackId, inviteId, reqEditors...)
+// GetApiHacksHackIdInvitationsInviteIdAcceptWithResponse request returning *GetApiHacksHackIdInvitationsInviteIdAcceptResponse
+func (c *ClientWithResponses) GetApiHacksHackIdInvitationsInviteIdAcceptWithResponse(ctx context.Context, hackId int, inviteId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdInvitationsInviteIdAcceptResponse, error) {
+	rsp, err := c.GetApiHacksHackIdInvitationsInviteIdAccept(ctx, hackId, inviteId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdInvitationsInviteIdAcceptResponse(rsp)
+	return ParseGetApiHacksHackIdInvitationsInviteIdAcceptResponse(rsp)
 }
 
-// GetHacksHackIdParticipantsWithResponse request returning *GetHacksHackIdParticipantsResponse
-func (c *ClientWithResponses) GetHacksHackIdParticipantsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdParticipantsResponse, error) {
-	rsp, err := c.GetHacksHackIdParticipants(ctx, hackId, reqEditors...)
+// GetApiHacksHackIdParticipantsWithResponse request returning *GetApiHacksHackIdParticipantsResponse
+func (c *ClientWithResponses) GetApiHacksHackIdParticipantsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdParticipantsResponse, error) {
+	rsp, err := c.GetApiHacksHackIdParticipants(ctx, hackId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdParticipantsResponse(rsp)
+	return ParseGetApiHacksHackIdParticipantsResponse(rsp)
 }
 
-// GetHacksHackIdParticipantsParticipantIdWithResponse request returning *GetHacksHackIdParticipantsParticipantIdResponse
-func (c *ClientWithResponses) GetHacksHackIdParticipantsParticipantIdWithResponse(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdParticipantsParticipantIdResponse, error) {
-	rsp, err := c.GetHacksHackIdParticipantsParticipantId(ctx, hackId, participantId, reqEditors...)
+// GetApiHacksHackIdParticipantsParticipantIdWithResponse request returning *GetApiHacksHackIdParticipantsParticipantIdResponse
+func (c *ClientWithResponses) GetApiHacksHackIdParticipantsParticipantIdWithResponse(ctx context.Context, hackId int, participantId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdParticipantsParticipantIdResponse, error) {
+	rsp, err := c.GetApiHacksHackIdParticipantsParticipantId(ctx, hackId, participantId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdParticipantsParticipantIdResponse(rsp)
+	return ParseGetApiHacksHackIdParticipantsParticipantIdResponse(rsp)
 }
 
-// PostHacksHackIdParticipantsParticipantsIdInviteWithResponse request returning *PostHacksHackIdParticipantsParticipantsIdInviteResponse
-func (c *ClientWithResponses) PostHacksHackIdParticipantsParticipantsIdInviteWithResponse(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*PostHacksHackIdParticipantsParticipantsIdInviteResponse, error) {
-	rsp, err := c.PostHacksHackIdParticipantsParticipantsIdInvite(ctx, hackId, participantsId, reqEditors...)
+// PostApiHacksHackIdParticipantsParticipantsIdInviteWithResponse request returning *PostApiHacksHackIdParticipantsParticipantsIdInviteResponse
+func (c *ClientWithResponses) PostApiHacksHackIdParticipantsParticipantsIdInviteWithResponse(ctx context.Context, hackId int, participantsId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdParticipantsParticipantsIdInviteResponse, error) {
+	rsp, err := c.PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx, hackId, participantsId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdParticipantsParticipantsIdInviteResponse(rsp)
+	return ParsePostApiHacksHackIdParticipantsParticipantsIdInviteResponse(rsp)
 }
 
-// GetHacksHackIdRequestsWithResponse request returning *GetHacksHackIdRequestsResponse
-func (c *ClientWithResponses) GetHacksHackIdRequestsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdRequestsResponse, error) {
-	rsp, err := c.GetHacksHackIdRequests(ctx, hackId, reqEditors...)
+// GetApiHacksHackIdRequestsWithResponse request returning *GetApiHacksHackIdRequestsResponse
+func (c *ClientWithResponses) GetApiHacksHackIdRequestsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdRequestsResponse, error) {
+	rsp, err := c.GetApiHacksHackIdRequests(ctx, hackId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdRequestsResponse(rsp)
+	return ParseGetApiHacksHackIdRequestsResponse(rsp)
 }
 
-// PostHacksHackIdRequestsRequestIdAcceptWithResponse request returning *PostHacksHackIdRequestsRequestIdAcceptResponse
-func (c *ClientWithResponses) PostHacksHackIdRequestsRequestIdAcceptWithResponse(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*PostHacksHackIdRequestsRequestIdAcceptResponse, error) {
-	rsp, err := c.PostHacksHackIdRequestsRequestIdAccept(ctx, hackId, requestId, reqEditors...)
+// PostApiHacksHackIdRequestsRequestIdAcceptWithResponse request returning *PostApiHacksHackIdRequestsRequestIdAcceptResponse
+func (c *ClientWithResponses) PostApiHacksHackIdRequestsRequestIdAcceptWithResponse(ctx context.Context, hackId int, requestId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdRequestsRequestIdAcceptResponse, error) {
+	rsp, err := c.PostApiHacksHackIdRequestsRequestIdAccept(ctx, hackId, requestId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdRequestsRequestIdAcceptResponse(rsp)
+	return ParsePostApiHacksHackIdRequestsRequestIdAcceptResponse(rsp)
 }
 
-// GetHacksHackIdTeamsWithResponse request returning *GetHacksHackIdTeamsResponse
-func (c *ClientWithResponses) GetHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdTeamsResponse, error) {
-	rsp, err := c.GetHacksHackIdTeams(ctx, hackId, reqEditors...)
+// GetApiHacksHackIdTeamsWithResponse request returning *GetApiHacksHackIdTeamsResponse
+func (c *ClientWithResponses) GetApiHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdTeamsResponse, error) {
+	rsp, err := c.GetApiHacksHackIdTeams(ctx, hackId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdTeamsResponse(rsp)
+	return ParseGetApiHacksHackIdTeamsResponse(rsp)
 }
 
-// PostHacksHackIdTeamsWithBodyWithResponse request with arbitrary body returning *PostHacksHackIdTeamsResponse
-func (c *ClientWithResponses) PostHacksHackIdTeamsWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostHacksHackIdTeamsResponse, error) {
-	rsp, err := c.PostHacksHackIdTeamsWithBody(ctx, hackId, contentType, body, reqEditors...)
+// PostApiHacksHackIdTeamsWithBodyWithResponse request with arbitrary body returning *PostApiHacksHackIdTeamsResponse
+func (c *ClientWithResponses) PostApiHacksHackIdTeamsWithBodyWithResponse(ctx context.Context, hackId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsResponse, error) {
+	rsp, err := c.PostApiHacksHackIdTeamsWithBody(ctx, hackId, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdTeamsResponse(rsp)
+	return ParsePostApiHacksHackIdTeamsResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, body PostHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostHacksHackIdTeamsResponse, error) {
-	rsp, err := c.PostHacksHackIdTeams(ctx, hackId, body, reqEditors...)
+func (c *ClientWithResponses) PostApiHacksHackIdTeamsWithResponse(ctx context.Context, hackId int, body PostApiHacksHackIdTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsResponse, error) {
+	rsp, err := c.PostApiHacksHackIdTeams(ctx, hackId, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdTeamsResponse(rsp)
+	return ParsePostApiHacksHackIdTeamsResponse(rsp)
 }
 
-// GetHacksHackIdTeamsTeamIdWithResponse request returning *GetHacksHackIdTeamsTeamIdResponse
-func (c *ClientWithResponses) GetHacksHackIdTeamsTeamIdWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*GetHacksHackIdTeamsTeamIdResponse, error) {
-	rsp, err := c.GetHacksHackIdTeamsTeamId(ctx, hackId, teamId, reqEditors...)
+// GetApiHacksHackIdTeamsTeamIdWithResponse request returning *GetApiHacksHackIdTeamsTeamIdResponse
+func (c *ClientWithResponses) GetApiHacksHackIdTeamsTeamIdWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdTeamsTeamIdResponse, error) {
+	rsp, err := c.GetApiHacksHackIdTeamsTeamId(ctx, hackId, teamId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHacksHackIdTeamsTeamIdResponse(rsp)
+	return ParseGetApiHacksHackIdTeamsTeamIdResponse(rsp)
 }
 
-// PostHacksHackIdTeamsTeamIdRequestWithResponse request returning *PostHacksHackIdTeamsTeamIdRequestResponse
-func (c *ClientWithResponses) PostHacksHackIdTeamsTeamIdRequestWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*PostHacksHackIdTeamsTeamIdRequestResponse, error) {
-	rsp, err := c.PostHacksHackIdTeamsTeamIdRequest(ctx, hackId, teamId, reqEditors...)
+// PostApiHacksHackIdTeamsTeamIdRequestWithResponse request returning *PostApiHacksHackIdTeamsTeamIdRequestResponse
+func (c *ClientWithResponses) PostApiHacksHackIdTeamsTeamIdRequestWithResponse(ctx context.Context, hackId int, teamId int, reqEditors ...RequestEditorFn) (*PostApiHacksHackIdTeamsTeamIdRequestResponse, error) {
+	rsp, err := c.PostApiHacksHackIdTeamsTeamIdRequest(ctx, hackId, teamId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostHacksHackIdTeamsTeamIdRequestResponse(rsp)
+	return ParsePostApiHacksHackIdTeamsTeamIdRequestResponse(rsp)
 }
 
-// PostLoginWithBodyWithResponse request with arbitrary body returning *PostLoginResponse
-func (c *ClientWithResponses) PostLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostLoginResponse, error) {
-	rsp, err := c.PostLoginWithBody(ctx, contentType, body, reqEditors...)
+// GetApiHealthchekWithResponse request returning *GetApiHealthchekResponse
+func (c *ClientWithResponses) GetApiHealthchekWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHealthchekResponse, error) {
+	rsp, err := c.GetApiHealthchek(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostLoginResponse(rsp)
+	return ParseGetApiHealthchekResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostLoginWithResponse(ctx context.Context, body PostLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostLoginResponse, error) {
-	rsp, err := c.PostLogin(ctx, body, reqEditors...)
+// PostApiLoginWithBodyWithResponse request with arbitrary body returning *PostApiLoginResponse
+func (c *ClientWithResponses) PostApiLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiLoginResponse, error) {
+	rsp, err := c.PostApiLoginWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostLoginResponse(rsp)
+	return ParsePostApiLoginResponse(rsp)
 }
 
-// GetUsersUserIdWithResponse request returning *GetUsersUserIdResponse
-func (c *ClientWithResponses) GetUsersUserIdWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetUsersUserIdResponse, error) {
-	rsp, err := c.GetUsersUserId(ctx, userId, reqEditors...)
+func (c *ClientWithResponses) PostApiLoginWithResponse(ctx context.Context, body PostApiLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLoginResponse, error) {
+	rsp, err := c.PostApiLogin(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetUsersUserIdResponse(rsp)
+	return ParsePostApiLoginResponse(rsp)
 }
 
-// GetUsersUserIdTeamsWithResponse request returning *GetUsersUserIdTeamsResponse
-func (c *ClientWithResponses) GetUsersUserIdTeamsWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetUsersUserIdTeamsResponse, error) {
-	rsp, err := c.GetUsersUserIdTeams(ctx, userId, reqEditors...)
+// GetApiRolesWithResponse request returning *GetApiRolesResponse
+func (c *ClientWithResponses) GetApiRolesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiRolesResponse, error) {
+	rsp, err := c.GetApiRoles(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetUsersUserIdTeamsResponse(rsp)
+	return ParseGetApiRolesResponse(rsp)
 }
 
-// ParsePostAdminHacksResponse parses an HTTP response from a PostAdminHacksWithResponse call
-func ParsePostAdminHacksResponse(rsp *http.Response) (*PostAdminHacksResponse, error) {
+// GetApiSkillsWithResponse request returning *GetApiSkillsResponse
+func (c *ClientWithResponses) GetApiSkillsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSkillsResponse, error) {
+	rsp, err := c.GetApiSkills(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSkillsResponse(rsp)
+}
+
+// GetApiUsersUserIdWithResponse request returning *GetApiUsersUserIdResponse
+func (c *ClientWithResponses) GetApiUsersUserIdWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdResponse, error) {
+	rsp, err := c.GetApiUsersUserId(ctx, userId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiUsersUserIdResponse(rsp)
+}
+
+// GetApiUsersUserIdTeamsWithResponse request returning *GetApiUsersUserIdTeamsResponse
+func (c *ClientWithResponses) GetApiUsersUserIdTeamsWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdTeamsResponse, error) {
+	rsp, err := c.GetApiUsersUserIdTeams(ctx, userId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiUsersUserIdTeamsResponse(rsp)
+}
+
+// ParsePostApiAdminHacksResponse parses an HTTP response from a PostApiAdminHacksWithResponse call
+func ParsePostApiAdminHacksResponse(rsp *http.Response) (*PostApiAdminHacksResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostAdminHacksResponse{
+	response := &PostApiAdminHacksResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1920,15 +2147,15 @@ func ParsePostAdminHacksResponse(rsp *http.Response) (*PostAdminHacksResponse, e
 	return response, nil
 }
 
-// ParsePostAdminLoginResponse parses an HTTP response from a PostAdminLoginWithResponse call
-func ParsePostAdminLoginResponse(rsp *http.Response) (*PostAdminLoginResponse, error) {
+// ParsePostApiAdminLoginResponse parses an HTTP response from a PostApiAdminLoginWithResponse call
+func ParsePostApiAdminLoginResponse(rsp *http.Response) (*PostApiAdminLoginResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostAdminLoginResponse{
+	response := &PostApiAdminLoginResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1946,15 +2173,15 @@ func ParsePostAdminLoginResponse(rsp *http.Response) (*PostAdminLoginResponse, e
 	return response, nil
 }
 
-// ParseGetHacksResponse parses an HTTP response from a GetHacksWithResponse call
-func ParseGetHacksResponse(rsp *http.Response) (*GetHacksResponse, error) {
+// ParseGetApiHacksResponse parses an HTTP response from a GetApiHacksWithResponse call
+func ParseGetApiHacksResponse(rsp *http.Response) (*GetApiHacksResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksResponse{
+	response := &GetApiHacksResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1972,22 +2199,22 @@ func ParseGetHacksResponse(rsp *http.Response) (*GetHacksResponse, error) {
 	return response, nil
 }
 
-// ParseGetHacksHackIdResponse parses an HTTP response from a GetHacksHackIdWithResponse call
-func ParseGetHacksHackIdResponse(rsp *http.Response) (*GetHacksHackIdResponse, error) {
+// ParseGetApiHacksHackIdResponse parses an HTTP response from a GetApiHacksHackIdWithResponse call
+func ParseGetApiHacksHackIdResponse(rsp *http.Response) (*GetApiHacksHackIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdResponse{
+	response := &GetApiHacksHackIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []HackathonPage
+		var dest HackathonPage
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1998,15 +2225,15 @@ func ParseGetHacksHackIdResponse(rsp *http.Response) (*GetHacksHackIdResponse, e
 	return response, nil
 }
 
-// ParsePostHacksHackIdEnterResponse parses an HTTP response from a PostHacksHackIdEnterWithResponse call
-func ParsePostHacksHackIdEnterResponse(rsp *http.Response) (*PostHacksHackIdEnterResponse, error) {
+// ParsePostApiHacksHackIdEnterResponse parses an HTTP response from a PostApiHacksHackIdEnterWithResponse call
+func ParsePostApiHacksHackIdEnterResponse(rsp *http.Response) (*PostApiHacksHackIdEnterResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostHacksHackIdEnterResponse{
+	response := &PostApiHacksHackIdEnterResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2014,15 +2241,15 @@ func ParsePostHacksHackIdEnterResponse(rsp *http.Response) (*PostHacksHackIdEnte
 	return response, nil
 }
 
-// ParseGetHacksHackIdInvitationsResponse parses an HTTP response from a GetHacksHackIdInvitationsWithResponse call
-func ParseGetHacksHackIdInvitationsResponse(rsp *http.Response) (*GetHacksHackIdInvitationsResponse, error) {
+// ParseGetApiHacksHackIdInvitationsResponse parses an HTTP response from a GetApiHacksHackIdInvitationsWithResponse call
+func ParseGetApiHacksHackIdInvitationsResponse(rsp *http.Response) (*GetApiHacksHackIdInvitationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdInvitationsResponse{
+	response := &GetApiHacksHackIdInvitationsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2040,15 +2267,15 @@ func ParseGetHacksHackIdInvitationsResponse(rsp *http.Response) (*GetHacksHackId
 	return response, nil
 }
 
-// ParseGetHacksHackIdInvitationsInviteIdAcceptResponse parses an HTTP response from a GetHacksHackIdInvitationsInviteIdAcceptWithResponse call
-func ParseGetHacksHackIdInvitationsInviteIdAcceptResponse(rsp *http.Response) (*GetHacksHackIdInvitationsInviteIdAcceptResponse, error) {
+// ParseGetApiHacksHackIdInvitationsInviteIdAcceptResponse parses an HTTP response from a GetApiHacksHackIdInvitationsInviteIdAcceptWithResponse call
+func ParseGetApiHacksHackIdInvitationsInviteIdAcceptResponse(rsp *http.Response) (*GetApiHacksHackIdInvitationsInviteIdAcceptResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdInvitationsInviteIdAcceptResponse{
+	response := &GetApiHacksHackIdInvitationsInviteIdAcceptResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2056,15 +2283,15 @@ func ParseGetHacksHackIdInvitationsInviteIdAcceptResponse(rsp *http.Response) (*
 	return response, nil
 }
 
-// ParseGetHacksHackIdParticipantsResponse parses an HTTP response from a GetHacksHackIdParticipantsWithResponse call
-func ParseGetHacksHackIdParticipantsResponse(rsp *http.Response) (*GetHacksHackIdParticipantsResponse, error) {
+// ParseGetApiHacksHackIdParticipantsResponse parses an HTTP response from a GetApiHacksHackIdParticipantsWithResponse call
+func ParseGetApiHacksHackIdParticipantsResponse(rsp *http.Response) (*GetApiHacksHackIdParticipantsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdParticipantsResponse{
+	response := &GetApiHacksHackIdParticipantsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2082,15 +2309,15 @@ func ParseGetHacksHackIdParticipantsResponse(rsp *http.Response) (*GetHacksHackI
 	return response, nil
 }
 
-// ParseGetHacksHackIdParticipantsParticipantIdResponse parses an HTTP response from a GetHacksHackIdParticipantsParticipantIdWithResponse call
-func ParseGetHacksHackIdParticipantsParticipantIdResponse(rsp *http.Response) (*GetHacksHackIdParticipantsParticipantIdResponse, error) {
+// ParseGetApiHacksHackIdParticipantsParticipantIdResponse parses an HTTP response from a GetApiHacksHackIdParticipantsParticipantIdWithResponse call
+func ParseGetApiHacksHackIdParticipantsParticipantIdResponse(rsp *http.Response) (*GetApiHacksHackIdParticipantsParticipantIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdParticipantsParticipantIdResponse{
+	response := &GetApiHacksHackIdParticipantsParticipantIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2108,15 +2335,15 @@ func ParseGetHacksHackIdParticipantsParticipantIdResponse(rsp *http.Response) (*
 	return response, nil
 }
 
-// ParsePostHacksHackIdParticipantsParticipantsIdInviteResponse parses an HTTP response from a PostHacksHackIdParticipantsParticipantsIdInviteWithResponse call
-func ParsePostHacksHackIdParticipantsParticipantsIdInviteResponse(rsp *http.Response) (*PostHacksHackIdParticipantsParticipantsIdInviteResponse, error) {
+// ParsePostApiHacksHackIdParticipantsParticipantsIdInviteResponse parses an HTTP response from a PostApiHacksHackIdParticipantsParticipantsIdInviteWithResponse call
+func ParsePostApiHacksHackIdParticipantsParticipantsIdInviteResponse(rsp *http.Response) (*PostApiHacksHackIdParticipantsParticipantsIdInviteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostHacksHackIdParticipantsParticipantsIdInviteResponse{
+	response := &PostApiHacksHackIdParticipantsParticipantsIdInviteResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2124,15 +2351,15 @@ func ParsePostHacksHackIdParticipantsParticipantsIdInviteResponse(rsp *http.Resp
 	return response, nil
 }
 
-// ParseGetHacksHackIdRequestsResponse parses an HTTP response from a GetHacksHackIdRequestsWithResponse call
-func ParseGetHacksHackIdRequestsResponse(rsp *http.Response) (*GetHacksHackIdRequestsResponse, error) {
+// ParseGetApiHacksHackIdRequestsResponse parses an HTTP response from a GetApiHacksHackIdRequestsWithResponse call
+func ParseGetApiHacksHackIdRequestsResponse(rsp *http.Response) (*GetApiHacksHackIdRequestsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdRequestsResponse{
+	response := &GetApiHacksHackIdRequestsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2150,15 +2377,15 @@ func ParseGetHacksHackIdRequestsResponse(rsp *http.Response) (*GetHacksHackIdReq
 	return response, nil
 }
 
-// ParsePostHacksHackIdRequestsRequestIdAcceptResponse parses an HTTP response from a PostHacksHackIdRequestsRequestIdAcceptWithResponse call
-func ParsePostHacksHackIdRequestsRequestIdAcceptResponse(rsp *http.Response) (*PostHacksHackIdRequestsRequestIdAcceptResponse, error) {
+// ParsePostApiHacksHackIdRequestsRequestIdAcceptResponse parses an HTTP response from a PostApiHacksHackIdRequestsRequestIdAcceptWithResponse call
+func ParsePostApiHacksHackIdRequestsRequestIdAcceptResponse(rsp *http.Response) (*PostApiHacksHackIdRequestsRequestIdAcceptResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostHacksHackIdRequestsRequestIdAcceptResponse{
+	response := &PostApiHacksHackIdRequestsRequestIdAcceptResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2166,15 +2393,15 @@ func ParsePostHacksHackIdRequestsRequestIdAcceptResponse(rsp *http.Response) (*P
 	return response, nil
 }
 
-// ParseGetHacksHackIdTeamsResponse parses an HTTP response from a GetHacksHackIdTeamsWithResponse call
-func ParseGetHacksHackIdTeamsResponse(rsp *http.Response) (*GetHacksHackIdTeamsResponse, error) {
+// ParseGetApiHacksHackIdTeamsResponse parses an HTTP response from a GetApiHacksHackIdTeamsWithResponse call
+func ParseGetApiHacksHackIdTeamsResponse(rsp *http.Response) (*GetApiHacksHackIdTeamsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdTeamsResponse{
+	response := &GetApiHacksHackIdTeamsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2192,15 +2419,15 @@ func ParseGetHacksHackIdTeamsResponse(rsp *http.Response) (*GetHacksHackIdTeamsR
 	return response, nil
 }
 
-// ParsePostHacksHackIdTeamsResponse parses an HTTP response from a PostHacksHackIdTeamsWithResponse call
-func ParsePostHacksHackIdTeamsResponse(rsp *http.Response) (*PostHacksHackIdTeamsResponse, error) {
+// ParsePostApiHacksHackIdTeamsResponse parses an HTTP response from a PostApiHacksHackIdTeamsWithResponse call
+func ParsePostApiHacksHackIdTeamsResponse(rsp *http.Response) (*PostApiHacksHackIdTeamsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostHacksHackIdTeamsResponse{
+	response := &PostApiHacksHackIdTeamsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2218,15 +2445,15 @@ func ParsePostHacksHackIdTeamsResponse(rsp *http.Response) (*PostHacksHackIdTeam
 	return response, nil
 }
 
-// ParseGetHacksHackIdTeamsTeamIdResponse parses an HTTP response from a GetHacksHackIdTeamsTeamIdWithResponse call
-func ParseGetHacksHackIdTeamsTeamIdResponse(rsp *http.Response) (*GetHacksHackIdTeamsTeamIdResponse, error) {
+// ParseGetApiHacksHackIdTeamsTeamIdResponse parses an HTTP response from a GetApiHacksHackIdTeamsTeamIdWithResponse call
+func ParseGetApiHacksHackIdTeamsTeamIdResponse(rsp *http.Response) (*GetApiHacksHackIdTeamsTeamIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHacksHackIdTeamsTeamIdResponse{
+	response := &GetApiHacksHackIdTeamsTeamIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2244,15 +2471,15 @@ func ParseGetHacksHackIdTeamsTeamIdResponse(rsp *http.Response) (*GetHacksHackId
 	return response, nil
 }
 
-// ParsePostHacksHackIdTeamsTeamIdRequestResponse parses an HTTP response from a PostHacksHackIdTeamsTeamIdRequestWithResponse call
-func ParsePostHacksHackIdTeamsTeamIdRequestResponse(rsp *http.Response) (*PostHacksHackIdTeamsTeamIdRequestResponse, error) {
+// ParsePostApiHacksHackIdTeamsTeamIdRequestResponse parses an HTTP response from a PostApiHacksHackIdTeamsTeamIdRequestWithResponse call
+func ParsePostApiHacksHackIdTeamsTeamIdRequestResponse(rsp *http.Response) (*PostApiHacksHackIdTeamsTeamIdRequestResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostHacksHackIdTeamsTeamIdRequestResponse{
+	response := &PostApiHacksHackIdTeamsTeamIdRequestResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2260,22 +2487,22 @@ func ParsePostHacksHackIdTeamsTeamIdRequestResponse(rsp *http.Response) (*PostHa
 	return response, nil
 }
 
-// ParsePostLoginResponse parses an HTTP response from a PostLoginWithResponse call
-func ParsePostLoginResponse(rsp *http.Response) (*PostLoginResponse, error) {
+// ParseGetApiHealthchekResponse parses an HTTP response from a GetApiHealthchekWithResponse call
+func ParseGetApiHealthchekResponse(rsp *http.Response) (*GetApiHealthchekResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostLoginResponse{
+	response := &GetApiHealthchekResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Token
+		var dest Health
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2286,15 +2513,83 @@ func ParsePostLoginResponse(rsp *http.Response) (*PostLoginResponse, error) {
 	return response, nil
 }
 
-// ParseGetUsersUserIdResponse parses an HTTP response from a GetUsersUserIdWithResponse call
-func ParseGetUsersUserIdResponse(rsp *http.Response) (*GetUsersUserIdResponse, error) {
+// ParsePostApiLoginResponse parses an HTTP response from a PostApiLoginWithResponse call
+func ParsePostApiLoginResponse(rsp *http.Response) (*PostApiLoginResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetUsersUserIdResponse{
+	response := &PostApiLoginResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetApiRolesResponse parses an HTTP response from a GetApiRolesWithResponse call
+func ParseGetApiRolesResponse(rsp *http.Response) (*GetApiRolesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiRolesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Role
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSkillsResponse parses an HTTP response from a GetApiSkillsWithResponse call
+func ParseGetApiSkillsResponse(rsp *http.Response) (*GetApiSkillsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSkillsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Skill
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiUsersUserIdResponse parses an HTTP response from a GetApiUsersUserIdWithResponse call
+func ParseGetApiUsersUserIdResponse(rsp *http.Response) (*GetApiUsersUserIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiUsersUserIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2312,15 +2607,15 @@ func ParseGetUsersUserIdResponse(rsp *http.Response) (*GetUsersUserIdResponse, e
 	return response, nil
 }
 
-// ParseGetUsersUserIdTeamsResponse parses an HTTP response from a GetUsersUserIdTeamsWithResponse call
-func ParseGetUsersUserIdTeamsResponse(rsp *http.Response) (*GetUsersUserIdTeamsResponse, error) {
+// ParseGetApiUsersUserIdTeamsResponse parses an HTTP response from a GetApiUsersUserIdTeamsWithResponse call
+func ParseGetApiUsersUserIdTeamsResponse(rsp *http.Response) (*GetApiUsersUserIdTeamsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetUsersUserIdTeamsResponse{
+	response := &GetApiUsersUserIdTeamsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

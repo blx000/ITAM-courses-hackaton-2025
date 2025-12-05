@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -17,62 +18,71 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Create hack
-	// (POST /admin/hacks)
-	PostAdminHacks(w http.ResponseWriter, r *http.Request)
+	// (POST /api/admin/hacks)
+	PostApiAdminHacks(w http.ResponseWriter, r *http.Request)
 	// login user with a login/password
-	// (POST /admin/login)
-	PostAdminLogin(w http.ResponseWriter, r *http.Request)
+	// (POST /api/admin/login)
+	PostApiAdminLogin(w http.ResponseWriter, r *http.Request)
 	// Get hackathon list
-	// (GET /hacks)
-	GetHacks(w http.ResponseWriter, r *http.Request)
+	// (GET /api/hacks)
+	GetApiHacks(w http.ResponseWriter, r *http.Request)
 	// Get hackathon info
-	// (GET /hacks/{hack_id})
-	GetHacksHackId(w http.ResponseWriter, r *http.Request, hackId int)
+	// (GET /api/hacks/{hack_id})
+	GetApiHacksHackId(w http.ResponseWriter, r *http.Request, hackId int)
 	// Enter hack
-	// (POST /hacks/{hack_id}/enter)
-	PostHacksHackIdEnter(w http.ResponseWriter, r *http.Request, hackId int)
+	// (POST /api/hacks/{hack_id}/enter)
+	PostApiHacksHackIdEnter(w http.ResponseWriter, r *http.Request, hackId int)
 	// Все приглашения в команду
-	// (GET /hacks/{hack_id}/invitations)
-	GetHacksHackIdInvitations(w http.ResponseWriter, r *http.Request, hackId int)
+	// (GET /api/hacks/{hack_id}/invitations)
+	GetApiHacksHackIdInvitations(w http.ResponseWriter, r *http.Request, hackId int)
 	// Принять приглашение
-	// (GET /hacks/{hack_id}/invitations/{invite_id}/accept)
-	GetHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request, hackId int, inviteId int)
+	// (GET /api/hacks/{hack_id}/invitations/{invite_id}/accept)
+	GetApiHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request, hackId int, inviteId int)
 	// Get hackathon info
-	// (GET /hacks/{hack_id}/participants)
-	GetHacksHackIdParticipants(w http.ResponseWriter, r *http.Request, hackId int)
+	// (GET /api/hacks/{hack_id}/participants)
+	GetApiHacksHackIdParticipants(w http.ResponseWriter, r *http.Request, hackId int)
 	// Get hackathon info
-	// (GET /hacks/{hack_id}/participants/{participant_id})
-	GetHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request, hackId int, participantId int)
+	// (GET /api/hacks/{hack_id}/participants/{participant_id})
+	GetApiHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request, hackId int, participantId int)
 	// Приласить в команду участника
-	// (POST /hacks/{hack_id}/participants/{participants_id}/invite)
-	PostHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request, hackId int, participantsId int)
+	// (POST /api/hacks/{hack_id}/participants/{participants_id}/invite)
+	PostApiHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request, hackId int, participantsId int)
 	// Все запросы в команду
-	// (GET /hacks/{hack_id}/requests)
-	GetHacksHackIdRequests(w http.ResponseWriter, r *http.Request, hackId int)
+	// (GET /api/hacks/{hack_id}/requests)
+	GetApiHacksHackIdRequests(w http.ResponseWriter, r *http.Request, hackId int)
 	// Принять в команду участника
-	// (POST /hacks/{hack_id}/requests/{request_id}/accept)
-	PostHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request, hackId int, requestId int)
+	// (POST /api/hacks/{hack_id}/requests/{request_id}/accept)
+	PostApiHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request, hackId int, requestId int)
 	// Get hackathon info
-	// (GET /hacks/{hack_id}/teams)
-	GetHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int)
+	// (GET /api/hacks/{hack_id}/teams)
+	GetApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int)
 	// Create team
-	// (POST /hacks/{hack_id}/teams)
-	PostHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int)
+	// (POST /api/hacks/{hack_id}/teams)
+	PostApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int)
 	// Get team info
-	// (GET /hacks/{hack_id}/teams/{team_id})
-	GetHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request, hackId int, teamId int)
+	// (GET /api/hacks/{hack_id}/teams/{team_id})
+	GetApiHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request, hackId int, teamId int)
 	// Попроситься в команду
-	// (POST /hacks/{hack_id}/teams/{team_id}/request)
-	PostHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int)
+	// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
+	PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int)
+	// check if service if healthy
+	// (GET /api/healthchek)
+	GetApiHealthchek(w http.ResponseWriter, r *http.Request)
 	// login user with a code
-	// (POST /login)
-	PostLogin(w http.ResponseWriter, r *http.Request)
+	// (POST /api/login)
+	PostApiLogin(w http.ResponseWriter, r *http.Request)
+	// Get all roles
+	// (GET /api/roles)
+	GetApiRoles(w http.ResponseWriter, r *http.Request)
+	// Get all skills
+	// (GET /api/skills)
+	GetApiSkills(w http.ResponseWriter, r *http.Request)
 	// Get user information
-	// (GET /users/{user_id})
-	GetUsersUserId(w http.ResponseWriter, r *http.Request, userId int)
+	// (GET /api/users/{user_id})
+	GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int)
 	// Get user information
-	// (GET /users/{user_id}/teams)
-	GetUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int)
+	// (GET /api/users/{user_id}/teams)
+	GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -80,116 +90,134 @@ type ServerInterface interface {
 type Unimplemented struct{}
 
 // Create hack
-// (POST /admin/hacks)
-func (_ Unimplemented) PostAdminHacks(w http.ResponseWriter, r *http.Request) {
+// (POST /api/admin/hacks)
+func (_ Unimplemented) PostApiAdminHacks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // login user with a login/password
-// (POST /admin/login)
-func (_ Unimplemented) PostAdminLogin(w http.ResponseWriter, r *http.Request) {
+// (POST /api/admin/login)
+func (_ Unimplemented) PostApiAdminLogin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get hackathon list
-// (GET /hacks)
-func (_ Unimplemented) GetHacks(w http.ResponseWriter, r *http.Request) {
+// (GET /api/hacks)
+func (_ Unimplemented) GetApiHacks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get hackathon info
-// (GET /hacks/{hack_id})
-func (_ Unimplemented) GetHacksHackId(w http.ResponseWriter, r *http.Request, hackId int) {
+// (GET /api/hacks/{hack_id})
+func (_ Unimplemented) GetApiHacksHackId(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Enter hack
-// (POST /hacks/{hack_id}/enter)
-func (_ Unimplemented) PostHacksHackIdEnter(w http.ResponseWriter, r *http.Request, hackId int) {
+// (POST /api/hacks/{hack_id}/enter)
+func (_ Unimplemented) PostApiHacksHackIdEnter(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Все приглашения в команду
-// (GET /hacks/{hack_id}/invitations)
-func (_ Unimplemented) GetHacksHackIdInvitations(w http.ResponseWriter, r *http.Request, hackId int) {
+// (GET /api/hacks/{hack_id}/invitations)
+func (_ Unimplemented) GetApiHacksHackIdInvitations(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Принять приглашение
-// (GET /hacks/{hack_id}/invitations/{invite_id}/accept)
-func (_ Unimplemented) GetHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request, hackId int, inviteId int) {
+// (GET /api/hacks/{hack_id}/invitations/{invite_id}/accept)
+func (_ Unimplemented) GetApiHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request, hackId int, inviteId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get hackathon info
-// (GET /hacks/{hack_id}/participants)
-func (_ Unimplemented) GetHacksHackIdParticipants(w http.ResponseWriter, r *http.Request, hackId int) {
+// (GET /api/hacks/{hack_id}/participants)
+func (_ Unimplemented) GetApiHacksHackIdParticipants(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get hackathon info
-// (GET /hacks/{hack_id}/participants/{participant_id})
-func (_ Unimplemented) GetHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request, hackId int, participantId int) {
+// (GET /api/hacks/{hack_id}/participants/{participant_id})
+func (_ Unimplemented) GetApiHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request, hackId int, participantId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Приласить в команду участника
-// (POST /hacks/{hack_id}/participants/{participants_id}/invite)
-func (_ Unimplemented) PostHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request, hackId int, participantsId int) {
+// (POST /api/hacks/{hack_id}/participants/{participants_id}/invite)
+func (_ Unimplemented) PostApiHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request, hackId int, participantsId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Все запросы в команду
-// (GET /hacks/{hack_id}/requests)
-func (_ Unimplemented) GetHacksHackIdRequests(w http.ResponseWriter, r *http.Request, hackId int) {
+// (GET /api/hacks/{hack_id}/requests)
+func (_ Unimplemented) GetApiHacksHackIdRequests(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Принять в команду участника
-// (POST /hacks/{hack_id}/requests/{request_id}/accept)
-func (_ Unimplemented) PostHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request, hackId int, requestId int) {
+// (POST /api/hacks/{hack_id}/requests/{request_id}/accept)
+func (_ Unimplemented) PostApiHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request, hackId int, requestId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get hackathon info
-// (GET /hacks/{hack_id}/teams)
-func (_ Unimplemented) GetHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
+// (GET /api/hacks/{hack_id}/teams)
+func (_ Unimplemented) GetApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Create team
-// (POST /hacks/{hack_id}/teams)
-func (_ Unimplemented) PostHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
+// (POST /api/hacks/{hack_id}/teams)
+func (_ Unimplemented) PostApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get team info
-// (GET /hacks/{hack_id}/teams/{team_id})
-func (_ Unimplemented) GetHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
+// (GET /api/hacks/{hack_id}/teams/{team_id})
+func (_ Unimplemented) GetApiHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Попроситься в команду
-// (POST /hacks/{hack_id}/teams/{team_id}/request)
-func (_ Unimplemented) PostHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
+// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
+func (_ Unimplemented) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// check if service if healthy
+// (GET /api/healthchek)
+func (_ Unimplemented) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // login user with a code
-// (POST /login)
-func (_ Unimplemented) PostLogin(w http.ResponseWriter, r *http.Request) {
+// (POST /api/login)
+func (_ Unimplemented) PostApiLogin(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all roles
+// (GET /api/roles)
+func (_ Unimplemented) GetApiRoles(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all skills
+// (GET /api/skills)
+func (_ Unimplemented) GetApiSkills(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get user information
-// (GET /users/{user_id})
-func (_ Unimplemented) GetUsersUserId(w http.ResponseWriter, r *http.Request, userId int) {
+// (GET /api/users/{user_id})
+func (_ Unimplemented) GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get user information
-// (GET /users/{user_id}/teams)
-func (_ Unimplemented) GetUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int) {
+// (GET /api/users/{user_id}/teams)
+func (_ Unimplemented) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -202,8 +230,8 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// PostAdminHacks operation middleware
-func (siw *ServerInterfaceWrapper) PostAdminHacks(w http.ResponseWriter, r *http.Request) {
+// PostApiAdminHacks operation middleware
+func (siw *ServerInterfaceWrapper) PostApiAdminHacks(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -212,7 +240,7 @@ func (siw *ServerInterfaceWrapper) PostAdminHacks(w http.ResponseWriter, r *http
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostAdminHacks(w, r)
+		siw.Handler.PostApiAdminHacks(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -222,17 +250,11 @@ func (siw *ServerInterfaceWrapper) PostAdminHacks(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// PostAdminLogin operation middleware
-func (siw *ServerInterfaceWrapper) PostAdminLogin(w http.ResponseWriter, r *http.Request) {
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
+// PostApiAdminLogin operation middleware
+func (siw *ServerInterfaceWrapper) PostApiAdminLogin(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostAdminLogin(w, r)
+		siw.Handler.PostApiAdminLogin(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -242,17 +264,11 @@ func (siw *ServerInterfaceWrapper) PostAdminLogin(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacks operation middleware
-func (siw *ServerInterfaceWrapper) GetHacks(w http.ResponseWriter, r *http.Request) {
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
+// GetApiHacks operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacks(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacks(w, r)
+		siw.Handler.GetApiHacks(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -262,8 +278,8 @@ func (siw *ServerInterfaceWrapper) GetHacks(w http.ResponseWriter, r *http.Reque
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackId operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackId(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -283,7 +299,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackId(w http.ResponseWriter, r *http
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackId(w, r, hackId)
+		siw.Handler.GetApiHacksHackId(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -293,8 +309,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackId(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// PostHacksHackIdEnter operation middleware
-func (siw *ServerInterfaceWrapper) PostHacksHackIdEnter(w http.ResponseWriter, r *http.Request) {
+// PostApiHacksHackIdEnter operation middleware
+func (siw *ServerInterfaceWrapper) PostApiHacksHackIdEnter(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -314,7 +330,7 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdEnter(w http.ResponseWriter, r
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostHacksHackIdEnter(w, r, hackId)
+		siw.Handler.PostApiHacksHackIdEnter(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -324,8 +340,8 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdEnter(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdInvitations operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdInvitations(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdInvitations operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdInvitations(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -345,7 +361,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdInvitations(w http.ResponseWrit
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdInvitations(w, r, hackId)
+		siw.Handler.GetApiHacksHackIdInvitations(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -355,8 +371,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdInvitations(w http.ResponseWrit
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdInvitationsInviteIdAccept operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdInvitationsInviteIdAccept operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -385,7 +401,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdInvitationsInviteIdAccept(w htt
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdInvitationsInviteIdAccept(w, r, hackId, inviteId)
+		siw.Handler.GetApiHacksHackIdInvitationsInviteIdAccept(w, r, hackId, inviteId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -395,8 +411,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdInvitationsInviteIdAccept(w htt
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdParticipants operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdParticipants(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdParticipants operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdParticipants(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -416,7 +432,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdParticipants(w http.ResponseWri
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdParticipants(w, r, hackId)
+		siw.Handler.GetApiHacksHackIdParticipants(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -426,8 +442,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdParticipants(w http.ResponseWri
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdParticipantsParticipantId operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdParticipantsParticipantId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -456,7 +472,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdParticipantsParticipantId(w htt
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdParticipantsParticipantId(w, r, hackId, participantId)
+		siw.Handler.GetApiHacksHackIdParticipantsParticipantId(w, r, hackId, participantId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -466,8 +482,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdParticipantsParticipantId(w htt
 	handler.ServeHTTP(w, r)
 }
 
-// PostHacksHackIdParticipantsParticipantsIdInvite operation middleware
-func (siw *ServerInterfaceWrapper) PostHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request) {
+// PostApiHacksHackIdParticipantsParticipantsIdInvite operation middleware
+func (siw *ServerInterfaceWrapper) PostApiHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -496,7 +512,7 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdParticipantsParticipantsIdInvi
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostHacksHackIdParticipantsParticipantsIdInvite(w, r, hackId, participantsId)
+		siw.Handler.PostApiHacksHackIdParticipantsParticipantsIdInvite(w, r, hackId, participantsId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -506,8 +522,8 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdParticipantsParticipantsIdInvi
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdRequests operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdRequests(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdRequests operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdRequests(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -527,7 +543,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdRequests(w http.ResponseWriter,
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdRequests(w, r, hackId)
+		siw.Handler.GetApiHacksHackIdRequests(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -537,8 +553,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdRequests(w http.ResponseWriter,
 	handler.ServeHTTP(w, r)
 }
 
-// PostHacksHackIdRequestsRequestIdAccept operation middleware
-func (siw *ServerInterfaceWrapper) PostHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request) {
+// PostApiHacksHackIdRequestsRequestIdAccept operation middleware
+func (siw *ServerInterfaceWrapper) PostApiHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -567,7 +583,7 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdRequestsRequestIdAccept(w http
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostHacksHackIdRequestsRequestIdAccept(w, r, hackId, requestId)
+		siw.Handler.PostApiHacksHackIdRequestsRequestIdAccept(w, r, hackId, requestId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -577,8 +593,8 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdRequestsRequestIdAccept(w http
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdTeams operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdTeams(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdTeams operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -598,7 +614,7 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdTeams(w http.ResponseWriter, r 
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdTeams(w, r, hackId)
+		siw.Handler.GetApiHacksHackIdTeams(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -608,8 +624,8 @@ func (siw *ServerInterfaceWrapper) GetHacksHackIdTeams(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
-// PostHacksHackIdTeams operation middleware
-func (siw *ServerInterfaceWrapper) PostHacksHackIdTeams(w http.ResponseWriter, r *http.Request) {
+// PostApiHacksHackIdTeams operation middleware
+func (siw *ServerInterfaceWrapper) PostApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -629,7 +645,7 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdTeams(w http.ResponseWriter, r
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostHacksHackIdTeams(w, r, hackId)
+		siw.Handler.PostApiHacksHackIdTeams(w, r, hackId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -639,48 +655,8 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdTeams(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// GetHacksHackIdTeamsTeamId operation middleware
-func (siw *ServerInterfaceWrapper) GetHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "hack_id" -------------
-	var hackId int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "hack_id", chi.URLParam(r, "hack_id"), &hackId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "hack_id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "team_id" -------------
-	var teamId int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "team_id", chi.URLParam(r, "team_id"), &teamId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "team_id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHacksHackIdTeamsTeamId(w, r, hackId, teamId)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// PostHacksHackIdTeamsTeamIdRequest operation middleware
-func (siw *ServerInterfaceWrapper) PostHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request) {
+// GetApiHacksHackIdTeamsTeamId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -709,7 +685,7 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdTeamsTeamIdRequest(w http.Resp
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostHacksHackIdTeamsTeamIdRequest(w, r, hackId, teamId)
+		siw.Handler.GetApiHacksHackIdTeamsTeamId(w, r, hackId, teamId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -719,8 +695,28 @@ func (siw *ServerInterfaceWrapper) PostHacksHackIdTeamsTeamIdRequest(w http.Resp
 	handler.ServeHTTP(w, r)
 }
 
-// PostLogin operation middleware
-func (siw *ServerInterfaceWrapper) PostLogin(w http.ResponseWriter, r *http.Request) {
+// PostApiHacksHackIdTeamsTeamIdRequest operation middleware
+func (siw *ServerInterfaceWrapper) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "hack_id" -------------
+	var hackId int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "hack_id", chi.URLParam(r, "hack_id"), &hackId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "hack_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "team_id" -------------
+	var teamId int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "team_id", chi.URLParam(r, "team_id"), &teamId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "team_id", Err: err})
+		return
+	}
 
 	ctx := r.Context()
 
@@ -729,7 +725,7 @@ func (siw *ServerInterfaceWrapper) PostLogin(w http.ResponseWriter, r *http.Requ
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostLogin(w, r)
+		siw.Handler.PostApiHacksHackIdTeamsTeamIdRequest(w, r, hackId, teamId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -739,8 +735,64 @@ func (siw *ServerInterfaceWrapper) PostLogin(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
-// GetUsersUserId operation middleware
-func (siw *ServerInterfaceWrapper) GetUsersUserId(w http.ResponseWriter, r *http.Request) {
+// GetApiHealthchek operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiHealthchek(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PostApiLogin operation middleware
+func (siw *ServerInterfaceWrapper) PostApiLogin(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostApiLogin(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetApiRoles operation middleware
+func (siw *ServerInterfaceWrapper) GetApiRoles(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRoles(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetApiSkills operation middleware
+func (siw *ServerInterfaceWrapper) GetApiSkills(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSkills(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetApiUsersUserId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiUsersUserId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -760,7 +812,7 @@ func (siw *ServerInterfaceWrapper) GetUsersUserId(w http.ResponseWriter, r *http
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUsersUserId(w, r, userId)
+		siw.Handler.GetApiUsersUserId(w, r, userId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -770,8 +822,8 @@ func (siw *ServerInterfaceWrapper) GetUsersUserId(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// GetUsersUserIdTeams operation middleware
-func (siw *ServerInterfaceWrapper) GetUsersUserIdTeams(w http.ResponseWriter, r *http.Request) {
+// GetApiUsersUserIdTeams operation middleware
+func (siw *ServerInterfaceWrapper) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -784,14 +836,8 @@ func (siw *ServerInterfaceWrapper) GetUsersUserIdTeams(w http.ResponseWriter, r 
 		return
 	}
 
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUsersUserIdTeams(w, r, userId)
+		siw.Handler.GetApiUsersUserIdTeams(w, r, userId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -915,522 +961,589 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/admin/hacks", wrapper.PostAdminHacks)
+		r.Post(options.BaseURL+"/api/admin/hacks", wrapper.PostApiAdminHacks)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/admin/login", wrapper.PostAdminLogin)
+		r.Post(options.BaseURL+"/api/admin/login", wrapper.PostApiAdminLogin)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks", wrapper.GetHacks)
+		r.Get(options.BaseURL+"/api/hacks", wrapper.GetApiHacks)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}", wrapper.GetHacksHackId)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}", wrapper.GetApiHacksHackId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/hacks/{hack_id}/enter", wrapper.PostHacksHackIdEnter)
+		r.Post(options.BaseURL+"/api/hacks/{hack_id}/enter", wrapper.PostApiHacksHackIdEnter)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/invitations", wrapper.GetHacksHackIdInvitations)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/invitations", wrapper.GetApiHacksHackIdInvitations)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/invitations/{invite_id}/accept", wrapper.GetHacksHackIdInvitationsInviteIdAccept)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/invitations/{invite_id}/accept", wrapper.GetApiHacksHackIdInvitationsInviteIdAccept)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/participants", wrapper.GetHacksHackIdParticipants)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/participants", wrapper.GetApiHacksHackIdParticipants)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/participants/{participant_id}", wrapper.GetHacksHackIdParticipantsParticipantId)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/participants/{participant_id}", wrapper.GetApiHacksHackIdParticipantsParticipantId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/hacks/{hack_id}/participants/{participants_id}/invite", wrapper.PostHacksHackIdParticipantsParticipantsIdInvite)
+		r.Post(options.BaseURL+"/api/hacks/{hack_id}/participants/{participants_id}/invite", wrapper.PostApiHacksHackIdParticipantsParticipantsIdInvite)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/requests", wrapper.GetHacksHackIdRequests)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/requests", wrapper.GetApiHacksHackIdRequests)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/hacks/{hack_id}/requests/{request_id}/accept", wrapper.PostHacksHackIdRequestsRequestIdAccept)
+		r.Post(options.BaseURL+"/api/hacks/{hack_id}/requests/{request_id}/accept", wrapper.PostApiHacksHackIdRequestsRequestIdAccept)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/teams", wrapper.GetHacksHackIdTeams)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/teams", wrapper.GetApiHacksHackIdTeams)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/hacks/{hack_id}/teams", wrapper.PostHacksHackIdTeams)
+		r.Post(options.BaseURL+"/api/hacks/{hack_id}/teams", wrapper.PostApiHacksHackIdTeams)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/hacks/{hack_id}/teams/{team_id}", wrapper.GetHacksHackIdTeamsTeamId)
+		r.Get(options.BaseURL+"/api/hacks/{hack_id}/teams/{team_id}", wrapper.GetApiHacksHackIdTeamsTeamId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/hacks/{hack_id}/teams/{team_id}/request", wrapper.PostHacksHackIdTeamsTeamIdRequest)
+		r.Post(options.BaseURL+"/api/hacks/{hack_id}/teams/{team_id}/request", wrapper.PostApiHacksHackIdTeamsTeamIdRequest)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/login", wrapper.PostLogin)
+		r.Get(options.BaseURL+"/api/healthchek", wrapper.GetApiHealthchek)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{user_id}", wrapper.GetUsersUserId)
+		r.Post(options.BaseURL+"/api/login", wrapper.PostApiLogin)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{user_id}/teams", wrapper.GetUsersUserIdTeams)
+		r.Get(options.BaseURL+"/api/roles", wrapper.GetApiRoles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/skills", wrapper.GetApiSkills)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/users/{user_id}", wrapper.GetApiUsersUserId)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/users/{user_id}/teams", wrapper.GetApiUsersUserIdTeams)
 	})
 
 	return r
 }
 
-type PostAdminHacksRequestObject struct {
-	Body *PostAdminHacksJSONRequestBody
+type PostApiAdminHacksRequestObject struct {
+	Body *PostApiAdminHacksJSONRequestBody
 }
 
-type PostAdminHacksResponseObject interface {
-	VisitPostAdminHacksResponse(w http.ResponseWriter) error
+type PostApiAdminHacksResponseObject interface {
+	VisitPostApiAdminHacksResponse(w http.ResponseWriter) error
 }
 
-type PostAdminHacks201Response struct {
+type PostApiAdminHacks201Response struct {
 }
 
-func (response PostAdminHacks201Response) VisitPostAdminHacksResponse(w http.ResponseWriter) error {
+func (response PostApiAdminHacks201Response) VisitPostApiAdminHacksResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type PostAdminHacks403Response struct {
+type PostApiAdminHacks403Response struct {
 }
 
-func (response PostAdminHacks403Response) VisitPostAdminHacksResponse(w http.ResponseWriter) error {
+func (response PostApiAdminHacks403Response) VisitPostApiAdminHacksResponse(w http.ResponseWriter) error {
 	w.WriteHeader(403)
 	return nil
 }
 
-type PostAdminLoginRequestObject struct {
-	Body *PostAdminLoginJSONRequestBody
+type PostApiAdminLoginRequestObject struct {
+	Body *PostApiAdminLoginJSONRequestBody
 }
 
-type PostAdminLoginResponseObject interface {
-	VisitPostAdminLoginResponse(w http.ResponseWriter) error
+type PostApiAdminLoginResponseObject interface {
+	VisitPostApiAdminLoginResponse(w http.ResponseWriter) error
 }
 
-type PostAdminLogin200JSONResponse Token
+type PostApiAdminLogin200JSONResponse Token
 
-func (response PostAdminLogin200JSONResponse) VisitPostAdminLoginResponse(w http.ResponseWriter) error {
+func (response PostApiAdminLogin200JSONResponse) VisitPostApiAdminLoginResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostAdminLogin400Response struct {
+type PostApiAdminLogin400Response struct {
 }
 
-func (response PostAdminLogin400Response) VisitPostAdminLoginResponse(w http.ResponseWriter) error {
+func (response PostApiAdminLogin400Response) VisitPostApiAdminLoginResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type GetHacksRequestObject struct {
+type GetApiHacksRequestObject struct {
 }
 
-type GetHacksResponseObject interface {
-	VisitGetHacksResponse(w http.ResponseWriter) error
+type GetApiHacksResponseObject interface {
+	VisitGetApiHacksResponse(w http.ResponseWriter) error
 }
 
-type GetHacks200JSONResponse []HackathonShort
+type GetApiHacks200JSONResponse []HackathonShort
 
-func (response GetHacks200JSONResponse) VisitGetHacksResponse(w http.ResponseWriter) error {
+func (response GetApiHacks200JSONResponse) VisitGetApiHacksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacks404Response struct {
+type GetApiHacks404Response struct {
 }
 
-func (response GetHacks404Response) VisitGetHacksResponse(w http.ResponseWriter) error {
+func (response GetApiHacks404Response) VisitGetApiHacksResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetHacksHackIdRequestObject struct {
+type GetApiHacksHackIdRequestObject struct {
 	HackId int `json:"hack_id"`
 }
 
-type GetHacksHackIdResponseObject interface {
-	VisitGetHacksHackIdResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdResponseObject interface {
+	VisitGetApiHacksHackIdResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackId200JSONResponse []HackathonPage
+type GetApiHacksHackId200JSONResponse HackathonPage
 
-func (response GetHacksHackId200JSONResponse) VisitGetHacksHackIdResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackId200JSONResponse) VisitGetApiHacksHackIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacksHackId404Response struct {
+type GetApiHacksHackId404Response struct {
 }
 
-func (response GetHacksHackId404Response) VisitGetHacksHackIdResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackId404Response) VisitGetApiHacksHackIdResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type PostHacksHackIdEnterRequestObject struct {
+type PostApiHacksHackIdEnterRequestObject struct {
 	HackId int `json:"hack_id"`
-	Body   *PostHacksHackIdEnterJSONRequestBody
+	Body   *PostApiHacksHackIdEnterJSONRequestBody
 }
 
-type PostHacksHackIdEnterResponseObject interface {
-	VisitPostHacksHackIdEnterResponse(w http.ResponseWriter) error
+type PostApiHacksHackIdEnterResponseObject interface {
+	VisitPostApiHacksHackIdEnterResponse(w http.ResponseWriter) error
 }
 
-type PostHacksHackIdEnter201Response struct {
+type PostApiHacksHackIdEnter201Response struct {
 }
 
-func (response PostHacksHackIdEnter201Response) VisitPostHacksHackIdEnterResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdEnter201Response) VisitPostApiHacksHackIdEnterResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type PostHacksHackIdEnter400Response struct {
+type PostApiHacksHackIdEnter400Response struct {
 }
 
-func (response PostHacksHackIdEnter400Response) VisitPostHacksHackIdEnterResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdEnter400Response) VisitPostApiHacksHackIdEnterResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type GetHacksHackIdInvitationsRequestObject struct {
+type GetApiHacksHackIdInvitationsRequestObject struct {
 	HackId int `json:"hack_id"`
 }
 
-type GetHacksHackIdInvitationsResponseObject interface {
-	VisitGetHacksHackIdInvitationsResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdInvitationsResponseObject interface {
+	VisitGetApiHacksHackIdInvitationsResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdInvitations200JSONResponse []Invite
+type GetApiHacksHackIdInvitations200JSONResponse []Invite
 
-func (response GetHacksHackIdInvitations200JSONResponse) VisitGetHacksHackIdInvitationsResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdInvitations200JSONResponse) VisitGetApiHacksHackIdInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacksHackIdInvitationsInviteIdAcceptRequestObject struct {
+type GetApiHacksHackIdInvitationsInviteIdAcceptRequestObject struct {
 	HackId   int `json:"hack_id"`
 	InviteId int `json:"invite_id"`
 }
 
-type GetHacksHackIdInvitationsInviteIdAcceptResponseObject interface {
-	VisitGetHacksHackIdInvitationsInviteIdAcceptResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdInvitationsInviteIdAcceptResponseObject interface {
+	VisitGetApiHacksHackIdInvitationsInviteIdAcceptResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdInvitationsInviteIdAccept201Response struct {
+type GetApiHacksHackIdInvitationsInviteIdAccept201Response struct {
 }
 
-func (response GetHacksHackIdInvitationsInviteIdAccept201Response) VisitGetHacksHackIdInvitationsInviteIdAcceptResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdInvitationsInviteIdAccept201Response) VisitGetApiHacksHackIdInvitationsInviteIdAcceptResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type GetHacksHackIdInvitationsInviteIdAccept403Response struct {
+type GetApiHacksHackIdInvitationsInviteIdAccept403Response struct {
 }
 
-func (response GetHacksHackIdInvitationsInviteIdAccept403Response) VisitGetHacksHackIdInvitationsInviteIdAcceptResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdInvitationsInviteIdAccept403Response) VisitGetApiHacksHackIdInvitationsInviteIdAcceptResponse(w http.ResponseWriter) error {
 	w.WriteHeader(403)
 	return nil
 }
 
-type GetHacksHackIdParticipantsRequestObject struct {
+type GetApiHacksHackIdParticipantsRequestObject struct {
 	HackId int `json:"hack_id"`
 }
 
-type GetHacksHackIdParticipantsResponseObject interface {
-	VisitGetHacksHackIdParticipantsResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdParticipantsResponseObject interface {
+	VisitGetApiHacksHackIdParticipantsResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdParticipants200JSONResponse []Participant
+type GetApiHacksHackIdParticipants200JSONResponse []Participant
 
-func (response GetHacksHackIdParticipants200JSONResponse) VisitGetHacksHackIdParticipantsResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdParticipants200JSONResponse) VisitGetApiHacksHackIdParticipantsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacksHackIdParticipants404Response struct {
+type GetApiHacksHackIdParticipants404Response struct {
 }
 
-func (response GetHacksHackIdParticipants404Response) VisitGetHacksHackIdParticipantsResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdParticipants404Response) VisitGetApiHacksHackIdParticipantsResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetHacksHackIdParticipantsParticipantIdRequestObject struct {
+type GetApiHacksHackIdParticipantsParticipantIdRequestObject struct {
 	HackId        int `json:"hack_id"`
 	ParticipantId int `json:"participant_id"`
 }
 
-type GetHacksHackIdParticipantsParticipantIdResponseObject interface {
-	VisitGetHacksHackIdParticipantsParticipantIdResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdParticipantsParticipantIdResponseObject interface {
+	VisitGetApiHacksHackIdParticipantsParticipantIdResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdParticipantsParticipantId200JSONResponse Participant
+type GetApiHacksHackIdParticipantsParticipantId200JSONResponse Participant
 
-func (response GetHacksHackIdParticipantsParticipantId200JSONResponse) VisitGetHacksHackIdParticipantsParticipantIdResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdParticipantsParticipantId200JSONResponse) VisitGetApiHacksHackIdParticipantsParticipantIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacksHackIdParticipantsParticipantId404Response struct {
+type GetApiHacksHackIdParticipantsParticipantId404Response struct {
 }
 
-func (response GetHacksHackIdParticipantsParticipantId404Response) VisitGetHacksHackIdParticipantsParticipantIdResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdParticipantsParticipantId404Response) VisitGetApiHacksHackIdParticipantsParticipantIdResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type PostHacksHackIdParticipantsParticipantsIdInviteRequestObject struct {
+type PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject struct {
 	HackId         int `json:"hack_id"`
 	ParticipantsId int `json:"participants_id"`
 }
 
-type PostHacksHackIdParticipantsParticipantsIdInviteResponseObject interface {
-	VisitPostHacksHackIdParticipantsParticipantsIdInviteResponse(w http.ResponseWriter) error
+type PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject interface {
+	VisitPostApiHacksHackIdParticipantsParticipantsIdInviteResponse(w http.ResponseWriter) error
 }
 
-type PostHacksHackIdParticipantsParticipantsIdInvite201Response struct {
+type PostApiHacksHackIdParticipantsParticipantsIdInvite201Response struct {
 }
 
-func (response PostHacksHackIdParticipantsParticipantsIdInvite201Response) VisitPostHacksHackIdParticipantsParticipantsIdInviteResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdParticipantsParticipantsIdInvite201Response) VisitPostApiHacksHackIdParticipantsParticipantsIdInviteResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type PostHacksHackIdParticipantsParticipantsIdInvite403Response struct {
+type PostApiHacksHackIdParticipantsParticipantsIdInvite403Response struct {
 }
 
-func (response PostHacksHackIdParticipantsParticipantsIdInvite403Response) VisitPostHacksHackIdParticipantsParticipantsIdInviteResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdParticipantsParticipantsIdInvite403Response) VisitPostApiHacksHackIdParticipantsParticipantsIdInviteResponse(w http.ResponseWriter) error {
 	w.WriteHeader(403)
 	return nil
 }
 
-type GetHacksHackIdRequestsRequestObject struct {
+type GetApiHacksHackIdRequestsRequestObject struct {
 	HackId int `json:"hack_id"`
 }
 
-type GetHacksHackIdRequestsResponseObject interface {
-	VisitGetHacksHackIdRequestsResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdRequestsResponseObject interface {
+	VisitGetApiHacksHackIdRequestsResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdRequests200JSONResponse []Request
+type GetApiHacksHackIdRequests200JSONResponse []Request
 
-func (response GetHacksHackIdRequests200JSONResponse) VisitGetHacksHackIdRequestsResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdRequests200JSONResponse) VisitGetApiHacksHackIdRequestsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostHacksHackIdRequestsRequestIdAcceptRequestObject struct {
+type PostApiHacksHackIdRequestsRequestIdAcceptRequestObject struct {
 	HackId    int `json:"hack_id"`
 	RequestId int `json:"request_id"`
 }
 
-type PostHacksHackIdRequestsRequestIdAcceptResponseObject interface {
-	VisitPostHacksHackIdRequestsRequestIdAcceptResponse(w http.ResponseWriter) error
+type PostApiHacksHackIdRequestsRequestIdAcceptResponseObject interface {
+	VisitPostApiHacksHackIdRequestsRequestIdAcceptResponse(w http.ResponseWriter) error
 }
 
-type PostHacksHackIdRequestsRequestIdAccept200Response struct {
+type PostApiHacksHackIdRequestsRequestIdAccept200Response struct {
 }
 
-func (response PostHacksHackIdRequestsRequestIdAccept200Response) VisitPostHacksHackIdRequestsRequestIdAcceptResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdRequestsRequestIdAccept200Response) VisitPostApiHacksHackIdRequestsRequestIdAcceptResponse(w http.ResponseWriter) error {
 	w.WriteHeader(200)
 	return nil
 }
 
-type PostHacksHackIdRequestsRequestIdAccept403Response struct {
+type PostApiHacksHackIdRequestsRequestIdAccept403Response struct {
 }
 
-func (response PostHacksHackIdRequestsRequestIdAccept403Response) VisitPostHacksHackIdRequestsRequestIdAcceptResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdRequestsRequestIdAccept403Response) VisitPostApiHacksHackIdRequestsRequestIdAcceptResponse(w http.ResponseWriter) error {
 	w.WriteHeader(403)
 	return nil
 }
 
-type GetHacksHackIdTeamsRequestObject struct {
+type GetApiHacksHackIdTeamsRequestObject struct {
 	HackId int `json:"hack_id"`
 }
 
-type GetHacksHackIdTeamsResponseObject interface {
-	VisitGetHacksHackIdTeamsResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdTeamsResponseObject interface {
+	VisitGetApiHacksHackIdTeamsResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdTeams200JSONResponse []Team
+type GetApiHacksHackIdTeams200JSONResponse []Team
 
-func (response GetHacksHackIdTeams200JSONResponse) VisitGetHacksHackIdTeamsResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdTeams200JSONResponse) VisitGetApiHacksHackIdTeamsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacksHackIdTeams404Response struct {
+type GetApiHacksHackIdTeams404Response struct {
 }
 
-func (response GetHacksHackIdTeams404Response) VisitGetHacksHackIdTeamsResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdTeams404Response) VisitGetApiHacksHackIdTeamsResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type PostHacksHackIdTeamsRequestObject struct {
+type PostApiHacksHackIdTeamsRequestObject struct {
 	HackId int `json:"hack_id"`
-	Body   *PostHacksHackIdTeamsJSONRequestBody
+	Body   *PostApiHacksHackIdTeamsJSONRequestBody
 }
 
-type PostHacksHackIdTeamsResponseObject interface {
-	VisitPostHacksHackIdTeamsResponse(w http.ResponseWriter) error
+type PostApiHacksHackIdTeamsResponseObject interface {
+	VisitPostApiHacksHackIdTeamsResponse(w http.ResponseWriter) error
 }
 
-type PostHacksHackIdTeams201JSONResponse []Team
+type PostApiHacksHackIdTeams201JSONResponse []Team
 
-func (response PostHacksHackIdTeams201JSONResponse) VisitPostHacksHackIdTeamsResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdTeams201JSONResponse) VisitPostApiHacksHackIdTeamsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostHacksHackIdTeams400Response struct {
+type PostApiHacksHackIdTeams400Response struct {
 }
 
-func (response PostHacksHackIdTeams400Response) VisitPostHacksHackIdTeamsResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdTeams400Response) VisitPostApiHacksHackIdTeamsResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type GetHacksHackIdTeamsTeamIdRequestObject struct {
+type GetApiHacksHackIdTeamsTeamIdRequestObject struct {
 	HackId int `json:"hack_id"`
 	TeamId int `json:"team_id"`
 }
 
-type GetHacksHackIdTeamsTeamIdResponseObject interface {
-	VisitGetHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error
+type GetApiHacksHackIdTeamsTeamIdResponseObject interface {
+	VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error
 }
 
-type GetHacksHackIdTeamsTeamId200JSONResponse []Team
+type GetApiHacksHackIdTeamsTeamId200JSONResponse []Team
 
-func (response GetHacksHackIdTeamsTeamId200JSONResponse) VisitGetHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdTeamsTeamId200JSONResponse) VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetHacksHackIdTeamsTeamId404Response struct {
+type GetApiHacksHackIdTeamsTeamId404Response struct {
 }
 
-func (response GetHacksHackIdTeamsTeamId404Response) VisitGetHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error {
+func (response GetApiHacksHackIdTeamsTeamId404Response) VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type PostHacksHackIdTeamsTeamIdRequestRequestObject struct {
+type PostApiHacksHackIdTeamsTeamIdRequestRequestObject struct {
 	HackId int `json:"hack_id"`
 	TeamId int `json:"team_id"`
 }
 
-type PostHacksHackIdTeamsTeamIdRequestResponseObject interface {
-	VisitPostHacksHackIdTeamsTeamIdRequestResponse(w http.ResponseWriter) error
+type PostApiHacksHackIdTeamsTeamIdRequestResponseObject interface {
+	VisitPostApiHacksHackIdTeamsTeamIdRequestResponse(w http.ResponseWriter) error
 }
 
-type PostHacksHackIdTeamsTeamIdRequest201Response struct {
+type PostApiHacksHackIdTeamsTeamIdRequest201Response struct {
 }
 
-func (response PostHacksHackIdTeamsTeamIdRequest201Response) VisitPostHacksHackIdTeamsTeamIdRequestResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdTeamsTeamIdRequest201Response) VisitPostApiHacksHackIdTeamsTeamIdRequestResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type PostHacksHackIdTeamsTeamIdRequest403Response struct {
+type PostApiHacksHackIdTeamsTeamIdRequest403Response struct {
 }
 
-func (response PostHacksHackIdTeamsTeamIdRequest403Response) VisitPostHacksHackIdTeamsTeamIdRequestResponse(w http.ResponseWriter) error {
+func (response PostApiHacksHackIdTeamsTeamIdRequest403Response) VisitPostApiHacksHackIdTeamsTeamIdRequestResponse(w http.ResponseWriter) error {
 	w.WriteHeader(403)
 	return nil
 }
 
-type PostLoginRequestObject struct {
-	Body *PostLoginJSONRequestBody
+type GetApiHealthchekRequestObject struct {
 }
 
-type PostLoginResponseObject interface {
-	VisitPostLoginResponse(w http.ResponseWriter) error
+type GetApiHealthchekResponseObject interface {
+	VisitGetApiHealthchekResponse(w http.ResponseWriter) error
 }
 
-type PostLogin200JSONResponse Token
+type GetApiHealthchek200JSONResponse Health
 
-func (response PostLogin200JSONResponse) VisitPostLoginResponse(w http.ResponseWriter) error {
+func (response GetApiHealthchek200JSONResponse) VisitGetApiHealthchekResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostLogin400Response struct {
+type PostApiLoginRequestObject struct {
+	Body *PostApiLoginJSONRequestBody
 }
 
-func (response PostLogin400Response) VisitPostLoginResponse(w http.ResponseWriter) error {
+type PostApiLoginResponseObject interface {
+	VisitPostApiLoginResponse(w http.ResponseWriter) error
+}
+
+type PostApiLogin200ApplicaapitionjsonResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response PostApiLogin200ApplicaapitionjsonResponse) VisitPostApiLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "applica/apition/json")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type PostApiLogin400Response struct {
+}
+
+func (response PostApiLogin400Response) VisitPostApiLoginResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type GetUsersUserIdRequestObject struct {
-	UserId int `json:"user_id"`
+type GetApiRolesRequestObject struct {
 }
 
-type GetUsersUserIdResponseObject interface {
-	VisitGetUsersUserIdResponse(w http.ResponseWriter) error
+type GetApiRolesResponseObject interface {
+	VisitGetApiRolesResponse(w http.ResponseWriter) error
 }
 
-type GetUsersUserId200JSONResponse User
+type GetApiRoles200JSONResponse []Role
 
-func (response GetUsersUserId200JSONResponse) VisitGetUsersUserIdResponse(w http.ResponseWriter) error {
+func (response GetApiRoles200JSONResponse) VisitGetApiRolesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetUsersUserId404Response struct {
+type GetApiSkillsRequestObject struct {
 }
 
-func (response GetUsersUserId404Response) VisitGetUsersUserIdResponse(w http.ResponseWriter) error {
+type GetApiSkillsResponseObject interface {
+	VisitGetApiSkillsResponse(w http.ResponseWriter) error
+}
+
+type GetApiSkills200JSONResponse []Skill
+
+func (response GetApiSkills200JSONResponse) VisitGetApiSkillsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiUsersUserIdRequestObject struct {
+	UserId int `json:"user_id"`
+}
+
+type GetApiUsersUserIdResponseObject interface {
+	VisitGetApiUsersUserIdResponse(w http.ResponseWriter) error
+}
+
+type GetApiUsersUserId200JSONResponse User
+
+func (response GetApiUsersUserId200JSONResponse) VisitGetApiUsersUserIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiUsersUserId404Response struct {
+}
+
+func (response GetApiUsersUserId404Response) VisitGetApiUsersUserIdResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetUsersUserIdTeamsRequestObject struct {
+type GetApiUsersUserIdTeamsRequestObject struct {
 	UserId int `json:"user_id"`
 }
 
-type GetUsersUserIdTeamsResponseObject interface {
-	VisitGetUsersUserIdTeamsResponse(w http.ResponseWriter) error
+type GetApiUsersUserIdTeamsResponseObject interface {
+	VisitGetApiUsersUserIdTeamsResponse(w http.ResponseWriter) error
 }
 
-type GetUsersUserIdTeams200JSONResponse []TeamShort
+type GetApiUsersUserIdTeams200JSONResponse []TeamShort
 
-func (response GetUsersUserIdTeams200JSONResponse) VisitGetUsersUserIdTeamsResponse(w http.ResponseWriter) error {
+func (response GetApiUsersUserIdTeams200JSONResponse) VisitGetApiUsersUserIdTeamsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetUsersUserIdTeams404Response struct {
+type GetApiUsersUserIdTeams404Response struct {
 }
 
-func (response GetUsersUserIdTeams404Response) VisitGetUsersUserIdTeamsResponse(w http.ResponseWriter) error {
+func (response GetApiUsersUserIdTeams404Response) VisitGetApiUsersUserIdTeamsResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -1438,62 +1551,71 @@ func (response GetUsersUserIdTeams404Response) VisitGetUsersUserIdTeamsResponse(
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Create hack
-	// (POST /admin/hacks)
-	PostAdminHacks(ctx context.Context, request PostAdminHacksRequestObject) (PostAdminHacksResponseObject, error)
+	// (POST /api/admin/hacks)
+	PostApiAdminHacks(ctx context.Context, request PostApiAdminHacksRequestObject) (PostApiAdminHacksResponseObject, error)
 	// login user with a login/password
-	// (POST /admin/login)
-	PostAdminLogin(ctx context.Context, request PostAdminLoginRequestObject) (PostAdminLoginResponseObject, error)
+	// (POST /api/admin/login)
+	PostApiAdminLogin(ctx context.Context, request PostApiAdminLoginRequestObject) (PostApiAdminLoginResponseObject, error)
 	// Get hackathon list
-	// (GET /hacks)
-	GetHacks(ctx context.Context, request GetHacksRequestObject) (GetHacksResponseObject, error)
+	// (GET /api/hacks)
+	GetApiHacks(ctx context.Context, request GetApiHacksRequestObject) (GetApiHacksResponseObject, error)
 	// Get hackathon info
-	// (GET /hacks/{hack_id})
-	GetHacksHackId(ctx context.Context, request GetHacksHackIdRequestObject) (GetHacksHackIdResponseObject, error)
+	// (GET /api/hacks/{hack_id})
+	GetApiHacksHackId(ctx context.Context, request GetApiHacksHackIdRequestObject) (GetApiHacksHackIdResponseObject, error)
 	// Enter hack
-	// (POST /hacks/{hack_id}/enter)
-	PostHacksHackIdEnter(ctx context.Context, request PostHacksHackIdEnterRequestObject) (PostHacksHackIdEnterResponseObject, error)
+	// (POST /api/hacks/{hack_id}/enter)
+	PostApiHacksHackIdEnter(ctx context.Context, request PostApiHacksHackIdEnterRequestObject) (PostApiHacksHackIdEnterResponseObject, error)
 	// Все приглашения в команду
-	// (GET /hacks/{hack_id}/invitations)
-	GetHacksHackIdInvitations(ctx context.Context, request GetHacksHackIdInvitationsRequestObject) (GetHacksHackIdInvitationsResponseObject, error)
+	// (GET /api/hacks/{hack_id}/invitations)
+	GetApiHacksHackIdInvitations(ctx context.Context, request GetApiHacksHackIdInvitationsRequestObject) (GetApiHacksHackIdInvitationsResponseObject, error)
 	// Принять приглашение
-	// (GET /hacks/{hack_id}/invitations/{invite_id}/accept)
-	GetHacksHackIdInvitationsInviteIdAccept(ctx context.Context, request GetHacksHackIdInvitationsInviteIdAcceptRequestObject) (GetHacksHackIdInvitationsInviteIdAcceptResponseObject, error)
+	// (GET /api/hacks/{hack_id}/invitations/{invite_id}/accept)
+	GetApiHacksHackIdInvitationsInviteIdAccept(ctx context.Context, request GetApiHacksHackIdInvitationsInviteIdAcceptRequestObject) (GetApiHacksHackIdInvitationsInviteIdAcceptResponseObject, error)
 	// Get hackathon info
-	// (GET /hacks/{hack_id}/participants)
-	GetHacksHackIdParticipants(ctx context.Context, request GetHacksHackIdParticipantsRequestObject) (GetHacksHackIdParticipantsResponseObject, error)
+	// (GET /api/hacks/{hack_id}/participants)
+	GetApiHacksHackIdParticipants(ctx context.Context, request GetApiHacksHackIdParticipantsRequestObject) (GetApiHacksHackIdParticipantsResponseObject, error)
 	// Get hackathon info
-	// (GET /hacks/{hack_id}/participants/{participant_id})
-	GetHacksHackIdParticipantsParticipantId(ctx context.Context, request GetHacksHackIdParticipantsParticipantIdRequestObject) (GetHacksHackIdParticipantsParticipantIdResponseObject, error)
+	// (GET /api/hacks/{hack_id}/participants/{participant_id})
+	GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, request GetApiHacksHackIdParticipantsParticipantIdRequestObject) (GetApiHacksHackIdParticipantsParticipantIdResponseObject, error)
 	// Приласить в команду участника
-	// (POST /hacks/{hack_id}/participants/{participants_id}/invite)
-	PostHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, request PostHacksHackIdParticipantsParticipantsIdInviteRequestObject) (PostHacksHackIdParticipantsParticipantsIdInviteResponseObject, error)
+	// (POST /api/hacks/{hack_id}/participants/{participants_id}/invite)
+	PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, request PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject) (PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject, error)
 	// Все запросы в команду
-	// (GET /hacks/{hack_id}/requests)
-	GetHacksHackIdRequests(ctx context.Context, request GetHacksHackIdRequestsRequestObject) (GetHacksHackIdRequestsResponseObject, error)
+	// (GET /api/hacks/{hack_id}/requests)
+	GetApiHacksHackIdRequests(ctx context.Context, request GetApiHacksHackIdRequestsRequestObject) (GetApiHacksHackIdRequestsResponseObject, error)
 	// Принять в команду участника
-	// (POST /hacks/{hack_id}/requests/{request_id}/accept)
-	PostHacksHackIdRequestsRequestIdAccept(ctx context.Context, request PostHacksHackIdRequestsRequestIdAcceptRequestObject) (PostHacksHackIdRequestsRequestIdAcceptResponseObject, error)
+	// (POST /api/hacks/{hack_id}/requests/{request_id}/accept)
+	PostApiHacksHackIdRequestsRequestIdAccept(ctx context.Context, request PostApiHacksHackIdRequestsRequestIdAcceptRequestObject) (PostApiHacksHackIdRequestsRequestIdAcceptResponseObject, error)
 	// Get hackathon info
-	// (GET /hacks/{hack_id}/teams)
-	GetHacksHackIdTeams(ctx context.Context, request GetHacksHackIdTeamsRequestObject) (GetHacksHackIdTeamsResponseObject, error)
+	// (GET /api/hacks/{hack_id}/teams)
+	GetApiHacksHackIdTeams(ctx context.Context, request GetApiHacksHackIdTeamsRequestObject) (GetApiHacksHackIdTeamsResponseObject, error)
 	// Create team
-	// (POST /hacks/{hack_id}/teams)
-	PostHacksHackIdTeams(ctx context.Context, request PostHacksHackIdTeamsRequestObject) (PostHacksHackIdTeamsResponseObject, error)
+	// (POST /api/hacks/{hack_id}/teams)
+	PostApiHacksHackIdTeams(ctx context.Context, request PostApiHacksHackIdTeamsRequestObject) (PostApiHacksHackIdTeamsResponseObject, error)
 	// Get team info
-	// (GET /hacks/{hack_id}/teams/{team_id})
-	GetHacksHackIdTeamsTeamId(ctx context.Context, request GetHacksHackIdTeamsTeamIdRequestObject) (GetHacksHackIdTeamsTeamIdResponseObject, error)
+	// (GET /api/hacks/{hack_id}/teams/{team_id})
+	GetApiHacksHackIdTeamsTeamId(ctx context.Context, request GetApiHacksHackIdTeamsTeamIdRequestObject) (GetApiHacksHackIdTeamsTeamIdResponseObject, error)
 	// Попроситься в команду
-	// (POST /hacks/{hack_id}/teams/{team_id}/request)
-	PostHacksHackIdTeamsTeamIdRequest(ctx context.Context, request PostHacksHackIdTeamsTeamIdRequestRequestObject) (PostHacksHackIdTeamsTeamIdRequestResponseObject, error)
+	// (POST /api/hacks/{hack_id}/teams/{team_id}/request)
+	PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, request PostApiHacksHackIdTeamsTeamIdRequestRequestObject) (PostApiHacksHackIdTeamsTeamIdRequestResponseObject, error)
+	// check if service if healthy
+	// (GET /api/healthchek)
+	GetApiHealthchek(ctx context.Context, request GetApiHealthchekRequestObject) (GetApiHealthchekResponseObject, error)
 	// login user with a code
-	// (POST /login)
-	PostLogin(ctx context.Context, request PostLoginRequestObject) (PostLoginResponseObject, error)
+	// (POST /api/login)
+	PostApiLogin(ctx context.Context, request PostApiLoginRequestObject) (PostApiLoginResponseObject, error)
+	// Get all roles
+	// (GET /api/roles)
+	GetApiRoles(ctx context.Context, request GetApiRolesRequestObject) (GetApiRolesResponseObject, error)
+	// Get all skills
+	// (GET /api/skills)
+	GetApiSkills(ctx context.Context, request GetApiSkillsRequestObject) (GetApiSkillsResponseObject, error)
 	// Get user information
-	// (GET /users/{user_id})
-	GetUsersUserId(ctx context.Context, request GetUsersUserIdRequestObject) (GetUsersUserIdResponseObject, error)
+	// (GET /api/users/{user_id})
+	GetApiUsersUserId(ctx context.Context, request GetApiUsersUserIdRequestObject) (GetApiUsersUserIdResponseObject, error)
 	// Get user information
-	// (GET /users/{user_id}/teams)
-	GetUsersUserIdTeams(ctx context.Context, request GetUsersUserIdTeamsRequestObject) (GetUsersUserIdTeamsResponseObject, error)
+	// (GET /api/users/{user_id}/teams)
+	GetApiUsersUserIdTeams(ctx context.Context, request GetApiUsersUserIdTeamsRequestObject) (GetApiUsersUserIdTeamsResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -1525,11 +1647,11 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// PostAdminHacks operation middleware
-func (sh *strictHandler) PostAdminHacks(w http.ResponseWriter, r *http.Request) {
-	var request PostAdminHacksRequestObject
+// PostApiAdminHacks operation middleware
+func (sh *strictHandler) PostApiAdminHacks(w http.ResponseWriter, r *http.Request) {
+	var request PostApiAdminHacksRequestObject
 
-	var body PostAdminHacksJSONRequestBody
+	var body PostApiAdminHacksJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1537,18 +1659,18 @@ func (sh *strictHandler) PostAdminHacks(w http.ResponseWriter, r *http.Request) 
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostAdminHacks(ctx, request.(PostAdminHacksRequestObject))
+		return sh.ssi.PostApiAdminHacks(ctx, request.(PostApiAdminHacksRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostAdminHacks")
+		handler = middleware(handler, "PostApiAdminHacks")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostAdminHacksResponseObject); ok {
-		if err := validResponse.VisitPostAdminHacksResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiAdminHacksResponseObject); ok {
+		if err := validResponse.VisitPostApiAdminHacksResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1556,11 +1678,11 @@ func (sh *strictHandler) PostAdminHacks(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// PostAdminLogin operation middleware
-func (sh *strictHandler) PostAdminLogin(w http.ResponseWriter, r *http.Request) {
-	var request PostAdminLoginRequestObject
+// PostApiAdminLogin operation middleware
+func (sh *strictHandler) PostApiAdminLogin(w http.ResponseWriter, r *http.Request) {
+	var request PostApiAdminLoginRequestObject
 
-	var body PostAdminLoginJSONRequestBody
+	var body PostApiAdminLoginJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1568,18 +1690,18 @@ func (sh *strictHandler) PostAdminLogin(w http.ResponseWriter, r *http.Request) 
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostAdminLogin(ctx, request.(PostAdminLoginRequestObject))
+		return sh.ssi.PostApiAdminLogin(ctx, request.(PostApiAdminLoginRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostAdminLogin")
+		handler = middleware(handler, "PostApiAdminLogin")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostAdminLoginResponseObject); ok {
-		if err := validResponse.VisitPostAdminLoginResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiAdminLoginResponseObject); ok {
+		if err := validResponse.VisitPostApiAdminLoginResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1587,23 +1709,23 @@ func (sh *strictHandler) PostAdminLogin(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// GetHacks operation middleware
-func (sh *strictHandler) GetHacks(w http.ResponseWriter, r *http.Request) {
-	var request GetHacksRequestObject
+// GetApiHacks operation middleware
+func (sh *strictHandler) GetApiHacks(w http.ResponseWriter, r *http.Request) {
+	var request GetApiHacksRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacks(ctx, request.(GetHacksRequestObject))
+		return sh.ssi.GetApiHacks(ctx, request.(GetApiHacksRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacks")
+		handler = middleware(handler, "GetApiHacks")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksResponseObject); ok {
-		if err := validResponse.VisitGetHacksResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1611,25 +1733,25 @@ func (sh *strictHandler) GetHacks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetHacksHackId operation middleware
-func (sh *strictHandler) GetHacksHackId(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request GetHacksHackIdRequestObject
+// GetApiHacksHackId operation middleware
+func (sh *strictHandler) GetApiHacksHackId(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request GetApiHacksHackIdRequestObject
 
 	request.HackId = hackId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackId(ctx, request.(GetHacksHackIdRequestObject))
+		return sh.ssi.GetApiHacksHackId(ctx, request.(GetApiHacksHackIdRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackId")
+		handler = middleware(handler, "GetApiHacksHackId")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1637,13 +1759,13 @@ func (sh *strictHandler) GetHacksHackId(w http.ResponseWriter, r *http.Request, 
 	}
 }
 
-// PostHacksHackIdEnter operation middleware
-func (sh *strictHandler) PostHacksHackIdEnter(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request PostHacksHackIdEnterRequestObject
+// PostApiHacksHackIdEnter operation middleware
+func (sh *strictHandler) PostApiHacksHackIdEnter(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request PostApiHacksHackIdEnterRequestObject
 
 	request.HackId = hackId
 
-	var body PostHacksHackIdEnterJSONRequestBody
+	var body PostApiHacksHackIdEnterJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1651,18 +1773,18 @@ func (sh *strictHandler) PostHacksHackIdEnter(w http.ResponseWriter, r *http.Req
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostHacksHackIdEnter(ctx, request.(PostHacksHackIdEnterRequestObject))
+		return sh.ssi.PostApiHacksHackIdEnter(ctx, request.(PostApiHacksHackIdEnterRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostHacksHackIdEnter")
+		handler = middleware(handler, "PostApiHacksHackIdEnter")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostHacksHackIdEnterResponseObject); ok {
-		if err := validResponse.VisitPostHacksHackIdEnterResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiHacksHackIdEnterResponseObject); ok {
+		if err := validResponse.VisitPostApiHacksHackIdEnterResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1670,25 +1792,25 @@ func (sh *strictHandler) PostHacksHackIdEnter(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// GetHacksHackIdInvitations operation middleware
-func (sh *strictHandler) GetHacksHackIdInvitations(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request GetHacksHackIdInvitationsRequestObject
+// GetApiHacksHackIdInvitations operation middleware
+func (sh *strictHandler) GetApiHacksHackIdInvitations(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request GetApiHacksHackIdInvitationsRequestObject
 
 	request.HackId = hackId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdInvitations(ctx, request.(GetHacksHackIdInvitationsRequestObject))
+		return sh.ssi.GetApiHacksHackIdInvitations(ctx, request.(GetApiHacksHackIdInvitationsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdInvitations")
+		handler = middleware(handler, "GetApiHacksHackIdInvitations")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdInvitationsResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdInvitationsResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdInvitationsResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdInvitationsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1696,26 +1818,26 @@ func (sh *strictHandler) GetHacksHackIdInvitations(w http.ResponseWriter, r *htt
 	}
 }
 
-// GetHacksHackIdInvitationsInviteIdAccept operation middleware
-func (sh *strictHandler) GetHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request, hackId int, inviteId int) {
-	var request GetHacksHackIdInvitationsInviteIdAcceptRequestObject
+// GetApiHacksHackIdInvitationsInviteIdAccept operation middleware
+func (sh *strictHandler) GetApiHacksHackIdInvitationsInviteIdAccept(w http.ResponseWriter, r *http.Request, hackId int, inviteId int) {
+	var request GetApiHacksHackIdInvitationsInviteIdAcceptRequestObject
 
 	request.HackId = hackId
 	request.InviteId = inviteId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdInvitationsInviteIdAccept(ctx, request.(GetHacksHackIdInvitationsInviteIdAcceptRequestObject))
+		return sh.ssi.GetApiHacksHackIdInvitationsInviteIdAccept(ctx, request.(GetApiHacksHackIdInvitationsInviteIdAcceptRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdInvitationsInviteIdAccept")
+		handler = middleware(handler, "GetApiHacksHackIdInvitationsInviteIdAccept")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdInvitationsInviteIdAcceptResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdInvitationsInviteIdAcceptResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdInvitationsInviteIdAcceptResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdInvitationsInviteIdAcceptResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1723,25 +1845,25 @@ func (sh *strictHandler) GetHacksHackIdInvitationsInviteIdAccept(w http.Response
 	}
 }
 
-// GetHacksHackIdParticipants operation middleware
-func (sh *strictHandler) GetHacksHackIdParticipants(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request GetHacksHackIdParticipantsRequestObject
+// GetApiHacksHackIdParticipants operation middleware
+func (sh *strictHandler) GetApiHacksHackIdParticipants(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request GetApiHacksHackIdParticipantsRequestObject
 
 	request.HackId = hackId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdParticipants(ctx, request.(GetHacksHackIdParticipantsRequestObject))
+		return sh.ssi.GetApiHacksHackIdParticipants(ctx, request.(GetApiHacksHackIdParticipantsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdParticipants")
+		handler = middleware(handler, "GetApiHacksHackIdParticipants")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdParticipantsResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdParticipantsResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdParticipantsResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdParticipantsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1749,26 +1871,26 @@ func (sh *strictHandler) GetHacksHackIdParticipants(w http.ResponseWriter, r *ht
 	}
 }
 
-// GetHacksHackIdParticipantsParticipantId operation middleware
-func (sh *strictHandler) GetHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request, hackId int, participantId int) {
-	var request GetHacksHackIdParticipantsParticipantIdRequestObject
+// GetApiHacksHackIdParticipantsParticipantId operation middleware
+func (sh *strictHandler) GetApiHacksHackIdParticipantsParticipantId(w http.ResponseWriter, r *http.Request, hackId int, participantId int) {
+	var request GetApiHacksHackIdParticipantsParticipantIdRequestObject
 
 	request.HackId = hackId
 	request.ParticipantId = participantId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdParticipantsParticipantId(ctx, request.(GetHacksHackIdParticipantsParticipantIdRequestObject))
+		return sh.ssi.GetApiHacksHackIdParticipantsParticipantId(ctx, request.(GetApiHacksHackIdParticipantsParticipantIdRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdParticipantsParticipantId")
+		handler = middleware(handler, "GetApiHacksHackIdParticipantsParticipantId")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdParticipantsParticipantIdResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdParticipantsParticipantIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdParticipantsParticipantIdResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdParticipantsParticipantIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1776,26 +1898,26 @@ func (sh *strictHandler) GetHacksHackIdParticipantsParticipantId(w http.Response
 	}
 }
 
-// PostHacksHackIdParticipantsParticipantsIdInvite operation middleware
-func (sh *strictHandler) PostHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request, hackId int, participantsId int) {
-	var request PostHacksHackIdParticipantsParticipantsIdInviteRequestObject
+// PostApiHacksHackIdParticipantsParticipantsIdInvite operation middleware
+func (sh *strictHandler) PostApiHacksHackIdParticipantsParticipantsIdInvite(w http.ResponseWriter, r *http.Request, hackId int, participantsId int) {
+	var request PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject
 
 	request.HackId = hackId
 	request.ParticipantsId = participantsId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostHacksHackIdParticipantsParticipantsIdInvite(ctx, request.(PostHacksHackIdParticipantsParticipantsIdInviteRequestObject))
+		return sh.ssi.PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx, request.(PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostHacksHackIdParticipantsParticipantsIdInvite")
+		handler = middleware(handler, "PostApiHacksHackIdParticipantsParticipantsIdInvite")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostHacksHackIdParticipantsParticipantsIdInviteResponseObject); ok {
-		if err := validResponse.VisitPostHacksHackIdParticipantsParticipantsIdInviteResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject); ok {
+		if err := validResponse.VisitPostApiHacksHackIdParticipantsParticipantsIdInviteResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1803,25 +1925,25 @@ func (sh *strictHandler) PostHacksHackIdParticipantsParticipantsIdInvite(w http.
 	}
 }
 
-// GetHacksHackIdRequests operation middleware
-func (sh *strictHandler) GetHacksHackIdRequests(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request GetHacksHackIdRequestsRequestObject
+// GetApiHacksHackIdRequests operation middleware
+func (sh *strictHandler) GetApiHacksHackIdRequests(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request GetApiHacksHackIdRequestsRequestObject
 
 	request.HackId = hackId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdRequests(ctx, request.(GetHacksHackIdRequestsRequestObject))
+		return sh.ssi.GetApiHacksHackIdRequests(ctx, request.(GetApiHacksHackIdRequestsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdRequests")
+		handler = middleware(handler, "GetApiHacksHackIdRequests")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdRequestsResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdRequestsResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdRequestsResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdRequestsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1829,26 +1951,26 @@ func (sh *strictHandler) GetHacksHackIdRequests(w http.ResponseWriter, r *http.R
 	}
 }
 
-// PostHacksHackIdRequestsRequestIdAccept operation middleware
-func (sh *strictHandler) PostHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request, hackId int, requestId int) {
-	var request PostHacksHackIdRequestsRequestIdAcceptRequestObject
+// PostApiHacksHackIdRequestsRequestIdAccept operation middleware
+func (sh *strictHandler) PostApiHacksHackIdRequestsRequestIdAccept(w http.ResponseWriter, r *http.Request, hackId int, requestId int) {
+	var request PostApiHacksHackIdRequestsRequestIdAcceptRequestObject
 
 	request.HackId = hackId
 	request.RequestId = requestId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostHacksHackIdRequestsRequestIdAccept(ctx, request.(PostHacksHackIdRequestsRequestIdAcceptRequestObject))
+		return sh.ssi.PostApiHacksHackIdRequestsRequestIdAccept(ctx, request.(PostApiHacksHackIdRequestsRequestIdAcceptRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostHacksHackIdRequestsRequestIdAccept")
+		handler = middleware(handler, "PostApiHacksHackIdRequestsRequestIdAccept")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostHacksHackIdRequestsRequestIdAcceptResponseObject); ok {
-		if err := validResponse.VisitPostHacksHackIdRequestsRequestIdAcceptResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiHacksHackIdRequestsRequestIdAcceptResponseObject); ok {
+		if err := validResponse.VisitPostApiHacksHackIdRequestsRequestIdAcceptResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1856,25 +1978,25 @@ func (sh *strictHandler) PostHacksHackIdRequestsRequestIdAccept(w http.ResponseW
 	}
 }
 
-// GetHacksHackIdTeams operation middleware
-func (sh *strictHandler) GetHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request GetHacksHackIdTeamsRequestObject
+// GetApiHacksHackIdTeams operation middleware
+func (sh *strictHandler) GetApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request GetApiHacksHackIdTeamsRequestObject
 
 	request.HackId = hackId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdTeams(ctx, request.(GetHacksHackIdTeamsRequestObject))
+		return sh.ssi.GetApiHacksHackIdTeams(ctx, request.(GetApiHacksHackIdTeamsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdTeams")
+		handler = middleware(handler, "GetApiHacksHackIdTeams")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdTeamsResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdTeamsResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdTeamsResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdTeamsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1882,13 +2004,13 @@ func (sh *strictHandler) GetHacksHackIdTeams(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// PostHacksHackIdTeams operation middleware
-func (sh *strictHandler) PostHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
-	var request PostHacksHackIdTeamsRequestObject
+// PostApiHacksHackIdTeams operation middleware
+func (sh *strictHandler) PostApiHacksHackIdTeams(w http.ResponseWriter, r *http.Request, hackId int) {
+	var request PostApiHacksHackIdTeamsRequestObject
 
 	request.HackId = hackId
 
-	var body PostHacksHackIdTeamsJSONRequestBody
+	var body PostApiHacksHackIdTeamsJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1896,18 +2018,18 @@ func (sh *strictHandler) PostHacksHackIdTeams(w http.ResponseWriter, r *http.Req
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostHacksHackIdTeams(ctx, request.(PostHacksHackIdTeamsRequestObject))
+		return sh.ssi.PostApiHacksHackIdTeams(ctx, request.(PostApiHacksHackIdTeamsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostHacksHackIdTeams")
+		handler = middleware(handler, "PostApiHacksHackIdTeams")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostHacksHackIdTeamsResponseObject); ok {
-		if err := validResponse.VisitPostHacksHackIdTeamsResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiHacksHackIdTeamsResponseObject); ok {
+		if err := validResponse.VisitPostApiHacksHackIdTeamsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1915,26 +2037,26 @@ func (sh *strictHandler) PostHacksHackIdTeams(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// GetHacksHackIdTeamsTeamId operation middleware
-func (sh *strictHandler) GetHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
-	var request GetHacksHackIdTeamsTeamIdRequestObject
+// GetApiHacksHackIdTeamsTeamId operation middleware
+func (sh *strictHandler) GetApiHacksHackIdTeamsTeamId(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
+	var request GetApiHacksHackIdTeamsTeamIdRequestObject
 
 	request.HackId = hackId
 	request.TeamId = teamId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHacksHackIdTeamsTeamId(ctx, request.(GetHacksHackIdTeamsTeamIdRequestObject))
+		return sh.ssi.GetApiHacksHackIdTeamsTeamId(ctx, request.(GetApiHacksHackIdTeamsTeamIdRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHacksHackIdTeamsTeamId")
+		handler = middleware(handler, "GetApiHacksHackIdTeamsTeamId")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHacksHackIdTeamsTeamIdResponseObject); ok {
-		if err := validResponse.VisitGetHacksHackIdTeamsTeamIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiHacksHackIdTeamsTeamIdResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksHackIdTeamsTeamIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1942,26 +2064,26 @@ func (sh *strictHandler) GetHacksHackIdTeamsTeamId(w http.ResponseWriter, r *htt
 	}
 }
 
-// PostHacksHackIdTeamsTeamIdRequest operation middleware
-func (sh *strictHandler) PostHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
-	var request PostHacksHackIdTeamsTeamIdRequestRequestObject
+// PostApiHacksHackIdTeamsTeamIdRequest operation middleware
+func (sh *strictHandler) PostApiHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter, r *http.Request, hackId int, teamId int) {
+	var request PostApiHacksHackIdTeamsTeamIdRequestRequestObject
 
 	request.HackId = hackId
 	request.TeamId = teamId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostHacksHackIdTeamsTeamIdRequest(ctx, request.(PostHacksHackIdTeamsTeamIdRequestRequestObject))
+		return sh.ssi.PostApiHacksHackIdTeamsTeamIdRequest(ctx, request.(PostApiHacksHackIdTeamsTeamIdRequestRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostHacksHackIdTeamsTeamIdRequest")
+		handler = middleware(handler, "PostApiHacksHackIdTeamsTeamIdRequest")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostHacksHackIdTeamsTeamIdRequestResponseObject); ok {
-		if err := validResponse.VisitPostHacksHackIdTeamsTeamIdRequestResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiHacksHackIdTeamsTeamIdRequestResponseObject); ok {
+		if err := validResponse.VisitPostApiHacksHackIdTeamsTeamIdRequestResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1969,11 +2091,35 @@ func (sh *strictHandler) PostHacksHackIdTeamsTeamIdRequest(w http.ResponseWriter
 	}
 }
 
-// PostLogin operation middleware
-func (sh *strictHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
-	var request PostLoginRequestObject
+// GetApiHealthchek operation middleware
+func (sh *strictHandler) GetApiHealthchek(w http.ResponseWriter, r *http.Request) {
+	var request GetApiHealthchekRequestObject
 
-	var body PostLoginJSONRequestBody
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiHealthchek(ctx, request.(GetApiHealthchekRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiHealthchek")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiHealthchekResponseObject); ok {
+		if err := validResponse.VisitGetApiHealthchekResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostApiLogin operation middleware
+func (sh *strictHandler) PostApiLogin(w http.ResponseWriter, r *http.Request) {
+	var request PostApiLoginRequestObject
+
+	var body PostApiLoginJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1981,18 +2127,18 @@ func (sh *strictHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostLogin(ctx, request.(PostLoginRequestObject))
+		return sh.ssi.PostApiLogin(ctx, request.(PostApiLoginRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostLogin")
+		handler = middleware(handler, "PostApiLogin")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostLoginResponseObject); ok {
-		if err := validResponse.VisitPostLoginResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiLoginResponseObject); ok {
+		if err := validResponse.VisitPostApiLoginResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -2000,25 +2146,23 @@ func (sh *strictHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetUsersUserId operation middleware
-func (sh *strictHandler) GetUsersUserId(w http.ResponseWriter, r *http.Request, userId int) {
-	var request GetUsersUserIdRequestObject
-
-	request.UserId = userId
+// GetApiRoles operation middleware
+func (sh *strictHandler) GetApiRoles(w http.ResponseWriter, r *http.Request) {
+	var request GetApiRolesRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetUsersUserId(ctx, request.(GetUsersUserIdRequestObject))
+		return sh.ssi.GetApiRoles(ctx, request.(GetApiRolesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetUsersUserId")
+		handler = middleware(handler, "GetApiRoles")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetUsersUserIdResponseObject); ok {
-		if err := validResponse.VisitGetUsersUserIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiRolesResponseObject); ok {
+		if err := validResponse.VisitGetApiRolesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -2026,25 +2170,75 @@ func (sh *strictHandler) GetUsersUserId(w http.ResponseWriter, r *http.Request, 
 	}
 }
 
-// GetUsersUserIdTeams operation middleware
-func (sh *strictHandler) GetUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int) {
-	var request GetUsersUserIdTeamsRequestObject
-
-	request.UserId = userId
+// GetApiSkills operation middleware
+func (sh *strictHandler) GetApiSkills(w http.ResponseWriter, r *http.Request) {
+	var request GetApiSkillsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetUsersUserIdTeams(ctx, request.(GetUsersUserIdTeamsRequestObject))
+		return sh.ssi.GetApiSkills(ctx, request.(GetApiSkillsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetUsersUserIdTeams")
+		handler = middleware(handler, "GetApiSkills")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetUsersUserIdTeamsResponseObject); ok {
-		if err := validResponse.VisitGetUsersUserIdTeamsResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetApiSkillsResponseObject); ok {
+		if err := validResponse.VisitGetApiSkillsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiUsersUserId operation middleware
+func (sh *strictHandler) GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int) {
+	var request GetApiUsersUserIdRequestObject
+
+	request.UserId = userId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiUsersUserId(ctx, request.(GetApiUsersUserIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiUsersUserId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiUsersUserIdResponseObject); ok {
+		if err := validResponse.VisitGetApiUsersUserIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiUsersUserIdTeams operation middleware
+func (sh *strictHandler) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int) {
+	var request GetApiUsersUserIdTeamsRequestObject
+
+	request.UserId = userId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiUsersUserIdTeams(ctx, request.(GetApiUsersUserIdTeamsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiUsersUserIdTeams")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiUsersUserIdTeamsResponseObject); ok {
+		if err := validResponse.VisitGetApiUsersUserIdTeamsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
