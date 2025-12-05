@@ -8,6 +8,8 @@ import (
 type Form interface {
 	Create(ctx context.Context, userId int64, hackId int, exp int, addInfo string, roleIds []int, skillIds []int) error
 	GetForm(ctx context.Context, userId int64) (*FormDto, error)
+	ListSkills(ctx context.Context) ([]*Skill, error)
+	ListRoles(ctx context.Context) ([]*Role, error)
 }
 
 var (
@@ -21,4 +23,23 @@ type FormDto struct {
 	TeamId     int
 	Experience int
 	AddInfo    string
+}
+
+type Participant struct {
+	Id        int
+	FirstName string
+	LastName  string
+	Skills    []Skill
+	Role      Role
+	TeamId    int
+}
+
+type FormCreate struct {
+	ID         int
+	UserId     int64
+	HackId     int
+	Experience int
+	AddInfo    string
+	SKills     []Skill
+	Role       Role
 }

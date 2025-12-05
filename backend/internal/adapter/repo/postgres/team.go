@@ -99,7 +99,7 @@ func (t *TeamRepo) ReadByHackId(ctx context.Context, hackId int64) ([]*repo.Team
 		}
 
 		// Members остается пустым массивом, так как запрашиваем только общую информацию
-		team.Members = []*repo.UserDTO{}
+		team.Members = []*repo.User{}
 		teams = append(teams, &team)
 	}
 

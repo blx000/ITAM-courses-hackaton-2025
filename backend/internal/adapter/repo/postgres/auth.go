@@ -42,18 +42,22 @@ func (a *AutRepo) Create(ctx context.Context, auth *repo.AuthDto) error {
 
 func (a *AutRepo) Read(ctx context.Context, code string) (*repo.AuthDto, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
-	sb.Select("user_id, expires_at").From("hackmate.auth").Where(sb.Equal("code", code))
+	sb.Select("user_id, expires_at", "first_name", "last_name").From("hackmate.auth").Where(sb.Equal("code", code))
 
 	sql, args := sb.Build()
 
 	var (
 		userId    int64
 		expiresAt time.Time
+		firstName string
+		lastName  string
 	)
 
 	err := a.pool.QueryRow(ctx, sql, args...).Scan(
 		&userId,
 		&expiresAt,
+		&firstName,
+		&lastName,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -66,6 +70,8 @@ func (a *AutRepo) Read(ctx context.Context, code string) (*repo.AuthDto, error) 
 		Code:       code,
 		TelegramId: userId,
 		ExpiresAt:  expiresAt,
+		FirstName:  firstName,
+		LastName:   lastName,
 	}, nil
 }
 

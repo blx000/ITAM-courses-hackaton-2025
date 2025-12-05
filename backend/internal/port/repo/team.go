@@ -11,9 +11,17 @@ type Team interface {
 }
 
 type TeamDTO struct {
-	ID        int64
-	CaptainId int64
-	HackId    int64
+	ID        int
+	CaptainId int
+	HackId    int
 	Name      string
-	Members   []*UserDTO
+	Members   []*User
+}
+
+type TeamShort struct {
+	ID        int
+	CaptainId int
+	HackId    int
+	Name      string
+	Members   []*Participant
 }
