@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -77,6 +76,9 @@ type ServerInterface interface {
 	// Get all skills
 	// (GET /api/skills)
 	GetApiSkills(w http.ResponseWriter, r *http.Request)
+	// Get user info
+	// (GET /api/user)
+	GetApiUser(w http.ResponseWriter, r *http.Request)
 	// Get user information
 	// (GET /api/users/{user_id})
 	GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int)
@@ -206,6 +208,12 @@ func (_ Unimplemented) GetApiRoles(w http.ResponseWriter, r *http.Request) {
 // Get all skills
 // (GET /api/skills)
 func (_ Unimplemented) GetApiSkills(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get user info
+// (GET /api/user)
+func (_ Unimplemented) GetApiUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -791,6 +799,26 @@ func (siw *ServerInterfaceWrapper) GetApiSkills(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
+// GetApiUser operation middleware
+func (siw *ServerInterfaceWrapper) GetApiUser(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiUser(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetApiUsersUserId operation middleware
 func (siw *ServerInterfaceWrapper) GetApiUsersUserId(w http.ResponseWriter, r *http.Request) {
 
@@ -1019,6 +1047,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/skills", wrapper.GetApiSkills)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/user", wrapper.GetApiUser)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/users/{user_id}", wrapper.GetApiUsersUserId)
@@ -1373,7 +1404,7 @@ type GetApiHacksHackIdTeamsTeamIdResponseObject interface {
 	VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error
 }
 
-type GetApiHacksHackIdTeamsTeamId200JSONResponse []Team
+type GetApiHacksHackIdTeamsTeamId200JSONResponse Team
 
 func (response GetApiHacksHackIdTeamsTeamId200JSONResponse) VisitGetApiHacksHackIdTeamsTeamIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1439,23 +1470,13 @@ type PostApiLoginResponseObject interface {
 	VisitPostApiLoginResponse(w http.ResponseWriter) error
 }
 
-type PostApiLogin200ApplicaapitionjsonResponse struct {
-	Body          io.Reader
-	ContentLength int64
-}
+type PostApiLogin200JSONResponse Token
 
-func (response PostApiLogin200ApplicaapitionjsonResponse) VisitPostApiLoginResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "applica/apition/json")
-	if response.ContentLength != 0 {
-		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
-	}
+func (response PostApiLogin200JSONResponse) VisitPostApiLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-	if closer, ok := response.Body.(io.ReadCloser); ok {
-		defer closer.Close()
-	}
-	_, err := io.Copy(w, response.Body)
-	return err
+	return json.NewEncoder(w).Encode(response)
 }
 
 type PostApiLogin400Response struct {
@@ -1496,6 +1517,30 @@ func (response GetApiSkills200JSONResponse) VisitGetApiSkillsResponse(w http.Res
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiUserRequestObject struct {
+}
+
+type GetApiUserResponseObject interface {
+	VisitGetApiUserResponse(w http.ResponseWriter) error
+}
+
+type GetApiUser200JSONResponse User
+
+func (response GetApiUser200JSONResponse) VisitGetApiUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiUser401Response struct {
+}
+
+func (response GetApiUser401Response) VisitGetApiUserResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
 }
 
 type GetApiUsersUserIdRequestObject struct {
@@ -1610,6 +1655,9 @@ type StrictServerInterface interface {
 	// Get all skills
 	// (GET /api/skills)
 	GetApiSkills(ctx context.Context, request GetApiSkillsRequestObject) (GetApiSkillsResponseObject, error)
+	// Get user info
+	// (GET /api/user)
+	GetApiUser(ctx context.Context, request GetApiUserRequestObject) (GetApiUserResponseObject, error)
 	// Get user information
 	// (GET /api/users/{user_id})
 	GetApiUsersUserId(ctx context.Context, request GetApiUsersUserIdRequestObject) (GetApiUsersUserIdResponseObject, error)
@@ -2187,6 +2235,30 @@ func (sh *strictHandler) GetApiSkills(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSkillsResponseObject); ok {
 		if err := validResponse.VisitGetApiSkillsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiUser operation middleware
+func (sh *strictHandler) GetApiUser(w http.ResponseWriter, r *http.Request) {
+	var request GetApiUserRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiUser(ctx, request.(GetApiUserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiUser")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiUserResponseObject); ok {
+		if err := validResponse.VisitGetApiUserResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

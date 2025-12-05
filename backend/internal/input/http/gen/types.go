@@ -71,11 +71,12 @@ type Invite struct {
 
 // Participant defines model for Participant.
 type Participant struct {
-	FirstName string   `json:"first_name"`
-	Id        int      `json:"id"`
-	LastName  string   `json:"last_name"`
-	Roles     []string `json:"roles"`
-	TeamId    int      `json:"team_id"`
+	FirstName string  `json:"first_name"`
+	Id        int     `json:"id"`
+	LastName  string  `json:"last_name"`
+	Role      Role    `json:"role"`
+	Skills    []Skill `json:"skills"`
+	TeamId    int     `json:"team_id"`
 }
 
 // Request defines model for Request.
@@ -98,10 +99,11 @@ type Skill struct {
 
 // Team defines model for Team.
 type Team struct {
-	Id      int    `json:"id"`
-	MaxSize int    `json:"max_size"`
-	Members []User `json:"members"`
-	Name    string `json:"name"`
+	CaptainId int           `json:"captain_id"`
+	Id        int           `json:"id"`
+	MaxSize   int           `json:"max_size"`
+	Members   []Participant `json:"members"`
+	Name      string        `json:"name"`
 }
 
 // TeamCreate defines model for TeamCreate.
@@ -129,7 +131,7 @@ type Token struct {
 type User struct {
 	Bio       string `json:"bio"`
 	FirstName string `json:"first_name"`
-	Id        int    `json:"id"`
+	Id        int64  `json:"id"`
 	LastName  string `json:"last_name"`
 }
 

@@ -126,8 +126,9 @@ components:
         - id
         - first_name
         - last_name
-        - roles
+        - role
         - team_id
+        - skills
       properties:
         id:
           type: integer
@@ -135,10 +136,12 @@ components:
           type: string
         last_name:
           type: string
-        roles:
+        role:
+          $ref: '#/components/schemas/Role'
+        skills:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Skill'
         team_id:
           type: integer
 
@@ -174,6 +177,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         first_name:
           type: string
         last_name:
@@ -187,16 +191,19 @@ components:
         - id
         - name
         - members
+        - captain_id
         - max_size
       properties:
         id:
           type: integer
         name:
           type: string
+        captain_id:
+          type: integer
         members:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/Participant'
         max_size:
           type: integer
 
@@ -323,6 +330,21 @@ paths:
                 items:
                   $ref: '#/components/schemas/Skill'
 
+  /api/user:
+    get:
+      summary: Get user info
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
   /api/login:
     post:
       summary: login user with a code
@@ -336,7 +358,7 @@ paths:
         '200':
           description: Successful auth
           content:
-            applica/apition/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Token'
         '400':
@@ -553,9 +575,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
+                $ref: '#/components/schemas/Team'
         '404':
           description: Team id not found
 

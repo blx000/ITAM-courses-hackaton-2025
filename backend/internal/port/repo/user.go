@@ -33,7 +33,12 @@ type UserDTO struct {
 	Login     string
 }
 
-type Skills struct {
-	ID   int64
+type Skill struct {
+	ID   int
+	Name string
+}
+
+type Role struct {
+	ID   int
 	Name string
 }

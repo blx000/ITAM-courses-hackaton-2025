@@ -15,25 +15,26 @@ type Hackathon interface {
 }
 
 type HackathonDTO struct {
-	Id          int64
+	Id          int
 	AdminId     int64
 	Name        string
 	Desc        string
 	StartDate   time.Time
 	EndDate     time.Time
-	MaxTeams    int64
-	MaxTeamSize int64
+	MaxTeams    int
+	MaxTeamSize int
 	Teams       []*Team
 	Users       []*User
 }
 
 type HackathonGeneralDTO struct {
-	Id          int64
+	Id          int
 	AdminId     int64
 	Name        string
 	Desc        string
+	Prize       int
 	StartDate   time.Time
 	EndDate     time.Time
-	MaxTeams    int64
-	MaxTeamSize int64
+	MaxTeams    int
+	MaxTeamSize int
 }

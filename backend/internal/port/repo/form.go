@@ -22,3 +22,22 @@ type FormDto struct {
 	Experience int
 	AddInfo    string
 }
+
+type Participant struct {
+	Id        int
+	FirstName string
+	LastName  string
+	Skills    []Skill
+	Role      Role
+	TeamId    int
+}
+
+type FormCreate struct {
+	ID         int
+	UserId     int64
+	HackId     int
+	Experience int
+	AddInfo    string
+	SKills     []Skill
+	Role       Role
+}
