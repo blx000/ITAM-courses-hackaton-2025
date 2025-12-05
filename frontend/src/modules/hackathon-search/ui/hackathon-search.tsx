@@ -11,7 +11,7 @@ interface HackathonSearchProps {
 
 export function HackathonSearch({
   placeholder = "Поиск хакатона...",
-  compactMode = false,
+  //compactMode = false,
 }: HackathonSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [hackathons, setHackathons] = useState<HackathonShort[]>([]);

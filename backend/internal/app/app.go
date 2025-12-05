@@ -11,6 +11,7 @@ import (
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -60,6 +61,14 @@ func Start(cfg config.Config) error {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(60 * time.Second))
 	router.Use(handler.RequestInContext)
+
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:5173"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
 	gen.HandlerWithOptions(strictHandler, gen.ChiServerOptions{
 		BaseRouter: router,
