@@ -8,142 +8,147 @@ import (
 )
 
 const (
-	BearerAuthScopes = "bearerAuth.Scopes"
+	BearerAuthScopes = "BearerAuth.Scopes"
 )
 
 // AdminLogin defines model for AdminLogin.
 type AdminLogin struct {
-	Login    *string `json:"login,omitempty"`
-	Password *string `json:"password,omitempty"`
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
 
 // FormCreate defines model for FormCreate.
 type FormCreate struct {
-	AdditionalInfo *string `json:"additional_info,omitempty"`
+	AdditionalInfo string `json:"additional_info"`
 
 	// Experience Количество хакатонов
-	Experience *int     `json:"experience,omitempty"`
-	Role       *Role    `json:"role,omitempty"`
-	Skills     *[]Skill `json:"skills,omitempty"`
+	Experience int     `json:"experience"`
+	Role       Role    `json:"role"`
+	Skills     []Skill `json:"skills"`
 }
 
 // HackCreate defines model for HackCreate.
 type HackCreate struct {
-	Description *string             `json:"description,omitempty"`
-	EndDate     *openapi_types.Date `json:"end_date,omitempty"`
-	MaxTeamSize *int                `json:"max_team_size,omitempty"`
-	Name        *string             `json:"name,omitempty"`
-	Prize       *int                `json:"prize,omitempty"`
-	StartDate   *openapi_types.Date `json:"start_date,omitempty"`
+	Description string             `json:"description"`
+	EndDate     openapi_types.Date `json:"end_date"`
+	MaxTeamSize int                `json:"max_team_size"`
+	Name        string             `json:"name"`
+	Prize       int                `json:"prize"`
+	StartDate   openapi_types.Date `json:"start_date"`
 }
 
 // HackathonPage defines model for HackathonPage.
 type HackathonPage struct {
-	Description *string             `json:"description,omitempty"`
-	EndDate     *openapi_types.Date `json:"end_date,omitempty"`
-	Id          *int                `json:"id,omitempty"`
-	MaxTeamSize *int                `json:"max_team_size,omitempty"`
-	Name        *string             `json:"name,omitempty"`
-	Prize       *int                `json:"prize,omitempty"`
-	StartDate   *openapi_types.Date `json:"start_date,omitempty"`
+	Description string             `json:"description"`
+	EndDate     openapi_types.Date `json:"end_date"`
+	Id          int                `json:"id"`
+	MaxTeamSize int                `json:"max_team_size"`
+	Name        string             `json:"name"`
+	Prize       int                `json:"prize"`
+	StartDate   openapi_types.Date `json:"start_date"`
 }
 
 // HackathonShort defines model for HackathonShort.
 type HackathonShort struct {
-	Description *string             `json:"description,omitempty"`
-	EndDate     *openapi_types.Date `json:"end_date,omitempty"`
-	Id          *int                `json:"id,omitempty"`
-	Name        *string             `json:"name,omitempty"`
-	StartDate   *openapi_types.Date `json:"start_date,omitempty"`
+	Description string             `json:"description"`
+	EndDate     openapi_types.Date `json:"end_date"`
+	Id          int                `json:"id"`
+	Name        string             `json:"name"`
+	StartDate   openapi_types.Date `json:"start_date"`
+}
+
+// Health defines model for Health.
+type Health struct {
+	Resp string `json:"resp"`
 }
 
 // Invite defines model for Invite.
 type Invite struct {
-	Id            *int `json:"id,omitempty"`
-	ParticipantId *int `json:"participant_id,omitempty"`
-	TeamId        *int `json:"team_id,omitempty"`
+	Id          int          `json:"id"`
+	Participant *Participant `json:"participant,omitempty"`
+	TeamId      int          `json:"team_id"`
 }
 
 // Participant defines model for Participant.
 type Participant struct {
-	FirstName *string   `json:"first_name,omitempty"`
-	Id        *int      `json:"id,omitempty"`
-	LastName  *string   `json:"last_name,omitempty"`
-	Roles     *[]string `json:"roles,omitempty"`
-	TeamId    *int      `json:"team_id,omitempty"`
+	FirstName string   `json:"first_name"`
+	Id        int      `json:"id"`
+	LastName  string   `json:"last_name"`
+	Roles     []string `json:"roles"`
+	TeamId    int      `json:"team_id"`
 }
 
 // Request defines model for Request.
 type Request struct {
-	Id     *int `json:"id,omitempty"`
-	TeamId *int `json:"team_id,omitempty"`
+	Id     int `json:"id"`
+	TeamId int `json:"team_id"`
 }
 
 // Role defines model for Role.
 type Role struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // Skill defines model for Skill.
 type Skill struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // Team defines model for Team.
 type Team struct {
-	Id      *int    `json:"id,omitempty"`
-	MaxSize *int    `json:"max_size,omitempty"`
-	Members *[]User `json:"members,omitempty"`
-	Name    *string `json:"name,omitempty"`
+	Id      int    `json:"id"`
+	MaxSize int    `json:"max_size"`
+	Members []User `json:"members"`
+	Name    string `json:"name"`
 }
 
 // TeamCreate defines model for TeamCreate.
 type TeamCreate struct {
-	CaptainId *int    `json:"captain_id,omitempty"`
-	Name      *string `json:"name,omitempty"`
+	CaptainId int    `json:"captain_id"`
+	Name      string `json:"name"`
 }
 
 // TeamShort defines model for TeamShort.
 type TeamShort struct {
-	HackId   *int    `json:"hack_id,omitempty"`
-	HackName *string `json:"hack_name,omitempty"`
-	Id       *int    `json:"id,omitempty"`
-	MaxSize  *int    `json:"max_size,omitempty"`
-	Name     *string `json:"name,omitempty"`
+	HackId   int    `json:"hack_id"`
+	HackName string `json:"hack_name"`
+	Id       int    `json:"id"`
+	MaxSize  int    `json:"max_size"`
+	Name     string `json:"name"`
 }
 
 // Token defines model for Token.
 type Token struct {
-	AccessToken  *string `json:"access_token,omitempty"`
-	RefreshToken *string `json:"refresh_token,omitempty"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 // User defines model for User.
 type User struct {
-	Bio       *string `json:"bio,omitempty"`
-	FirstName *string `json:"first_name,omitempty"`
-	Id        *int    `json:"id,omitempty"`
-	LastName  *string `json:"last_name,omitempty"`
+	Bio       string `json:"bio"`
+	FirstName string `json:"first_name"`
+	Id        int    `json:"id"`
+	LastName  string `json:"last_name"`
 }
 
 // UserLogin defines model for UserLogin.
 type UserLogin struct {
-	Code *string `json:"code,omitempty"`
+	Code string `json:"code"`
 }
 
-// PostAdminHacksJSONRequestBody defines body for PostAdminHacks for application/json ContentType.
-type PostAdminHacksJSONRequestBody = HackCreate
+// PostApiAdminHacksJSONRequestBody defines body for PostApiAdminHacks for application/json ContentType.
+type PostApiAdminHacksJSONRequestBody = HackCreate
 
-// PostAdminLoginJSONRequestBody defines body for PostAdminLogin for application/json ContentType.
-type PostAdminLoginJSONRequestBody = AdminLogin
+// PostApiAdminLoginJSONRequestBody defines body for PostApiAdminLogin for application/json ContentType.
+type PostApiAdminLoginJSONRequestBody = AdminLogin
 
-// PostHacksHackIdEnterJSONRequestBody defines body for PostHacksHackIdEnter for application/json ContentType.
-type PostHacksHackIdEnterJSONRequestBody = FormCreate
+// PostApiHacksHackIdEnterJSONRequestBody defines body for PostApiHacksHackIdEnter for application/json ContentType.
+type PostApiHacksHackIdEnterJSONRequestBody = FormCreate
 
-// PostHacksHackIdTeamsJSONRequestBody defines body for PostHacksHackIdTeams for application/json ContentType.
-type PostHacksHackIdTeamsJSONRequestBody = TeamCreate
+// PostApiHacksHackIdTeamsJSONRequestBody defines body for PostApiHacksHackIdTeams for application/json ContentType.
+type PostApiHacksHackIdTeamsJSONRequestBody = TeamCreate
 
-// PostLoginJSONRequestBody defines body for PostLogin for application/json ContentType.
-type PostLoginJSONRequestBody = UserLogin
+// PostApiLoginJSONRequestBody defines body for PostApiLogin for application/json ContentType.
+type PostApiLoginJSONRequestBody = UserLogin
