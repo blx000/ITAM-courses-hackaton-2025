@@ -10,7 +10,8 @@ import { ProfilePage } from "../../pages/profile-page";
 import { FormPage } from "../../pages/form-page";
 import { HelpPage } from "../../pages/help-page";
 import { NotificationPage } from "../../pages/notification-page";
-import { CommandPage } from "../../pages/commands-page";
+import { HackathonInfoPage } from "../../pages/hackathon-info-page";
+import { MyComandPage } from "../../pages/my-comands-page";
 
 export const appRouter = createBrowserRouter([
   {
@@ -23,16 +24,20 @@ export const appRouter = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/commands",
-        element: <CommandPage />,
+        path: "comands",
+        element: <MyComandPage />,
       },
       {
-        path: "/calendar",
+        path: "calendar",
         element: <CalendarPage />,
       },
       {
-        path: "/notifications",
+        path: "notifications",
         element: <NotificationPage />,
+      },
+      {
+        path: "hackathons/:id",
+        element: <HackathonInfoPage />,
       },
       {
         path: "*",

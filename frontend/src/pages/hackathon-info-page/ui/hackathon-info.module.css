@@ -1,0 +1,35 @@
+.container {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.info {
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: space-between;
+}
+.description {
+  padding: 16px;
+  border-radius: 24px;
+  width: 100%;
+  min-height: 291px;
+  background-color: rgba(217, 217, 217, 1);
+}
+.btn {
+  color: black;
+  margin: 26px auto 50px;
+  width: fit-content;
+  padding: 10px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: rgba(172, 235, 76, 1);
+}

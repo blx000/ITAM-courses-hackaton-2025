@@ -1,0 +1,1 @@
+export {MyComandPage} from './ui/my-comands-page'

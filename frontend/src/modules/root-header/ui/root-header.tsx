@@ -14,7 +14,7 @@ type MenuOption = {
 
 const menuOptions: MenuOption[] = [
   { label: "Мой профиль", path: "/profile" },
-  { label: "Мои команды", path: "/commands" },
+  { label: "Мои команды", path: "/comands" },
 ];
 
 export function RootHeader() {
