@@ -24,4 +24,5 @@ type TeamShort struct {
 	HackId    int
 	Name      string
 	Members   []*Participant
+	MemberCnt int
 }

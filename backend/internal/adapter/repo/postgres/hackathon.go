@@ -16,6 +16,47 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int, name string) error {
+	const defaultMaxSize = 5
+
+	// Начнем транзакцию
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertTeamQuery, insertTeamArgs := sb.InsertInto("hackmate.team").
+		Cols("name", "captain_id", "hackathon_id", "max_size").
+		Values(name, participantId, hackId, defaultMaxSize).
+		SQL("RETURNING id").
+		Build()
+
+	var teamId int
+	err = tx.QueryRow(ctx, insertTeamQuery, insertTeamArgs...).Scan(&teamId)
+	if err != nil {
+		return fmt.Errorf("failed to create team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertParticipantQuery, insertParticipantArgs := sb2.InsertInto("hackmate.team_participant").
+		Cols("participant_id", "team_id").
+		Values(participantId, teamId).
+		Build()
+
+	_, err = tx.Exec(ctx, insertParticipantQuery, insertParticipantArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to add captain to team: %w", err)
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
 func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
@@ -73,7 +114,7 @@ func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Pa
 	return participants, nil
 }
 
-func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.Team, error) {
+func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error) {
 	//TODO implement me
 	panic("implement me")
 }

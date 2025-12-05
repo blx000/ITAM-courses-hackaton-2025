@@ -350,6 +350,7 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 			Name:    teams[i].Name,
 			Id:      teams[i].ID,
 			Members: participantsResponse,
+			MaxSize: teams[i].MemberCnt,
 		}
 	}
 	return gen.GetApiHacksHackIdTeams200JSONResponse(teamsResponse), nil

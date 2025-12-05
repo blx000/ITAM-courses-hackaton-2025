@@ -9,10 +9,15 @@ import (
 	"time"
 )
 
+const (
+	TeamNull = -1
+)
+
 var (
 	ErrHackNotFound               = errors.New("hack not found")
 	ErrAuthCodeNotFound           = errors.New("auth code not found")
 	ErrUserAlreadyJoinedHackathon = errors.New("user already joined hackathon")
+	ErrUserAlreadyJoinedTeam      = errors.New("user already joined team")
 	ErrUserNotFound               = errors.New("user not found")
 	ErrInvalidCredentials         = errors.New("invalid credentials")
 )
@@ -32,6 +37,8 @@ type Service interface {
 	GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
 }
+
+var _ Service = (*ServiceImpl)(nil)
 
 type ServiceImpl struct {
 	formRepo repo.Form
@@ -172,7 +179,26 @@ func (s *ServiceImpl) GetTeam(ctx context.Context, teamId int) (*repo.TeamShort,
 
 func (s *ServiceImpl) CreateTeam(ctx context.Context, userId int64, hackId int, name string) error {
 	//TODO implement me
-	panic("implement me")
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, repo.ErrParticipantNotFound) {
+			return ErrHackNotFound
+		}
+		return fmt.Errorf("failed to read participant: %w", err)
+	}
+
+	if participant.TeamId != TeamNull {
+		return ErrUserAlreadyJoinedTeam
+	}
+
+	err = s.hackRepo.CreateTeam(ctx, participant.Id, hackId, name)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to create hack team: %w", err)
+	}
+
+	return nil
 }
 
 func (s *ServiceImpl) ListSkills(ctx context.Context) ([]*repo.Skill, error) {

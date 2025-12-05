@@ -199,6 +199,7 @@ components:
         - members
         - captain_id
         - max_size
+        - cur_size
       properties:
         id:
           type: integer
@@ -211,6 +212,8 @@ components:
           items:
             $ref: '#/components/schemas/Participant'
         max_size:
+          type: integer
+        cur_size:
           type: integer
 
     TeamShort:

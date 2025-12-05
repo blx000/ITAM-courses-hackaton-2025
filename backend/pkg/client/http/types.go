@@ -100,6 +100,7 @@ type Skill struct {
 // Team defines model for Team.
 type Team struct {
 	CaptainId int           `json:"captain_id"`
+	CurSize   int           `json:"cur_size"`
 	Id        int           `json:"id"`
 	MaxSize   int           `json:"max_size"`
 	Members   []Participant `json:"members"`
