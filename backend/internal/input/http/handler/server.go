@@ -280,8 +280,52 @@ func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.G
 }
 
 func (s Server) GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, request gen.GetApiHacksHackIdParticipantsParticipantIdRequestObject) (gen.GetApiHacksHackIdParticipantsParticipantIdResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	_, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	participant, err := s.service.GetParticipantProfile(ctx, request.HackId, request.ParticipantId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to find participant: %w", err)
+	}
+
+	skillsResponse := make([]gen.Skill, len(participant.Skills))
+	for i := range participant.Skills {
+		skillsResponse[i] = gen.Skill{
+			Name: participant.Skills[i].Name,
+			Id:   participant.Skills[i].ID,
+		}
+	}
+
+	participantResponse := gen.Participant{
+		Id:        participant.Id,
+		TeamId:    participant.TeamId,
+		FirstName: participant.FirstName,
+		LastName:  participant.LastName,
+		Skills:    skillsResponse,
+		Role: gen.Role{
+			Id:   participant.Role.ID,
+			Name: participant.Role.Name,
+		},
+	}
+
+	return gen.GetApiHacksHackIdParticipantsParticipantId200JSONResponse(participantResponse), nil
 }
 
 func (s Server) PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, request gen.PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject) (gen.PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject, error) {

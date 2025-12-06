@@ -36,6 +36,7 @@ type Service interface {
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
 	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
+	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
 }
 
 var _ Service = (*ServiceImpl)(nil)
@@ -45,6 +46,18 @@ type ServiceImpl struct {
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+}
+
+func (s *ServiceImpl) GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error) {
+	participant, err := s.hackRepo.GetParticipantProfile(ctx, participantId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("get participant profile: %w", err)
+	}
+	if participant.HackId != hackId {
+		return nil, ErrHackNotFound
+	}
+	return s.hackRepo.GetParticipantProfile(ctx, participantId)
 }
 
 func NewServiceImpl(formRepo repo.Form, authRepo repo.Auth, hackRepo repo.Hackathon, userRepo repo.User) *ServiceImpl {

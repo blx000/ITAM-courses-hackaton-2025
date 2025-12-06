@@ -34,6 +34,7 @@ type Participant struct {
 	TeamId     int
 	Experience int
 	AddInfo    string
+	HackId     int
 }
 
 type FormCreate struct {

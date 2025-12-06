@@ -16,6 +16,92 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int) (*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	participantQuery, participantArgs := sb.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"p.experience",
+		"p.additional_info",
+		"p.hack_id",
+		"COALESCE(tp.team_id, -1) as team_id",
+	).
+		From("hackmate.participant p").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp",
+			"p.id = tp.participant_id").
+		Where(sb.Equal("p.id", participantId)).
+		Build()
+
+	var participant repo.Participant
+
+	err := h.pool.QueryRow(ctx, participantQuery, participantArgs...).Scan(
+		&participant.Id,
+		&participant.FirstName,
+		&participant.LastName,
+		&participant.Role.ID,
+		&participant.Role.Name,
+		&participant.Experience,
+		&participant.AddInfo,
+		&participant.HackId,
+		&participant.TeamId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("participant not found")
+		}
+		return nil, fmt.Errorf("failed to get participant: %w", err)
+	}
+
+	// 2. Получаем навыки участника
+	sb2 := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	skillsQuery, skillsArgs := sb2.Select(
+		"s.id",
+		"s.name",
+	).
+		From("hackmate.skill s").
+		Join("hackmate.participant_skill ps", "s.id = ps.skill_id").
+		Where(sb2.Equal("ps.participant_id", participantId)).
+		Build()
+
+	rows, err := h.pool.Query(ctx, skillsQuery, skillsArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query participant skills: %w", err)
+	}
+	defer rows.Close()
+
+	var skills []repo.Skill
+
+	for rows.Next() {
+		var skill repo.Skill
+
+		err := rows.Scan(
+			&skill.ID,
+			&skill.Name,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan skill: %w", err)
+		}
+
+		skills = append(skills, skill)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	participant.Skills = skills
+
+	return &participant, nil
+}
+
 func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamShort, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
