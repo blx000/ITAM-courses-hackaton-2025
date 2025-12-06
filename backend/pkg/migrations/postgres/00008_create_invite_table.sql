@@ -7,7 +7,7 @@ create table if not exists hackmate.invite (
 );
 
 create table if not exists hackmate.join_request (
-    id int primary key,
+    id serial primary key,
     team_id int references hackmate.team(id),
     participant_id int references hackmate.participant(id)
 );

@@ -43,9 +43,9 @@ type Service interface {
 	GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error)
 
 	CreateInvite(ctx context.Context, hackId int, senderId int64, rectId int) error
-	CreateJoinRequest(ctx context.Context, hackId int, teamId int, participantId int) error
+	CreateJoinRequest(ctx context.Context, hackId int, teamId int, userId int64) error
 	AcceptInvite(ctx context.Context, hackId int, inviteId int, userId int64) error
-	AcceptJoinRequest(ctx context.Context, hackId int, requestId int, participantId int) error
+	AcceptJoinRequest(ctx context.Context, hackId int, requestId int, userId int64) error
 }
 
 var _ Service = (*ServiceImpl)(nil)
@@ -89,9 +89,23 @@ func (s *ServiceImpl) CreateInvite(ctx context.Context, hackId int, senderId int
 	return nil
 }
 
-func (s *ServiceImpl) CreateJoinRequest(ctx context.Context, hackId int, teamId int, participantId int) error {
-	//TODO implement me
-	panic("implement me")
+func (s *ServiceImpl) CreateJoinRequest(ctx context.Context, hackId int, teamId int, userId int64) error {
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to find participant")
+	}
+	if participant.TeamId != TeamNull {
+		return ErrUserAlreadyJoinedTeam
+	}
+
+	err = s.hackRepo.CreateRequest(ctx, teamId, participant.Id)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to create request")
+	}
+
+	return nil
 }
 
 func (s *ServiceImpl) AcceptInvite(ctx context.Context, hackId int, inviteId int, userId int64) error {
@@ -120,9 +134,34 @@ func (s *ServiceImpl) AcceptInvite(ctx context.Context, hackId int, inviteId int
 	return nil
 }
 
-func (s *ServiceImpl) AcceptJoinRequest(ctx context.Context, hackId int, requestId int, participantId int) error {
-	//TODO implement me
-	panic("implement me")
+func (s *ServiceImpl) AcceptJoinRequest(ctx context.Context, hackId int, requestId int, userId int64) error {
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to get participant %w", err)
+	}
+
+	joinReq, err := s.hackRepo.GetRequest(ctx, requestId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to get join request %w", err)
+	}
+
+	if participant.TeamId != joinReq.TeamId {
+		return fmt.Errorf("mismatch participant and join.part_id")
+	}
+
+	if joinReq.CaptainId != participant.Id {
+		return ErrOnlyCaptainCanAcceptRequests
+	}
+
+	err = s.hackRepo.AcceptRequest(ctx, requestId, joinReq.TeamId, joinReq.ParticipantId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to accept join request %w", err)
+	}
+
+	return nil
 }
 
 func (s *ServiceImpl) CreateHack(ctx context.Context, hack *repo.HackathonGeneralDTO) (int, error) {

@@ -474,11 +474,6 @@ func (s Server) GetApiHacksHackIdRequests(ctx context.Context, request gen.GetAp
 	panic("implement me")
 }
 
-func (s Server) PostApiHacksHackIdRequestsRequestIdAccept(ctx context.Context, request gen.PostApiHacksHackIdRequestsRequestIdAcceptRequestObject) (gen.PostApiHacksHackIdRequestsRequestIdAcceptResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHacksHackIdTeamsRequestObject) (gen.GetApiHacksHackIdTeamsResponseObject, error) {
 	bearer, ok := ctx.Value(AuthorizationHeader).(string)
 	if !ok {
@@ -623,8 +618,63 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 }
 
 func (s Server) PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, request gen.PostApiHacksHackIdTeamsTeamIdRequestRequestObject) (gen.PostApiHacksHackIdTeamsTeamIdRequestResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	err = s.service.CreateJoinRequest(ctx, request.HackId, request.TeamId, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to create hack join request: %w", err)
+	}
+
+	return gen.PostApiHacksHackIdTeamsTeamIdRequest201Response{}, nil
+}
+
+func (s Server) PostApiHacksHackIdRequestsRequestIdAccept(ctx context.Context, request gen.PostApiHacksHackIdRequestsRequestIdAcceptRequestObject) (gen.PostApiHacksHackIdRequestsRequestIdAcceptResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	err = s.service.AcceptJoinRequest(ctx, request.HackId, request.RequestId, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, service.ErrOnlyCaptainCanAcceptRequests) {
+			return gen.PostApiHacksHackIdRequestsRequestIdAccept403Response{}, nil
+		}
+		return nil, fmt.Errorf("failed to accept join request: %w", err)
+	}
+
+	return gen.PostApiHacksHackIdRequestsRequestIdAccept200Response{}, nil
 }
 
 func (s Server) PostApiLogin(ctx context.Context, request gen.PostApiLoginRequestObject) (gen.PostApiLoginResponseObject, error) {
