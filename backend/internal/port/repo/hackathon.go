@@ -15,6 +15,12 @@ type Hackathon interface {
 	Read(ctx context.Context, id int) (*HackathonGeneralDTO, error)
 	AddParticipant(ctx context.Context, hackId int, create FormCreate) error
 	GetParticipant(ctx context.Context, hackId int, userId int64) (*Participant, error)
+	ListParticipants(ctx context.Context, hackId int) ([]*Participant, error)
+	ListTeams(ctx context.Context, hackId int) ([]*TeamShort, error)
+	CreateTeam(ctx context.Context, participantId int, hackId int, name string) error
+	GetTeamProfile(ctx context.Context, teamId int) (*TeamShort, error)
+	GetParticipantProfile(ctx context.Context, participantId int) (*Participant, error)
+	CreateHack(ctx context.Context, dto *HackathonGeneralDTO) (int, error)
 }
 
 var (

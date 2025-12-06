@@ -1464,6 +1464,7 @@ type ClientWithResponsesInterface interface {
 type PostApiAdminHacksResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *HackathonShort
 }
 
 // Status returns HTTPResponse.Status
@@ -2219,6 +2220,16 @@ func ParsePostApiAdminHacksResponse(rsp *http.Response) (*PostApiAdminHacksRespo
 	response := &PostApiAdminHacksResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HackathonShort
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil

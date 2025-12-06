@@ -26,12 +26,15 @@ type FormDto struct {
 }
 
 type Participant struct {
-	Id        int
-	FirstName string
-	LastName  string
-	Skills    []Skill
-	Role      Role
-	TeamId    int
+	Id         int
+	FirstName  string
+	LastName   string
+	Skills     []Skill
+	Role       Role
+	TeamId     int
+	Experience int
+	AddInfo    string
+	HackId     int
 }
 
 type FormCreate struct {
