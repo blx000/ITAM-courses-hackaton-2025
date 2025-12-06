@@ -10,7 +10,6 @@ export function RootLayout() {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated on mount
     if (!AuthService.isAuthenticated()) {
       setShowAuthModal(true);
     }

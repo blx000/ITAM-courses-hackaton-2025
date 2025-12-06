@@ -5,6 +5,7 @@ import type { User, TeamShort } from "../../../api";
 import styles from "./profile-page.module.css";
 import bgImage from "/bg-image.png";
 import editIcon from "/edit-icon.svg";
+import profilePhoto from "/profile-photo.svg";
 
 export function ProfilePage() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ export function ProfilePage() {
 
         <div className={styles.info}>
           <div className={styles.photo}>
-            {user.first_name?.[0]}{user.last_name?.[0]}
+            <img src={profilePhoto} alt="profile" />
           </div>
           <div className={styles.textBox}>
             <h2 className={styles.surname}>{user.last_name || "Фамилия"}</h2>
@@ -93,7 +94,7 @@ export function ProfilePage() {
         </div>
 
       <div className={styles.phone}>
-        <strong>Тег tg: </strong> @{user.login || "hack_mate_bot"}
+        <strong>Телеграм: </strong> @{user.login || "username"}
       </div>
 
       {user.bio && (

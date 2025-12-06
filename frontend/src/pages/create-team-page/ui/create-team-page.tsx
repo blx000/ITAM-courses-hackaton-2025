@@ -39,7 +39,6 @@ export function CreateTeamPage() {
         captain_id: userId,
       });
       
-      // Navigate to the created team page
       navigate(`/hackathons/${id}/teams/${team.id}`);
 
       navigate(`/hackathons/${id}/teams`);

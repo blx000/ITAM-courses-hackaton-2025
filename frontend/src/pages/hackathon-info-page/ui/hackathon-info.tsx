@@ -32,10 +32,7 @@ export function HackathonInfoPage() {
         );
         setParticipantsCount(count);
         
-        // Check if current user is participating
         try {
-          // TODO: Check if current user is in participants when backend provides user_id in Participant type
-          // For now, we'll assume user is not participating
           setIsParticipating(false);
         } catch (err) {
           setIsParticipating(false);

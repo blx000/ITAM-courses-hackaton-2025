@@ -113,6 +113,14 @@ export const appRouter = createBrowserRouter([
         ),
       },
       {
+        path: "search",
+        element: (
+          <ProtectedRoute>
+            <SearchPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "*",
         element: <NotFoundPage />,
       },
@@ -159,13 +167,5 @@ export const appRouter = createBrowserRouter([
         element: <HelpPage />,
       },
     ],
-  },
-  {
-    path: "/search",
-    element: (
-      <ProtectedRoute>
-        <SearchPage />
-      </ProtectedRoute>
-    ),
   },
 ]);

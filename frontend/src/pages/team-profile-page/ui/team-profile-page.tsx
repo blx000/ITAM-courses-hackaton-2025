@@ -35,7 +35,6 @@ export function TeamProfilePage() {
       const teamData = await HackmateApi.getTeam(hackathonId, tId);
       setTeam(teamData);
       
-      // Check if current user is captain
       const userId = AuthService.getUserId();
       if (userId && teamData.captain_id === userId) {
         setIsCaptain(true);

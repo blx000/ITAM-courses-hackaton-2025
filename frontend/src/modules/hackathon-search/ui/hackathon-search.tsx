@@ -11,7 +11,6 @@ interface HackathonSearchProps {
 
 export function HackathonSearch({
   placeholder = "Поиск хакатона...",
-  //compactMode = false,
 }: HackathonSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [hackathons, setHackathons] = useState<HackathonShort[]>([]);
@@ -22,7 +21,6 @@ export function HackathonSearch({
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Загружаем хакатоны
     HackmateApi.getHackathons().then(setHackathons).catch(console.error);
   }, []);
 
@@ -79,7 +77,6 @@ export function HackathonSearch({
     <div className={styles.container}>
       <form onSubmit={handleSearch} className={styles.searchForm}>
         <div className={styles.searchWrapper}>
-          {/* Иконка поиска слева */}
           <div className={styles.searchIcon}>
             <svg width="22" height="20" viewBox="0 0 22 20" fill="none">
               <path
@@ -89,7 +86,6 @@ export function HackathonSearch({
             </svg>
           </div>
 
-          {/* Поле ввода */}
           <input
             type="text"
             value={searchQuery}
@@ -100,7 +96,6 @@ export function HackathonSearch({
             className={styles.searchInput}
           />
 
-          {/* Иконка очистки или другая иконка справа */}
           {searchQuery ? (
             <button
               type="button"
@@ -128,7 +123,6 @@ export function HackathonSearch({
         </div>
       </form>
 
-      {/* Выпадающий список результатов */}
       {showResults && filteredHackathons.length > 0 && (
         <div className={styles.resultsDropdown}>
           {filteredHackathons.slice(0, 5).map((hackathon) => (

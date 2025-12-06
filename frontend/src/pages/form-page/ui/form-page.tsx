@@ -10,7 +10,6 @@ export function FormPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Get hackathon ID from URL params or search params
   const hackathonId = id
     ? parseInt(id)
     : parseInt(searchParams.get("hackathon") || "0");
@@ -145,13 +144,14 @@ export function FormPage() {
           </div>
         )}
 
-        <div className={styles.item}>
+        <div className={styles.inputGroup}>
           <h2>Роль:</h2>
           <select
             value={selectedRole?.id || ""}
             onChange={handleRoleChange}
             required
             disabled={submitting}
+            className={styles.select}
           >
             <option value="" disabled>
               Выберите роль
@@ -181,8 +181,13 @@ export function FormPage() {
               </div>
             ))}
           </div>
-          <div className={styles.item}>
-            <select value="" onChange={handleSkillSelect} disabled={submitting}>
+          <div className={styles.inputGroup}>
+            <select 
+              value="" 
+              onChange={handleSkillSelect} 
+              disabled={submitting}
+              className={styles.select}
+            >
               <option value="" disabled>
                 Выберите навык
               </option>
@@ -199,26 +204,33 @@ export function FormPage() {
           </div>
         </div>
 
-        <div className={styles.item}>
+        <div className={styles.inputGroup}>
           <h2>Опыт (количество хакатонов):</h2>
           <input
             type="number"
             min="0"
             value={experience}
-            onChange={(e) => setExperience(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || /^\d+$/.test(value)) {
+                setExperience(value);
+              }
+            }}
             placeholder="0"
             required
             disabled={submitting}
+            className={styles.input}
           />
         </div>
 
-        <div className={`${styles.item} ${styles.addInfo}`}>
+        <div className={styles.inputGroup}>
           <h2>Дополнительная информация:</h2>
           <textarea
             value={additionalInfo}
             onChange={(e) => setAdditionalInfo(e.target.value)}
             placeholder="Расскажите о себе..."
             disabled={submitting}
+            className={styles.textarea}
           />
         </div>
 

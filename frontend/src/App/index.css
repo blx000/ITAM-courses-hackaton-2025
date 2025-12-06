@@ -13,8 +13,6 @@ body {
   box-sizing: border-box;
 }
 
-/* Links */
-
 a,
 a:link,
 a:visited {
@@ -24,8 +22,6 @@ a:visited {
 a:hover {
   text-decoration: none;
 }
-
-/* Common */
 
 aside,
 nav,
@@ -65,8 +61,6 @@ svg {
 address {
   font-style: normal;
 }
-
-/* Form */
 
 input,
 textarea,

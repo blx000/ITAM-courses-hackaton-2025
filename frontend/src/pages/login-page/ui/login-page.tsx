@@ -25,7 +25,6 @@ export function LoginPage() {
       const tokens = await HackmateApi.loginUser(code);
       AuthService.setTokens(tokens);
 
-      // Get user info to store user ID
       const user = await HackmateApi.getCurrentUser();
       AuthService.setUserId(Number(user.id));
 

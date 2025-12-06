@@ -34,7 +34,6 @@ export function TeamsListPage() {
       const teamsData = await HackmateApi.getHackathonTeams(hackathonId);
       setTeams(teamsData);
       
-      // Find user's team
       const userId = AuthService.getUserId();
       if (userId) {
         const userTeam = teamsData.find(

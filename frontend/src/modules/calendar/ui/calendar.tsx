@@ -81,7 +81,6 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
       const dayDate = new Date(year, month, i);
       const isToday = isSameDay(dayDate, today);
       
-      // Check if this date has hackathons
       const hasHackathons = hackathons.some((hack) => {
         const startDate = new Date(hack.start_date);
         const endDate = new Date(hack.end_date);

@@ -77,17 +77,16 @@
 .photo {
   width: 120px;
   height: 120px;
-  border-radius: 50%;
   flex-shrink: 0;
-  background: rgba(172, 235, 76, 0.2);
-  border: 2px solid #aceb4c;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  font-weight: 600;
-  color: #aceb4c;
-  font-family: "Roboto Flex", sans-serif;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .textBox {

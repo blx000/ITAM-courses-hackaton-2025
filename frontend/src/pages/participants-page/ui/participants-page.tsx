@@ -51,12 +51,10 @@ export function ParticipantsPage() {
   };
 
   const handleParticipantClick = (participant: Participant) => {
-    // Navigate to participant profile
     navigate(`/hackathons/${id}/participants/${participant.id}`);
   };
 
   const handleTeamClick = (team: Team) => {
-    // Navigate to team profile
     navigate(`/hackathons/${id}/teams/${team.id}`);
   };
 

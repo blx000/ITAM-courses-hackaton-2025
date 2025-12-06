@@ -19,7 +19,6 @@ export function SearchPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Load all hackathons on mount
     loadHackathons();
   }, []);
 

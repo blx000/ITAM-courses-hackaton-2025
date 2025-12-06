@@ -24,24 +24,18 @@ export function CalendarPage() {
     try {
       setLoading(true);
       setError(null);
-      // Get all hackathons
       const allHackathons = await HackmateApi.getHackathons();
       setHackathons(allHackathons);
       
-      // Get hackathons where user is participating
       const userHacks: HackathonShort[] = [];
       for (const hack of allHackathons) {
         try {
-          // Check if current user is in participants
-          // For now, we'll show all upcoming hackathons
-          // TODO: Filter by actual user participation when backend provides user_id in Participant
           await HackmateApi.getHackathonParticipants(hack.id);
           const now = new Date();
           if (new Date(hack.start_date) >= now) {
             userHacks.push(hack);
           }
         } catch (err) {
-          // Skip if error loading participants
         }
       }
       setUserHackathons(userHacks);
