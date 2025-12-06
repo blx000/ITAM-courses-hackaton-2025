@@ -129,6 +129,7 @@ components:
         - role
         - team_id
         - skills
+        - add_info
       properties:
         id:
           type: integer
@@ -144,6 +145,8 @@ components:
             $ref: '#/components/schemas/Skill'
         team_id:
           type: integer
+        add_info:
+          type: string
 
     HackathonShort:
       type: object
@@ -404,8 +407,12 @@ paths:
             schema:
               $ref: '#/components/schemas/HackCreate'
       responses:
-        '201':
+        '200':
           description: Successful create
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackathonShort'
         '403':
           description: Permission denied
 

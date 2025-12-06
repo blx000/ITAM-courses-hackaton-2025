@@ -2,9 +2,10 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS hackmate.participant (
     id SERIAL PRIMARY KEY,
-    user_id BIGINT UNIQUE REFERENCES hackmate.user(id),
+    user_id BIGINT REFERENCES hackmate.user(id),
     role_id INT references hackmate.role(id),
     hack_id INT REFERENCES hackmate.hackathon(id),
+    UNIQUE (user_id, hack_id),
     experience INT NOT NULL,
     additional_info TEXT NOT NULL
 );

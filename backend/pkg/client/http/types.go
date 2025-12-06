@@ -71,6 +71,7 @@ type Invite struct {
 
 // Participant defines model for Participant.
 type Participant struct {
+	AddInfo   string  `json:"add_info"`
 	FirstName string  `json:"first_name"`
 	Id        int     `json:"id"`
 	LastName  string  `json:"last_name"`

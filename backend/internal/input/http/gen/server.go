@@ -1069,12 +1069,13 @@ type PostApiAdminHacksResponseObject interface {
 	VisitPostApiAdminHacksResponse(w http.ResponseWriter) error
 }
 
-type PostApiAdminHacks201Response struct {
-}
+type PostApiAdminHacks200JSONResponse HackathonShort
 
-func (response PostApiAdminHacks201Response) VisitPostApiAdminHacksResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response PostApiAdminHacks200JSONResponse) VisitPostApiAdminHacksResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type PostApiAdminHacks403Response struct {

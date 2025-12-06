@@ -9,6 +9,11 @@ VALUES
 (1, 'ITAM HACK NAME', 'ITAM HACK DESC', '07-13-2025', '08-13-2025', 15, 5);
 
 
+INSERT INTO hackmate.hackathon(admin_id, name, description, start_date, end_date, max_teams, max_team_size)
+VALUES
+    (1, 'SECOND HACK', 'SECOND HACK DESC', '07-12-2024', '07-20-2024', 15, 5);
+
+
 -- +goose StatementEnd
 
 -- +goose Down

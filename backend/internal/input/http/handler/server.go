@@ -104,8 +104,51 @@ func (s Server) GetApiSkills(ctx context.Context, request gen.GetApiSkillsReques
 }
 
 func (s Server) PostApiAdminHacks(ctx context.Context, request gen.PostApiAdminHacksRequestObject) (gen.PostApiAdminHacksResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	if !user.IsAdmin {
+		fmt.Println("User is not admin")
+		return nil, fmt.Errorf("Permission denied")
+	}
+
+	hackDto := &repo.HackathonGeneralDTO{
+		AdminId:     user.ID,
+		Desc:        request.Body.Description,
+		Name:        request.Body.Name,
+		StartDate:   request.Body.StartDate.Time,
+		EndDate:     request.Body.EndDate.Time,
+		Prize:       request.Body.Prize,
+		MaxTeamSize: request.Body.MaxTeamSize,
+	}
+
+	hackId, err := s.service.CreateHack(ctx, hackDto)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Create hack failed")
+	}
+
+	hackResponse := gen.HackathonShort{
+		Id: hackId,
+	}
+
+	return gen.PostApiAdminHacks200JSONResponse(hackResponse), nil
 }
 
 func (s Server) PostApiAdminLogin(ctx context.Context, request gen.PostApiAdminLoginRequestObject) (gen.PostApiAdminLoginResponseObject, error) {
@@ -323,6 +366,7 @@ func (s Server) GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, 
 			Id:   participant.Role.ID,
 			Name: participant.Role.Name,
 		},
+		AddInfo: participant.AddInfo,
 	}
 
 	return gen.GetApiHacksHackIdParticipantsParticipantId200JSONResponse(participantResponse), nil
@@ -395,7 +439,8 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 			Id:        teams[i].ID,
 			CaptainId: teams[i].CaptainId,
 			Members:   participantsResponse,
-			MaxSize:   teams[i].MemberCnt,
+			MaxSize:   teams[i].MaxTeamSize,
+			CurSize:   teams[i].MemberCnt,
 		}
 	}
 	return gen.GetApiHacksHackIdTeams200JSONResponse(teamsResponse), nil

@@ -16,6 +16,42 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO) (int, error) {
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	fmt.Println(dto)
+	query, args := sb.InsertInto("hackmate.hackathon").
+		Cols(
+			"admin_id",
+			"name",
+			"description",
+			"start_date",
+			"end_date",
+			"max_teams",
+			"max_team_size",
+		).
+		Values(
+			dto.AdminId,
+			dto.Name,
+			dto.Desc,
+			dto.StartDate,
+			dto.EndDate,
+			dto.MaxTeams,
+			dto.MaxTeamSize,
+		).
+		Returning("id").
+		Build()
+
+	var hackId int
+
+	err := h.pool.QueryRow(ctx, query, args...).Scan(&hackId)
+	if err != nil {
+		fmt.Println(err)
+		return 0, fmt.Errorf("failed to create hackathon: %w", err)
+	}
+
+	return hackId, nil
+}
+
 func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int) (*repo.Participant, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
@@ -58,7 +94,7 @@ func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int)
 		}
 		return nil, fmt.Errorf("failed to get participant: %w", err)
 	}
-
+	fmt.Println(participant)
 	// 2. Получаем навыки участника
 	sb2 := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
@@ -110,9 +146,11 @@ func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamSh
 		"t.name",
 		"t.captain_id",
 		"t.hackathon_id",
+		"h.max_team_size",
 	).
 		From("hackmate.team t").
 		Where(sb.Equal("t.id", teamId)).
+		Join("hackmate.hackathon h", "h.id = t.hackathon_id").
 		Build()
 
 	var team repo.TeamShort
@@ -122,6 +160,7 @@ func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamSh
 		&team.Name,
 		&team.CaptainId,
 		&team.HackId,
+		&team.MaxTeamSize,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -303,13 +342,15 @@ func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort
 		"t.captain_id",
 		"t.hackathon_id",
 		"COUNT(tp.participant_id) as member_cnt",
+		"MAX(h.max_team_size) as max_team_size",
 	).
 		From("hackmate.team t").
 		JoinWithOption(sqlbuilder.LeftJoin,
 			"hackmate.team_participant tp",
 			"t.id = tp.team_id").
+		Join("hackmate.hackathon h", "t.hackathon_id = h.id").
 		Where(sb.Equal("t.hackathon_id", hackId)).
-		GroupBy("t.id").
+		GroupBy("t.id", "h.max_team_size").
 		OrderByAsc("t.id").
 		Build()
 
@@ -331,6 +372,7 @@ func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort
 			&team.CaptainId,
 			&team.HackId,
 			&team.MemberCnt,
+			&team.MaxTeamSize,
 		)
 		if err != nil {
 			fmt.Println(err)
@@ -432,7 +474,8 @@ func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64)
 		"u.last_name",
 		"r.id as role_id",
 		"r.name as role_name",
-		"COALESCE(tp.team_id, -1) as team_id", // -1 если нет команды
+		"COALESCE(tp.team_id, -1) as team_id",
+		"p.additional_info",
 	).
 		From("hackmate.participant as p").
 		Join("hackmate.user as u", "p.user_id = u.id").
@@ -454,7 +497,10 @@ func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64)
 		&roleId,
 		&roleName,
 		&participant.TeamId,
+		&participant.AddInfo,
 	)
+
+	fmt.Println(participant)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
