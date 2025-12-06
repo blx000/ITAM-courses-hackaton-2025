@@ -25,6 +25,9 @@ type ServerInterface interface {
 	// Get hackathon list
 	// (GET /api/hacks)
 	GetApiHacks(w http.ResponseWriter, r *http.Request)
+	// Get users hackathons
+	// (GET /api/hacks/my)
+	GetApiHacksMy(w http.ResponseWriter, r *http.Request)
 	// Get hackathon info
 	// (GET /api/hacks/{hack_id})
 	GetApiHacksHackId(w http.ResponseWriter, r *http.Request, hackId int)
@@ -106,6 +109,12 @@ func (_ Unimplemented) PostApiAdminLogin(w http.ResponseWriter, r *http.Request)
 // Get hackathon list
 // (GET /api/hacks)
 func (_ Unimplemented) GetApiHacks(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get users hackathons
+// (GET /api/hacks/my)
+func (_ Unimplemented) GetApiHacksMy(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -277,6 +286,26 @@ func (siw *ServerInterfaceWrapper) GetApiHacks(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetApiHacks(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetApiHacksMy operation middleware
+func (siw *ServerInterfaceWrapper) GetApiHacksMy(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiHacksMy(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -998,6 +1027,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/hacks", wrapper.GetApiHacks)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/hacks/my", wrapper.GetApiHacksMy)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/hacks/{hack_id}", wrapper.GetApiHacksHackId)
 	})
 	r.Group(func(r chi.Router) {
@@ -1132,6 +1164,30 @@ type GetApiHacks404Response struct {
 
 func (response GetApiHacks404Response) VisitGetApiHacksResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
+	return nil
+}
+
+type GetApiHacksMyRequestObject struct {
+}
+
+type GetApiHacksMyResponseObject interface {
+	VisitGetApiHacksMyResponse(w http.ResponseWriter) error
+}
+
+type GetApiHacksMy200JSONResponse []HackathonShort
+
+func (response GetApiHacksMy200JSONResponse) VisitGetApiHacksMyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiHacksMy401Response struct {
+}
+
+func (response GetApiHacksMy401Response) VisitGetApiHacksMyResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
 	return nil
 }
 
@@ -1613,6 +1669,9 @@ type StrictServerInterface interface {
 	// Get hackathon list
 	// (GET /api/hacks)
 	GetApiHacks(ctx context.Context, request GetApiHacksRequestObject) (GetApiHacksResponseObject, error)
+	// Get users hackathons
+	// (GET /api/hacks/my)
+	GetApiHacksMy(ctx context.Context, request GetApiHacksMyRequestObject) (GetApiHacksMyResponseObject, error)
 	// Get hackathon info
 	// (GET /api/hacks/{hack_id})
 	GetApiHacksHackId(ctx context.Context, request GetApiHacksHackIdRequestObject) (GetApiHacksHackIdResponseObject, error)
@@ -1783,6 +1842,30 @@ func (sh *strictHandler) GetApiHacks(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiHacksResponseObject); ok {
 		if err := validResponse.VisitGetApiHacksResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiHacksMy operation middleware
+func (sh *strictHandler) GetApiHacksMy(w http.ResponseWriter, r *http.Request) {
+	var request GetApiHacksMyRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiHacksMy(ctx, request.(GetApiHacksMyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiHacksMy")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiHacksMyResponseObject); ok {
+		if err := validResponse.VisitGetApiHacksMyResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
