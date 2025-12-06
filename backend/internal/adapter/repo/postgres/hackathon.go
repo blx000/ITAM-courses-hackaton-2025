@@ -16,6 +16,78 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"t.id",
+		"t.name",
+		"t.captain_id",
+		"t.hackathon_id",
+		"t.max_size",
+		"COUNT(tp2.participant_id) as member_cnt",
+		"h.name",
+	).
+		From("hackmate.team t").
+		Join("hackmate.team_participant tp", "t.id = tp.team_id").
+		Join("hackmate.participant p", "tp.participant_id = p.id").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp2",
+			"t.id = tp2.team_id").
+		Join("hackmate.hackathon h", "h.id = t.hackathon_id").
+		Where(sb.Equal("p.user_id", userId)).
+		GroupBy(
+			"t.id",
+			"t.name",
+			"t.captain_id",
+			"t.hackathon_id",
+			"t.max_size",
+			"h.name",
+		).
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []*repo.TeamShort{}, nil
+		}
+		return nil, fmt.Errorf("failed to query user's teams: %w", err)
+	}
+	defer rows.Close()
+
+	var teams []*repo.TeamShort
+
+	for rows.Next() {
+		var team repo.TeamShort
+
+		err := rows.Scan(
+			&team.ID,
+			&team.Name,
+			&team.CaptainId,
+			&team.HackId,
+			&team.MaxTeamSize,
+			&team.MemberCnt,
+			&team.HackName,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan team: %w", err)
+		}
+
+		team.Members = []*repo.Participant{}
+
+		teams = append(teams, &team)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return teams, nil
+}
+
 func (h *HackRepo) CreateRequest(ctx context.Context, teamId int, senderId int) error {
 	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
 

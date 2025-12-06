@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS hackmate.auth (
     user_id BIGINT NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    expires_at TIMESTAMP not null
+    expires_at TIMESTAMP not null,
+    username TEXT NOT NULL
 );
 -- +goose StatementEnd
 

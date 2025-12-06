@@ -165,11 +165,16 @@ type ClientInterface interface {
 	// GetApiUser request
 	GetApiUser(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PatchApiUserWithBody request with any body
+	PatchApiUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PatchApiUser(ctx context.Context, body PatchApiUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiUsersUserId request
-	GetApiUsersUserId(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetApiUsersUserId(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiUsersUserIdTeams request
-	GetApiUsersUserIdTeams(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetApiUsersUserIdTeams(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) PostApiAdminHacksWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -496,7 +501,31 @@ func (c *Client) GetApiUser(ctx context.Context, reqEditors ...RequestEditorFn) 
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiUsersUserId(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) PatchApiUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchApiUserRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PatchApiUser(ctx context.Context, body PatchApiUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchApiUserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiUsersUserId(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiUsersUserIdRequest(c.Server, userId)
 	if err != nil {
 		return nil, err
@@ -508,7 +537,7 @@ func (c *Client) GetApiUsersUserId(ctx context.Context, userId int, reqEditors .
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiUsersUserIdTeams(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) GetApiUsersUserIdTeams(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiUsersUserIdTeamsRequest(c.Server, userId)
 	if err != nil {
 		return nil, err
@@ -1312,8 +1341,48 @@ func NewGetApiUserRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewPatchApiUserRequest calls the generic PatchApiUser builder with application/json body
+func NewPatchApiUserRequest(server string, body PatchApiUserJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPatchApiUserRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPatchApiUserRequestWithBody generates requests for PatchApiUser with any type of body
+func NewPatchApiUserRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/user")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiUsersUserIdRequest generates requests for GetApiUsersUserId
-func NewGetApiUsersUserIdRequest(server string, userId int) (*http.Request, error) {
+func NewGetApiUsersUserIdRequest(server string, userId int64) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1347,7 +1416,7 @@ func NewGetApiUsersUserIdRequest(server string, userId int) (*http.Request, erro
 }
 
 // NewGetApiUsersUserIdTeamsRequest generates requests for GetApiUsersUserIdTeams
-func NewGetApiUsersUserIdTeamsRequest(server string, userId int) (*http.Request, error) {
+func NewGetApiUsersUserIdTeamsRequest(server string, userId int64) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1499,11 +1568,16 @@ type ClientWithResponsesInterface interface {
 	// GetApiUserWithResponse request
 	GetApiUserWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiUserResponse, error)
 
+	// PatchApiUserWithBodyWithResponse request with any body
+	PatchApiUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchApiUserResponse, error)
+
+	PatchApiUserWithResponse(ctx context.Context, body PatchApiUserJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchApiUserResponse, error)
+
 	// GetApiUsersUserIdWithResponse request
-	GetApiUsersUserIdWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdResponse, error)
+	GetApiUsersUserIdWithResponse(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdResponse, error)
 
 	// GetApiUsersUserIdTeamsWithResponse request
-	GetApiUsersUserIdTeamsWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdTeamsResponse, error)
+	GetApiUsersUserIdTeamsWithResponse(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdTeamsResponse, error)
 }
 
 type PostApiAdminHacksResponse struct {
@@ -1985,6 +2059,28 @@ func (r GetApiUserResponse) StatusCode() int {
 	return 0
 }
 
+type PatchApiUserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UserChangeToken
+}
+
+// Status returns HTTPResponse.Status
+func (r PatchApiUserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PatchApiUserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiUsersUserIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2267,8 +2363,25 @@ func (c *ClientWithResponses) GetApiUserWithResponse(ctx context.Context, reqEdi
 	return ParseGetApiUserResponse(rsp)
 }
 
+// PatchApiUserWithBodyWithResponse request with arbitrary body returning *PatchApiUserResponse
+func (c *ClientWithResponses) PatchApiUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchApiUserResponse, error) {
+	rsp, err := c.PatchApiUserWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchApiUserResponse(rsp)
+}
+
+func (c *ClientWithResponses) PatchApiUserWithResponse(ctx context.Context, body PatchApiUserJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchApiUserResponse, error) {
+	rsp, err := c.PatchApiUser(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchApiUserResponse(rsp)
+}
+
 // GetApiUsersUserIdWithResponse request returning *GetApiUsersUserIdResponse
-func (c *ClientWithResponses) GetApiUsersUserIdWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdResponse, error) {
+func (c *ClientWithResponses) GetApiUsersUserIdWithResponse(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdResponse, error) {
 	rsp, err := c.GetApiUsersUserId(ctx, userId, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -2277,7 +2390,7 @@ func (c *ClientWithResponses) GetApiUsersUserIdWithResponse(ctx context.Context,
 }
 
 // GetApiUsersUserIdTeamsWithResponse request returning *GetApiUsersUserIdTeamsResponse
-func (c *ClientWithResponses) GetApiUsersUserIdTeamsWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdTeamsResponse, error) {
+func (c *ClientWithResponses) GetApiUsersUserIdTeamsWithResponse(ctx context.Context, userId int64, reqEditors ...RequestEditorFn) (*GetApiUsersUserIdTeamsResponse, error) {
 	rsp, err := c.GetApiUsersUserIdTeams(ctx, userId, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -2797,6 +2910,32 @@ func ParseGetApiUserResponse(rsp *http.Response) (*GetApiUserResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest User
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePatchApiUserResponse parses an HTTP response from a PatchApiUserWithResponse call
+func ParsePatchApiUserResponse(rsp *http.Response) (*PatchApiUserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PatchApiUserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserChangeToken
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

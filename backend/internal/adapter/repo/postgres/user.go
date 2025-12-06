@@ -55,8 +55,8 @@ func (u *UserRepo) Create(ctx context.Context, user *repo.UserDTO) error {
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 
 	ib.InsertInto("hackmate.user").
-		Cols("id", "first_name", "last_name", "bio").
-		Values(user.ID, user.FirstName, user.LastName, user.Bio)
+		Cols("id", "first_name", "last_name", "bio", "username").
+		Values(user.ID, user.FirstName, user.LastName, user.Bio, user.UserName)
 
 	sql, args := ib.Build()
 
@@ -83,7 +83,7 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 	//TODO implement me
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
-	sb.Select("first_name", "last_name", "bio").
+	sb.Select("first_name", "last_name", "bio", "username").
 		From("hackmate.user").
 		Where(sb.Equal("id", id))
 
@@ -96,6 +96,7 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 		firstName string
 		lastName  string
 		bio       string
+		username  string
 	)
 
 	err := u.pool.
@@ -104,6 +105,7 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 			&firstName,
 			&lastName,
 			&bio,
+			&username,
 		)
 
 	if err != nil {
@@ -113,32 +115,12 @@ func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
 		return nil, fmt.Errorf("failed to read user %w", err)
 	}
 
-	//sb.Select("name").
-	//	From("hackmate.user_skill as us").
-	//	Where(sb.Equal("us.user_id", id)).
-	//	Join("hackmate.skill as s", "us.skill_id = s.id")
-	//
-	//sql, args = sb.Build()
-	//
-	//rows, err := u.pool.Query(ctx, sql, args...)
-	//defer rows.Close()
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to read user %w", err)
-	//}
-	//
-	//for rows.Next() {
-	//	var skillName string
-	//	if err := rows.Scan(&skillName); err != nil {
-	//		return nil, fmt.Errorf("failed to scan skill: %w", err)
-	//	}
-	//	skills = append(skills, skillName)
-	//}
-
 	return &repo.UserDTO{
 		ID:        id,
 		FirstName: firstName,
 		LastName:  lastName,
 		Bio:       bio,
+		UserName:  username,
 	}, nil
 }
 
@@ -274,9 +256,29 @@ func (u *UserRepo) ReadByHack(ctx context.Context, hackathonId int64) ([]*repo.U
 	return users, nil
 }
 
-func (u *UserRepo) Update(ctx context.Context, user *repo.UserDTO) error {
-	//TODO implement me
-	panic("implement me")
+func (u *UserRepo) Update(ctx context.Context, user *repo.UserChange) error {
+	sb := sqlbuilder.PostgreSQL.NewUpdateBuilder()
+
+	query, args := sb.Update("hackmate.user").
+		Set(
+			sb.Assign("first_name", user.FirstName),
+			sb.Assign("last_name", user.LastName),
+			sb.Assign("bio", user.Bio),
+			sb.Assign("username", user.Username),
+		).
+		Where(sb.Equal("id", user.Id)).
+		Build()
+
+	result, err := u.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return repo.ErrUserNotFound
+	}
+
+	return nil
 }
 
 func (u *UserRepo) Delete(ctx context.Context, id int64) error {
