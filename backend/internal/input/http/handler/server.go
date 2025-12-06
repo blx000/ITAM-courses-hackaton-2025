@@ -24,6 +24,43 @@ type Server struct {
 	hmacSecret string
 }
 
+func (s Server) PatchApiUser(ctx context.Context, request gen.PatchApiUserRequestObject) (gen.PatchApiUserResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return gen.PatchApiUser401Response{}, nil
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return gen.PatchApiUser401Response{}, nil
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return gen.PatchApiUser401Response{}, nil
+	}
+
+	userChange := &repo.UserChange{
+		Id:        user.ID,
+		FirstName: request.Body.FirstName,
+		LastName:  request.Body.LastName,
+		Bio:       request.Body.Bio,
+		Username:  request.Body.Username,
+	}
+
+	newToken, err := s.service.ChangeUserInfo(ctx, userChange, s.hmacSecret)
+
+	changeResponse := gen.UserChangeToken{
+		AccessToken: newToken,
+	}
+
+	return gen.PatchApiUser200JSONResponse(changeResponse), nil
+}
+
 func (s Server) GetApiHacksMy(ctx context.Context, request gen.GetApiHacksMyRequestObject) (gen.GetApiHacksMyResponseObject, error) {
 	bearer, ok := ctx.Value(AuthorizationHeader).(string)
 	if !ok {
@@ -382,7 +419,7 @@ func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.G
 				Id:   participants[i].Role.ID,
 				Name: participants[i].Role.Name,
 			},
-			AddInfo:   participants[i].AddInfo,
+			AddInfo: participants[i].AddInfo,
 		}
 	}
 	return gen.GetApiHacksHackIdParticipants200JSONResponse(participantsResponse), nil
@@ -520,7 +557,7 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 					Id:   participants[j].Role.ID,
 					Name: participants[j].Role.Name,
 				},
-				AddInfo:   participants[j].AddInfo,
+				AddInfo: participants[j].AddInfo,
 			}
 		}
 		teamsResponse[i] = gen.Team{
@@ -610,7 +647,7 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 				Id:   participants[i].Role.ID,
 				Name: participants[i].Role.Name,
 			},
-			AddInfo:   participants[i].AddInfo,
+			AddInfo: participants[i].AddInfo,
 		}
 	}
 
@@ -703,13 +740,81 @@ func (s Server) PostApiLogin(ctx context.Context, request gen.PostApiLoginReques
 }
 
 func (s Server) GetApiUsersUserId(ctx context.Context, request gen.GetApiUsersUserIdRequestObject) (gen.GetApiUsersUserIdResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	_, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	user, err := s.service.GetUserInfo(ctx, request.UserId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	userResponse := gen.User{
+		Id:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Username:  user.UserName,
+		Bio:       user.Bio,
+	}
+
+	return gen.GetApiUsersUserId200JSONResponse(userResponse), nil
 }
 
 func (s Server) GetApiUsersUserIdTeams(ctx context.Context, request gen.GetApiUsersUserIdTeamsRequestObject) (gen.GetApiUsersUserIdTeamsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	//bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	//if !ok {
+	//	fmt.Println("Empty token")
+	//	return nil, fmt.Errorf("Empty token")
+	//}
+	//
+	//token := strings.Split(bearer, " ")[1]
+	//if token == "" {
+	//	fmt.Println("Empty token")
+	//	return nil, fmt.Errorf("Empty token")
+	//}
+	//
+	//_, err := jwt.ValidateToken(token, s.hmacSecret)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return nil, fmt.Errorf("Unauthorized")
+	//}
+
+	teams, err := s.service.GetUsersTeams(ctx, request.UserId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get users teams: %w", err)
+	}
+
+	teamsResponse := make([]gen.TeamShort, len(teams))
+
+	for i, team := range teams {
+		teamsResponse[i] = gen.TeamShort{
+			Id:       team.ID,
+			HackId:   team.HackId,
+			Name:     team.Name,
+			CurSize:  team.MemberCnt,
+			MaxSize:  team.MaxTeamSize,
+			HackName: team.HackName,
+		}
+	}
+
+	return gen.GetApiUsersUserIdTeams200JSONResponse(teamsResponse), nil
 }
 
 func RequestInContext(next http.Handler) http.Handler {

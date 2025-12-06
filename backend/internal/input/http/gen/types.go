@@ -116,6 +116,7 @@ type TeamCreate struct {
 
 // TeamShort defines model for TeamShort.
 type TeamShort struct {
+	CurSize  int    `json:"cur_size"`
 	HackId   int    `json:"hack_id"`
 	HackName string `json:"hack_name"`
 	Id       int    `json:"id"`
@@ -137,11 +138,25 @@ type User struct {
 	IsAdmin   bool   `json:"is_admin"`
 	LastName  string `json:"last_name"`
 	Login     string `json:"login"`
+	Username  string `json:"username"`
+}
+
+// UserChangeToken defines model for UserChangeToken.
+type UserChangeToken struct {
+	AccessToken string `json:"access_token"`
 }
 
 // UserLogin defines model for UserLogin.
 type UserLogin struct {
 	Code string `json:"code"`
+}
+
+// UserPatch defines model for UserPatch.
+type UserPatch struct {
+	Bio       string `json:"bio"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
 }
 
 // PostApiAdminHacksJSONRequestBody defines body for PostApiAdminHacks for application/json ContentType.
@@ -158,3 +173,6 @@ type PostApiHacksHackIdTeamsJSONRequestBody = TeamCreate
 
 // PostApiLoginJSONRequestBody defines body for PostApiLogin for application/json ContentType.
 type PostApiLoginJSONRequestBody = UserLogin
+
+// PatchApiUserJSONRequestBody defines body for PatchApiUser for application/json ContentType.
+type PatchApiUserJSONRequestBody = UserPatch

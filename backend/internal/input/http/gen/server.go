@@ -82,12 +82,15 @@ type ServerInterface interface {
 	// Get user info
 	// (GET /api/user)
 	GetApiUser(w http.ResponseWriter, r *http.Request)
+	// Patch user info
+	// (PATCH /api/user)
+	PatchApiUser(w http.ResponseWriter, r *http.Request)
 	// Get user information
 	// (GET /api/users/{user_id})
-	GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int)
-	// Get user information
+	GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int64)
+	// Get user teams
 	// (GET /api/users/{user_id}/teams)
-	GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int)
+	GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int64)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -226,15 +229,21 @@ func (_ Unimplemented) GetApiUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Get user information
-// (GET /api/users/{user_id})
-func (_ Unimplemented) GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int) {
+// Patch user info
+// (PATCH /api/user)
+func (_ Unimplemented) PatchApiUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get user information
+// (GET /api/users/{user_id})
+func (_ Unimplemented) GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int64) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get user teams
 // (GET /api/users/{user_id}/teams)
-func (_ Unimplemented) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int) {
+func (_ Unimplemented) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int64) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -848,13 +857,33 @@ func (siw *ServerInterfaceWrapper) GetApiUser(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// PatchApiUser operation middleware
+func (siw *ServerInterfaceWrapper) PatchApiUser(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PatchApiUser(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetApiUsersUserId operation middleware
 func (siw *ServerInterfaceWrapper) GetApiUsersUserId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "user_id" -------------
-	var userId int
+	var userId int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "user_id", chi.URLParam(r, "user_id"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -885,7 +914,7 @@ func (siw *ServerInterfaceWrapper) GetApiUsersUserIdTeams(w http.ResponseWriter,
 	var err error
 
 	// ------------- Path parameter "user_id" -------------
-	var userId int
+	var userId int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "user_id", chi.URLParam(r, "user_id"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -1082,6 +1111,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/user", wrapper.GetApiUser)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/user", wrapper.PatchApiUser)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/users/{user_id}", wrapper.GetApiUsersUserId)
@@ -1608,8 +1640,33 @@ func (response GetApiUser401Response) VisitGetApiUserResponse(w http.ResponseWri
 	return nil
 }
 
+type PatchApiUserRequestObject struct {
+	Body *PatchApiUserJSONRequestBody
+}
+
+type PatchApiUserResponseObject interface {
+	VisitPatchApiUserResponse(w http.ResponseWriter) error
+}
+
+type PatchApiUser200JSONResponse UserChangeToken
+
+func (response PatchApiUser200JSONResponse) VisitPatchApiUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PatchApiUser401Response struct {
+}
+
+func (response PatchApiUser401Response) VisitPatchApiUserResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
 type GetApiUsersUserIdRequestObject struct {
-	UserId int `json:"user_id"`
+	UserId int64 `json:"user_id"`
 }
 
 type GetApiUsersUserIdResponseObject interface {
@@ -1634,7 +1691,7 @@ func (response GetApiUsersUserId404Response) VisitGetApiUsersUserIdResponse(w ht
 }
 
 type GetApiUsersUserIdTeamsRequestObject struct {
-	UserId int `json:"user_id"`
+	UserId int64 `json:"user_id"`
 }
 
 type GetApiUsersUserIdTeamsResponseObject interface {
@@ -1726,10 +1783,13 @@ type StrictServerInterface interface {
 	// Get user info
 	// (GET /api/user)
 	GetApiUser(ctx context.Context, request GetApiUserRequestObject) (GetApiUserResponseObject, error)
+	// Patch user info
+	// (PATCH /api/user)
+	PatchApiUser(ctx context.Context, request PatchApiUserRequestObject) (PatchApiUserResponseObject, error)
 	// Get user information
 	// (GET /api/users/{user_id})
 	GetApiUsersUserId(ctx context.Context, request GetApiUsersUserIdRequestObject) (GetApiUsersUserIdResponseObject, error)
-	// Get user information
+	// Get user teams
 	// (GET /api/users/{user_id}/teams)
 	GetApiUsersUserIdTeams(ctx context.Context, request GetApiUsersUserIdTeamsRequestObject) (GetApiUsersUserIdTeamsResponseObject, error)
 }
@@ -2358,8 +2418,39 @@ func (sh *strictHandler) GetApiUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PatchApiUser operation middleware
+func (sh *strictHandler) PatchApiUser(w http.ResponseWriter, r *http.Request) {
+	var request PatchApiUserRequestObject
+
+	var body PatchApiUserJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PatchApiUser(ctx, request.(PatchApiUserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PatchApiUser")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PatchApiUserResponseObject); ok {
+		if err := validResponse.VisitPatchApiUserResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetApiUsersUserId operation middleware
-func (sh *strictHandler) GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int) {
+func (sh *strictHandler) GetApiUsersUserId(w http.ResponseWriter, r *http.Request, userId int64) {
 	var request GetApiUsersUserIdRequestObject
 
 	request.UserId = userId
@@ -2385,7 +2476,7 @@ func (sh *strictHandler) GetApiUsersUserId(w http.ResponseWriter, r *http.Reques
 }
 
 // GetApiUsersUserIdTeams operation middleware
-func (sh *strictHandler) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int) {
+func (sh *strictHandler) GetApiUsersUserIdTeams(w http.ResponseWriter, r *http.Request, userId int64) {
 	var request GetApiUsersUserIdTeamsRequestObject
 
 	request.UserId = userId

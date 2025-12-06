@@ -18,7 +18,7 @@ type User interface {
 	ReadByTeam(ctx context.Context, teamId int64) ([]*UserDTO, error)
 	ReadByHack(ctx context.Context, hackathonId int64) ([]*UserDTO, error)
 
-	Update(ctx context.Context, user *UserDTO) error
+	Update(ctx context.Context, user *UserChange) error
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -33,6 +33,7 @@ type UserDTO struct {
 	IsAdmin   bool
 	Login     string
 	PassHash  string
+	UserName  string
 }
 
 type Skill struct {
@@ -43,4 +44,12 @@ type Skill struct {
 type Role struct {
 	ID   int
 	Name string
+}
+
+type UserChange struct {
+	Id        int64
+	FirstName string
+	LastName  string
+	Bio       string
+	Username  string
 }
