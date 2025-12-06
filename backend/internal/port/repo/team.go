@@ -19,9 +19,11 @@ type TeamDTO struct {
 }
 
 type TeamShort struct {
-	ID        int
-	CaptainId int
-	HackId    int
-	Name      string
-	Members   []*Participant
+	ID          int
+	CaptainId   int
+	HackId      int
+	Name        string
+	Members     []*Participant
+	MemberCnt   int
+	MaxTeamSize int
 }

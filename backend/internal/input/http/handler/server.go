@@ -104,8 +104,51 @@ func (s Server) GetApiSkills(ctx context.Context, request gen.GetApiSkillsReques
 }
 
 func (s Server) PostApiAdminHacks(ctx context.Context, request gen.PostApiAdminHacksRequestObject) (gen.PostApiAdminHacksResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	if !user.IsAdmin {
+		fmt.Println("User is not admin")
+		return nil, fmt.Errorf("Permission denied")
+	}
+
+	hackDto := &repo.HackathonGeneralDTO{
+		AdminId:     user.ID,
+		Desc:        request.Body.Description,
+		Name:        request.Body.Name,
+		StartDate:   request.Body.StartDate.Time,
+		EndDate:     request.Body.EndDate.Time,
+		Prize:       request.Body.Prize,
+		MaxTeamSize: request.Body.MaxTeamSize,
+	}
+
+	hackId, err := s.service.CreateHack(ctx, hackDto)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Create hack failed")
+	}
+
+	hackResponse := gen.HackathonShort{
+		Id: hackId,
+	}
+
+	return gen.PostApiAdminHacks200JSONResponse(hackResponse), nil
 }
 
 func (s Server) PostApiAdminLogin(ctx context.Context, request gen.PostApiAdminLoginRequestObject) (gen.PostApiAdminLoginResponseObject, error) {
@@ -280,8 +323,53 @@ func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.G
 }
 
 func (s Server) GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, request gen.GetApiHacksHackIdParticipantsParticipantIdRequestObject) (gen.GetApiHacksHackIdParticipantsParticipantIdResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	_, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	participant, err := s.service.GetParticipantProfile(ctx, request.HackId, request.ParticipantId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to find participant: %w", err)
+	}
+
+	skillsResponse := make([]gen.Skill, len(participant.Skills))
+	for i := range participant.Skills {
+		skillsResponse[i] = gen.Skill{
+			Name: participant.Skills[i].Name,
+			Id:   participant.Skills[i].ID,
+		}
+	}
+
+	participantResponse := gen.Participant{
+		Id:        participant.Id,
+		TeamId:    participant.TeamId,
+		FirstName: participant.FirstName,
+		LastName:  participant.LastName,
+		Skills:    skillsResponse,
+		Role: gen.Role{
+			Id:   participant.Role.ID,
+			Name: participant.Role.Name,
+		},
+		AddInfo: participant.AddInfo,
+	}
+
+	return gen.GetApiHacksHackIdParticipantsParticipantId200JSONResponse(participantResponse), nil
 }
 
 func (s Server) PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, request gen.PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject) (gen.PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject, error) {
@@ -347,9 +435,12 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 			}
 		}
 		teamsResponse[i] = gen.Team{
-			Name:    teams[i].Name,
-			Id:      teams[i].ID,
-			Members: participantsResponse,
+			Name:      teams[i].Name,
+			Id:        teams[i].ID,
+			CaptainId: teams[i].CaptainId,
+			Members:   participantsResponse,
+			MaxSize:   teams[i].MaxTeamSize,
+			CurSize:   teams[i].MemberCnt,
 		}
 	}
 	return gen.GetApiHacksHackIdTeams200JSONResponse(teamsResponse), nil
@@ -404,7 +495,7 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 		return nil, fmt.Errorf("Unauthorized")
 	}
 
-	team, err := s.service.GetTeam(ctx, request.TeamId)
+	team, err := s.service.GetTeam(ctx, request.HackId, request.TeamId)
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("failed to list hack teams: %w", err)

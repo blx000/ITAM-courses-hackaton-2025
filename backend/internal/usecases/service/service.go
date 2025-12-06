@@ -9,10 +9,15 @@ import (
 	"time"
 )
 
+const (
+	TeamNull = -1
+)
+
 var (
 	ErrHackNotFound               = errors.New("hack not found")
 	ErrAuthCodeNotFound           = errors.New("auth code not found")
 	ErrUserAlreadyJoinedHackathon = errors.New("user already joined hackathon")
+	ErrUserAlreadyJoinedTeam      = errors.New("user already joined team")
 	ErrUserNotFound               = errors.New("user not found")
 	ErrInvalidCredentials         = errors.New("invalid credentials")
 )
@@ -26,18 +31,45 @@ type Service interface {
 
 	ListHacks(ctx context.Context) ([]*repo.HackathonGeneralDTO, error)
 	GetHack(ctx context.Context, hackId int) (*repo.HackathonGeneralDTO, error)
+	CreateHack(ctx context.Context, hack *repo.HackathonGeneralDTO) (int, error)
 	EnterHackathon(ctx context.Context, create repo.FormCreate) error
 	ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error)
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
-	GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error)
+	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
+	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
 }
+
+var _ Service = (*ServiceImpl)(nil)
 
 type ServiceImpl struct {
 	formRepo repo.Form
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+}
+
+func (s *ServiceImpl) CreateHack(ctx context.Context, hack *repo.HackathonGeneralDTO) (int, error) {
+	hackId, err := s.hackRepo.CreateHack(ctx, hack)
+
+	fmt.Println(hack)
+	if err != nil {
+		fmt.Println(err)
+		return -1, err
+	}
+	return hackId, nil
+}
+
+func (s *ServiceImpl) GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error) {
+	participant, err := s.hackRepo.GetParticipantProfile(ctx, participantId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("get participant profile: %w", err)
+	}
+	if participant.HackId != hackId {
+		return nil, ErrHackNotFound
+	}
+	return s.hackRepo.GetParticipantProfile(ctx, participantId)
 }
 
 func NewServiceImpl(formRepo repo.Form, authRepo repo.Auth, hackRepo repo.Hackathon, userRepo repo.User) *ServiceImpl {
@@ -157,23 +189,50 @@ func (s *ServiceImpl) EnterHackathon(ctx context.Context, create repo.FormCreate
 }
 
 func (s *ServiceImpl) ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.hackRepo.ListParticipants(ctx, hackId)
 }
 
 func (s *ServiceImpl) ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.hackRepo.ListTeams(ctx, hackId)
 }
 
-func (s *ServiceImpl) GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *ServiceImpl) GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error) {
+	team, err := s.hackRepo.GetTeamProfile(ctx, teamId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get team profile: %w", err)
+	}
+
+	if team.HackId != hackId {
+		fmt.Println("hack id does not match")
+		return nil, ErrHackNotFound
+	}
+
+	return team, nil
 }
 
 func (s *ServiceImpl) CreateTeam(ctx context.Context, userId int64, hackId int, name string) error {
 	//TODO implement me
-	panic("implement me")
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, repo.ErrParticipantNotFound) {
+			return ErrHackNotFound
+		}
+		return fmt.Errorf("failed to read participant: %w", err)
+	}
+
+	if participant.TeamId != TeamNull {
+		return ErrUserAlreadyJoinedTeam
+	}
+
+	err = s.hackRepo.CreateTeam(ctx, participant.Id, hackId, name)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to create hack team: %w", err)
+	}
+
+	return nil
 }
 
 func (s *ServiceImpl) ListSkills(ctx context.Context) ([]*repo.Skill, error) {
