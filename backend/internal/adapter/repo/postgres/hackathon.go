@@ -16,6 +16,60 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"h.id",
+		"h.admin_id",
+		"h.name",
+		"h.start_date",
+		"h.end_date",
+	).
+		From("hackmate.hackathon h").
+		Join("hackmate.participant p", "h.id = p.hack_id").
+		Where(sb.Equal("p.user_id", userId)).
+		OrderByAsc("h.start_date").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []*repo.HackathonGeneralDTO{}, nil
+		}
+		return nil, fmt.Errorf("failed to query user's hackathons: %w", err)
+	}
+	defer rows.Close()
+
+	var hackathons []*repo.HackathonGeneralDTO
+
+	for rows.Next() {
+		var hackathon repo.HackathonGeneralDTO
+
+		err := rows.Scan(
+			&hackathon.Id,
+			&hackathon.AdminId,
+			&hackathon.Name,
+			&hackathon.StartDate,
+			&hackathon.EndDate,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan hackathon: %w", err)
+		}
+
+		hackathons = append(hackathons, &hackathon)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return hackathons, nil
+}
+
 func (h *HackRepo) AcceptInvite(ctx context.Context, inviteId int, teamId int, participantId int) error {
 	tx, err := h.pool.Begin(ctx)
 	if err != nil {
@@ -166,6 +220,7 @@ func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO
 			"end_date",
 			"max_teams",
 			"max_team_size",
+			"prize",
 		).
 		Values(
 			dto.AdminId,
@@ -175,6 +230,7 @@ func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO
 			dto.EndDate,
 			dto.MaxTeams,
 			dto.MaxTeamSize,
+			dto.Prize,
 		).
 		Returning("id").
 		Build()

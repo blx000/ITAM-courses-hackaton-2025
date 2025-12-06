@@ -102,6 +102,9 @@ type ClientInterface interface {
 	// GetApiHacks request
 	GetApiHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiHacksMy request
+	GetApiHacksMy(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiHacksHackId request
 	GetApiHacksHackId(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -219,6 +222,18 @@ func (c *Client) PostApiAdminLogin(ctx context.Context, body PostApiAdminLoginJS
 
 func (c *Client) GetApiHacks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiHacksRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiHacksMy(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiHacksMyRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -595,6 +610,33 @@ func NewGetApiHacksRequest(server string) (*http.Request, error) {
 	}
 
 	operationPath := fmt.Sprintf("/api/hacks")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiHacksMyRequest generates requests for GetApiHacksMy
+func NewGetApiHacksMyRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/hacks/my")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1394,6 +1436,9 @@ type ClientWithResponsesInterface interface {
 	// GetApiHacksWithResponse request
 	GetApiHacksWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHacksResponse, error)
 
+	// GetApiHacksMyWithResponse request
+	GetApiHacksMyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHacksMyResponse, error)
+
 	// GetApiHacksHackIdWithResponse request
 	GetApiHacksHackIdWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdResponse, error)
 
@@ -1521,6 +1566,28 @@ func (r GetApiHacksResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetApiHacksResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiHacksMyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]HackathonShort
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiHacksMyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiHacksMyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2005,6 +2072,15 @@ func (c *ClientWithResponses) GetApiHacksWithResponse(ctx context.Context, reqEd
 	return ParseGetApiHacksResponse(rsp)
 }
 
+// GetApiHacksMyWithResponse request returning *GetApiHacksMyResponse
+func (c *ClientWithResponses) GetApiHacksMyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiHacksMyResponse, error) {
+	rsp, err := c.GetApiHacksMy(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiHacksMyResponse(rsp)
+}
+
 // GetApiHacksHackIdWithResponse request returning *GetApiHacksHackIdResponse
 func (c *ClientWithResponses) GetApiHacksHackIdWithResponse(ctx context.Context, hackId int, reqEditors ...RequestEditorFn) (*GetApiHacksHackIdResponse, error) {
 	rsp, err := c.GetApiHacksHackId(ctx, hackId, reqEditors...)
@@ -2270,6 +2346,32 @@ func ParseGetApiHacksResponse(rsp *http.Response) (*GetApiHacksResponse, error) 
 	}
 
 	response := &GetApiHacksResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []HackathonShort
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiHacksMyResponse parses an HTTP response from a GetApiHacksMyWithResponse call
+func ParseGetApiHacksMyResponse(rsp *http.Response) (*GetApiHacksMyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiHacksMyResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

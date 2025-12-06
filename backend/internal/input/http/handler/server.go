@@ -24,6 +24,46 @@ type Server struct {
 	hmacSecret string
 }
 
+func (s Server) GetApiHacksMy(ctx context.Context, request gen.GetApiHacksMyRequestObject) (gen.GetApiHacksMyResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return gen.GetApiHacksMy401Response{}, nil
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return gen.GetApiHacksMy401Response{}, nil
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return gen.GetApiHacksMy401Response{}, nil
+	}
+	hacks, err := s.service.GetUsersHacks(ctx, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get users hacks: %w", err)
+	}
+
+	hackResponse := make([]gen.HackathonShort, len(hacks))
+
+	for i := range hacks {
+		hackResponse[i] = gen.HackathonShort{
+			Name:        hacks[i].Name,
+			Description: hacks[i].Desc,
+			StartDate:   openapi_types.Date{hacks[i].StartDate},
+			EndDate:     openapi_types.Date{hacks[i].EndDate},
+			Id:          hacks[i].Id,
+		}
+	}
+
+	return gen.GetApiHacksMy200JSONResponse(hackResponse), nil
+}
+
 func (s Server) GetApiHealthcheсk(ctx context.Context, request gen.GetApiHealthcheсkRequestObject) (gen.GetApiHealthcheсkResponseObject, error) {
 	return gen.GetApiHealthcheсk200JSONResponse{
 		Resp: "status ok",
