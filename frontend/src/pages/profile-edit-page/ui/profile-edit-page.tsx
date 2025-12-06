@@ -1,24 +1,27 @@
 import { useState, useEffect } from "react";
-import { HackmateApi } from "../../../api";
-import type { User, Role, Skill } from "../../../api";
+import { useNavigate } from "react-router";
+import { HackmateApi, AuthService } from "../../../api";
+import type { User, Role, Skill, Participant } from "../../../api";
 import styles from "./profile-edit-page.module.css";
 import bgImage from "/bg-image2.png";
 import profilePhoto from "/profile-photo.svg";
 
 export function ProfileEditPage() {
-  const [, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [, setParticipantData] = useState<Participant | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [experience, setExperience] = useState("");
+  const [bio, setBio] = useState("");
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
-  const [bio, setBio] = useState("");
 
   useEffect(() => {
     loadData();
@@ -27,6 +30,8 @@ export function ProfileEditPage() {
   const loadData = async () => {
     try {
       setLoading(true);
+      setError(null);
+
       const [userData, rolesData, skillsData] = await Promise.all([
         HackmateApi.getCurrentUser(),
         HackmateApi.getRoles(),
@@ -34,14 +39,42 @@ export function ProfileEditPage() {
       ]);
 
       setUser(userData);
-      setFirstName(userData.first_name);
-      setLastName(userData.last_name);
+      setFirstName(userData.first_name || "");
+      setLastName(userData.last_name || "");
       setBio(userData.bio || "");
       setRoles(rolesData);
       setSkills(skillsData);
+
+      // Загружаем данные участника для получения роли и стека
+      const userId = AuthService.getUserId();
+      if (userId) {
+        try {
+          const hackathons = await HackmateApi.getHackathons();
+          for (const hackathon of hackathons) {
+            try {
+              const participant = await HackmateApi.getParticipant(
+                hackathon.id,
+                userId
+              );
+              setParticipantData(participant);
+              setSelectedRole(participant.role || null);
+              setSelectedSkills(participant.skills || []);
+              break;
+            } catch (err) {
+              // Продолжаем поиск
+            }
+          }
+        } catch (err) {
+          console.error("Ошибка загрузки данных участника:", err);
+        }
+      }
     } catch (err: any) {
       console.error("Ошибка загрузки данных:", err);
-      setError("Не удалось загрузить данные");
+      setError(
+        err.response?.status === 401
+          ? "Необходимо войти в систему"
+          : "Не удалось загрузить данные"
+      );
     } finally {
       setLoading(false);
     }
@@ -64,15 +97,36 @@ export function ProfileEditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(false);
     setSaving(true);
 
+    if (!firstName.trim() || !lastName.trim()) {
+      setError("Имя и фамилия обязательны для заполнения");
+      setSaving(false);
+      return;
+    }
+
     try {
-      setError(
-        "Функция обновления профиля требует реализации backend endpoint PUT /api/user"
-      );
+      // Обновляем профиль пользователя
+      const updatedUser = await HackmateApi.updateUser({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        bio: bio.trim() || undefined,
+      });
+
+      setUser(updatedUser);
+      setSuccess(true);
+
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1500);
     } catch (err: any) {
       console.error("Ошибка сохранения:", err);
-      setError(err.response?.data?.message || "Не удалось сохранить изменения");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Не удалось сохранить изменения"
+      );
     } finally {
       setSaving(false);
     }
@@ -99,6 +153,15 @@ export function ProfileEditPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <div className={styles.error}>{error}</div>}
+          {success && (
+            <div className={styles.success}>
+              Профиль успешно обновлен! Перенаправление...
+            </div>
+          )}
+
+          <div className={styles.usernameDisplay}>
+            <strong>Телеграм:</strong> @{user?.login || "username"}
+          </div>
 
           <div className={styles.inputGroup}>
             <input
@@ -108,6 +171,7 @@ export function ProfileEditPage() {
               placeholder="Фамилия"
               className={styles.input}
               disabled={saving}
+              required
             />
           </div>
 
@@ -119,18 +183,7 @@ export function ProfileEditPage() {
               placeholder="Имя"
               className={styles.input}
               disabled={saving}
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <input
-              type="number"
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              placeholder="Опыт"
-              className={styles.input}
-              disabled={saving}
-              min="0"
+              required
             />
           </div>
 
@@ -200,7 +253,7 @@ export function ProfileEditPage() {
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Дополнительна информация:"
+              placeholder="Дополнительная информация:"
               className={styles.textarea}
               disabled={saving}
             />

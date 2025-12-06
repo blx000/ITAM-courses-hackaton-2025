@@ -48,6 +48,33 @@
   gap: 16px;
 }
 
+.usernameDisplay {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #f9ffee;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.usernameDisplay strong {
+  color: rgba(249, 255, 238, 0.8);
+  margin-right: 8px;
+}
+
+.success {
+  padding: 12px;
+  background: rgba(172, 235, 76, 0.2);
+  border: 1px solid #aceb4c;
+  border-radius: 12px;
+  color: #aceb4c;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;

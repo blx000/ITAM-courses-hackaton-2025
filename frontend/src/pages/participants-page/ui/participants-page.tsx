@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { HackmateApi } from "../../../api";
 import type { Participant, Team, HackathonPage, User } from "../../../api";
 import { Navigation } from "../../../modules/navigation";
-import { ParticipantSearch } from "../../../modules/participant-search";
+import { HackathonSearch } from "../../../modules/hackathon-search";
 import { ParticipantsHeader } from "../../../modules/participants-header";
 import styles from "./participants-page.module.css";
 import bgImage from "/bg-image.png";
@@ -23,7 +23,6 @@ export function ParticipantsPage() {
   const [activeTab, setActiveTab] = useState<
     "participants" | "teams" | "create"
   >("participants");
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -144,14 +143,7 @@ export function ParticipantsPage() {
         {error && <div className={styles.error}>{error}</div>}
 
         <div className={styles.searchContainer}>
-          <ParticipantSearch
-            placeholder={
-              activeTab === "participants"
-                ? "Поиск участника..."
-                : "Поиск команды..."
-            }
-            onSearchChange={setSearchQuery}
-          />
+          <HackathonSearch placeholder="Поиск хакатона..." />
         </div>
 
         <div className={styles.navigation}>
@@ -189,22 +181,7 @@ export function ParticipantsPage() {
               <div className={styles.empty}>Участники не найдены</div>
             ) : (
               <div className={styles.participantsGrid}>
-                {participants
-                  .filter((participant) => {
-                    if (!searchQuery.trim()) return true;
-                    const query = searchQuery.toLowerCase();
-                    const fullName = `${participant.first_name} ${participant.last_name}`.toLowerCase();
-                    const role = participant.role.name.toLowerCase();
-                    const skills = participant.skills
-                      ?.map((s) => s.name.toLowerCase())
-                      .join(" ") || "";
-                    return (
-                      fullName.includes(query) ||
-                      role.includes(query) ||
-                      skills.includes(query)
-                    );
-                  })
-                  .map((participant) => (
+                {participants.map((participant) => (
                   <div
                     key={participant.id}
                     className={styles.participantCard}
@@ -249,19 +226,7 @@ export function ParticipantsPage() {
               <div className={styles.empty}>Команды не найдены</div>
             ) : (
               <div className={styles.teamsGrid}>
-                {teams
-                  .filter((team) => {
-                    if (!searchQuery.trim()) return true;
-                    const query = searchQuery.toLowerCase();
-                    const teamName = team.name.toLowerCase();
-                    const members = team.members
-                      .map(
-                        (m) => `${m.first_name} ${m.last_name}`.toLowerCase()
-                      )
-                      .join(" ");
-                    return teamName.includes(query) || members.includes(query);
-                  })
-                  .map((team) => (
+                {teams.map((team) => (
                   <div
                     key={team.id}
                     className={styles.teamCard}

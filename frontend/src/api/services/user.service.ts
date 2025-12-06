@@ -1,5 +1,5 @@
 import api from "../config/axios.config";
-import type { User, TeamShort } from "../types";
+import type { User, TeamShort, UserUpdate } from "../types";
 
 export const UserService = {
   getCurrentUser: () =>
@@ -8,4 +8,6 @@ export const UserService = {
     api.get<User>(`/api/users/${userId}`).then((resp) => resp.data),
   getUserTeams: (userId: number) =>
     api.get<TeamShort[]>(`/api/users/${userId}/teams`).then((resp) => resp.data),
+  updateUser: (data: UserUpdate) =>
+    api.put<User>("/api/user", data).then((resp) => resp.data),
 };
