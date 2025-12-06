@@ -16,6 +16,100 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamShort, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	teamQuery, teamArgs := sb.Select(
+		"t.id",
+		"t.name",
+		"t.captain_id",
+		"t.hackathon_id",
+	).
+		From("hackmate.team t").
+		Where(sb.Equal("t.id", teamId)).
+		Build()
+
+	var team repo.TeamShort
+
+	err := h.pool.QueryRow(ctx, teamQuery, teamArgs...).Scan(
+		&team.ID,
+		&team.Name,
+		&team.CaptainId,
+		&team.HackId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("team not found")
+		}
+		return nil, fmt.Errorf("failed to get team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	membersQuery, membersArgs := sb2.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"p.experience",
+		"p.additional_info",
+		"p.hack_id",
+	).
+		From("hackmate.participant p").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		Join("hackmate.team_participant tp", "p.id = tp.participant_id").
+		Where(sb2.Equal("tp.team_id", teamId)).
+		Build()
+
+	rows, err := h.pool.Query(ctx, membersQuery, membersArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team members: %w", err)
+	}
+	defer rows.Close()
+
+	var members []*repo.Participant
+
+	for rows.Next() {
+		var member repo.Participant
+		var roleID int
+		var roleName string
+
+		err := rows.Scan(
+			&member.Id,
+			&member.FirstName,
+			&member.LastName,
+			&roleID,
+			&roleName,
+			&member.Experience,
+			&member.AddInfo,
+			&member.TeamId,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan member: %w", err)
+		}
+
+		member.Role = repo.Role{
+			ID:   roleID,
+			Name: roleName,
+		}
+
+		member.Skills = []repo.Skill{}
+
+		members = append(members, &member)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	team.Members = members
+
+	return &team, nil
+}
+
 func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int, name string) error {
 	const defaultMaxSize = 5
 

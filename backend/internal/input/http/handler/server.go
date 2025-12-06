@@ -406,7 +406,7 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 		return nil, fmt.Errorf("Unauthorized")
 	}
 
-	team, err := s.service.GetTeam(ctx, request.TeamId)
+	team, err := s.service.GetTeam(ctx, request.HackId, request.TeamId)
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("failed to list hack teams: %w", err)

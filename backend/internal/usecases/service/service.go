@@ -34,7 +34,7 @@ type Service interface {
 	EnterHackathon(ctx context.Context, create repo.FormCreate) error
 	ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error)
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
-	GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error)
+	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
 }
 
@@ -171,9 +171,19 @@ func (s *ServiceImpl) ListHackTeams(ctx context.Context, hackId int) ([]*repo.Te
 	return s.hackRepo.ListTeams(ctx, hackId)
 }
 
-func (s *ServiceImpl) GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *ServiceImpl) GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error) {
+	team, err := s.hackRepo.GetTeamProfile(ctx, teamId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get team profile: %w", err)
+	}
+
+	if team.HackId != hackId {
+		fmt.Println("hack id does not match")
+		return nil, ErrHackNotFound
+	}
+
+	return team, nil
 }
 
 func (s *ServiceImpl) CreateTeam(ctx context.Context, userId int64, hackId int, name string) error {
