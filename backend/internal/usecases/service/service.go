@@ -40,7 +40,9 @@ type Service interface {
 	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
 	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
+
 	GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error)
+	GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error)
 
 	CreateInvite(ctx context.Context, hackId int, senderId int64, rectId int) error
 	CreateJoinRequest(ctx context.Context, hackId int, teamId int, userId int64) error
@@ -55,6 +57,10 @@ type ServiceImpl struct {
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+}
+
+func (s *ServiceImpl) GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error) {
+	return s.hackRepo.GetUsersTeams(ctx, userId)
 }
 
 func (s *ServiceImpl) GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error) {

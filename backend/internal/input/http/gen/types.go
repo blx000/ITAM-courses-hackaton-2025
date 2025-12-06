@@ -116,6 +116,7 @@ type TeamCreate struct {
 
 // TeamShort defines model for TeamShort.
 type TeamShort struct {
+	CurSize  int    `json:"cur_size"`
 	HackId   int    `json:"hack_id"`
 	HackName string `json:"hack_name"`
 	Id       int    `json:"id"`

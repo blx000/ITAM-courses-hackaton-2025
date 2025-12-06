@@ -227,6 +227,7 @@ components:
         - hack_id
         - hack_name
         - max_size
+        - cur_size
       properties:
         id:
           type: integer
@@ -237,6 +238,8 @@ components:
         hack_name:
           type: string
         max_size:
+          type: integer
+        cur_size:
           type: integer
 
     FormCreate:
@@ -356,6 +359,15 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
+    patch:
+      summary: Patch user info
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful patch
+        '401':
+          description: "Unauthorized"
 
   /api/login:
     post:
@@ -425,6 +437,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       security:
         - BearerAuth: [ ]
       responses:
@@ -439,13 +452,14 @@ paths:
 
   /api/users/{user_id}/teams:
     get:
-      summary: Get user information
+      summary: Get user teams
       parameters:
         - name: user_id
           in: path
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: Successful response
