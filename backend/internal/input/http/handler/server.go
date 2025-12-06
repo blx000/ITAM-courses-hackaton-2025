@@ -342,6 +342,7 @@ func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.G
 				Id:   participants[i].Role.ID,
 				Name: participants[i].Role.Name,
 			},
+			AddInfo:   participants[i].AddInfo,
 		}
 	}
 	return gen.GetApiHacksHackIdParticipants200JSONResponse(participantsResponse), nil
@@ -471,8 +472,8 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 		participantsResponse := make([]gen.Participant, len(participants))
 		for j := range participants {
 			skillsResponse := make([]gen.Skill, len(participants[j].Skills))
-			for k := range participants[i].Skills {
-				skillsResponse[k] = gen.Skill{Name: participants[i].Skills[j].Name, Id: participants[i].Skills[j].ID}
+			for k := range participants[j].Skills {
+				skillsResponse[k] = gen.Skill{Name: participants[j].Skills[k].Name, Id: participants[j].Skills[k].ID}
 			}
 			participantsResponse[j] = gen.Participant{
 				Id:        participants[j].Id,
@@ -484,6 +485,7 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 					Id:   participants[j].Role.ID,
 					Name: participants[j].Role.Name,
 				},
+				AddInfo:   participants[j].AddInfo,
 			}
 		}
 		teamsResponse[i] = gen.Team{
@@ -521,9 +523,13 @@ func (s Server) PostApiHacksHackIdTeams(ctx context.Context, request gen.PostApi
 	err = s.service.CreateTeam(ctx, user.ID, request.HackId, request.Body.Name)
 	if err != nil {
 		fmt.Println(err)
+		if errors.Is(err, service.ErrUserAlreadyJoinedTeam) {
+			return gen.PostApiHacksHackIdTeams400Response{}, nil
+		}
 		return nil, fmt.Errorf("failed to create hack team: %w", err)
 	}
 
+	// Возвращаем пустой массив команд (согласно спецификации)
 	return gen.PostApiHacksHackIdTeams201JSONResponse{}, nil
 }
 
@@ -569,6 +575,7 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 				Id:   participants[i].Role.ID,
 				Name: participants[i].Role.Name,
 			},
+			AddInfo:   participants[i].AddInfo,
 		}
 	}
 

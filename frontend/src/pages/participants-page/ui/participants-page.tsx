@@ -32,17 +32,43 @@ export function ParticipantsPage() {
       setError(null);
       const hackathonId = parseInt(id);
       
-      const [participantsData, teamsData] = await Promise.all([
-        HackmateApi.getHackathonParticipants(hackathonId),
-        HackmateApi.getHackathonTeams(hackathonId),
-      ]);
+      // Загружаем данные с обработкой ошибок для каждого запроса отдельно
+      let participantsData: Participant[] = [];
+      let teamsData: Team[] = [];
+      
+      try {
+        participantsData = await HackmateApi.getHackathonParticipants(hackathonId);
+      } catch (err: any) {
+        console.error("Ошибка загрузки участников:", err);
+        if (err.response?.status === 401) {
+          setError("Необходима авторизация. Пожалуйста, войдите в систему.");
+          return;
+        }
+        // Продолжаем, даже если участники не загрузились
+      }
+      
+      try {
+        teamsData = await HackmateApi.getHackathonTeams(hackathonId);
+      } catch (err: any) {
+        console.error("Ошибка загрузки команд:", err);
+        if (err.response?.status === 401) {
+          setError("Необходима авторизация. Пожалуйста, войдите в систему.");
+          return;
+        }
+        // Продолжаем, даже если команды не загрузились
+      }
       
       setParticipants(participantsData);
       setTeams(teamsData);
+      
+      if (participantsData.length === 0 && teamsData.length === 0) {
+        setError("Не удалось загрузить данные. Пожалуйста, попробуйте позже.");
+      }
     } catch (err: any) {
       console.error("Ошибка загрузки данных:", err);
       setError(
         err.response?.data?.message ||
+        err.message ||
         "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
       );
     } finally {
@@ -71,6 +97,7 @@ export function ParticipantsPage() {
       <div className={styles.backgroundImage}>
         <img src={bgImage} alt="background" />
       </div>
+      <div className={styles.overlay} />
       <div className={styles.content}>
         <div className={styles.header}>
         <button
@@ -113,7 +140,7 @@ export function ParticipantsPage() {
                 >
                   <div className={styles.participantHeader}>
                     <h3>{`${participant.first_name} ${participant.last_name}`}</h3>
-                    {participant.team_id ? (
+                    {participant.team_id && participant.team_id > 0 ? (
                       <span className={styles.teamBadge}>В команде</span>
                     ) : (
                       <span className={styles.freeBadge}>Свободен</span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { HackmateApi, AuthService } from "../../../api";
+import { HackmateApi } from "../../../api";
 import styles from "./create-team-page.module.css";
 import bgImage from "/bg-image.png";
 
@@ -13,7 +13,7 @@ export function CreateTeamPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!teamName.trim()) {
       setError("Пожалуйста, введите название команды");
       return;
@@ -27,27 +27,35 @@ export function CreateTeamPage() {
     try {
       setLoading(true);
       setError(null);
-      
-      const userId = AuthService.getUserId();
-      if (!userId) {
-        setError("Пользователь не авторизован");
-        return;
-      }
 
-      const team = await HackmateApi.createTeam(parseInt(id), {
+      await HackmateApi.createTeam(parseInt(id), {
         name: teamName.trim(),
-        captain_id: userId,
       });
-      
-      navigate(`/hackathons/${id}/teams/${team.id}`);
 
-      navigate(`/hackathons/${id}/teams`);
+      // После создания команды перенаправляем на страницу участников
+      navigate(`/hackathons/${id}/participants`);
     } catch (err: any) {
       console.error("Ошибка создания команды:", err);
-      setError(
-        err.response?.data?.message ||
-        "Не удалось создать команду. Пожалуйста, попробуйте позже."
-      );
+      console.error("Детали ошибки:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+      });
+
+      let errorMessage =
+        "Не удалось создать команду. Пожалуйста, попробуйте позже.";
+
+      if (err.response?.status === 400) {
+        errorMessage = "Неверные данные. Проверьте название команды.";
+      } else if (err.response?.status === 401) {
+        errorMessage = "Необходима авторизация. Пожалуйста, войдите в систему.";
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -97,4 +105,3 @@ export function CreateTeamPage() {
     </div>
   );
 }
-

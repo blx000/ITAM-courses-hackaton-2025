@@ -427,7 +427,6 @@ func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Pa
 	sql, args := sb.Build()
 
 	rows, err := h.pool.Query(ctx, sql, args...)
-	defer rows.Close()
 	if err != nil {
 		fmt.Println(err)
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -435,6 +434,7 @@ func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Pa
 		}
 		return nil, err
 	}
+	defer rows.Close()
 	participants := make([]*repo.Participant, 0)
 	var (
 		roleId   int
@@ -457,6 +457,15 @@ func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Pa
 		participant.Role = repo.Role{
 			ID:   roleId,
 			Name: roleName,
+		}
+
+		// Получаем навыки участника
+		skills, err := h.getParticipantSkills(ctx, participant.Id)
+		if err != nil {
+			fmt.Printf("Failed to get skills for participant %d: %v\n", participant.Id, err)
+			participant.Skills = []repo.Skill{}
+		} else {
+			participant.Skills = skills
 		}
 
 		participants = append(participants, &participant)
@@ -614,6 +623,8 @@ func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64)
 		"r.name as role_name",
 		"COALESCE(tp.team_id, -1) as team_id",
 		"p.additional_info",
+		"p.hack_id",
+		"p.experience",
 	).
 		From("hackmate.participant as p").
 		Join("hackmate.user as u", "p.user_id = u.id").
@@ -636,6 +647,8 @@ func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64)
 		&roleName,
 		&participant.TeamId,
 		&participant.AddInfo,
+		&participant.HackId,
+		&participant.Experience,
 	)
 
 	fmt.Println(participant)

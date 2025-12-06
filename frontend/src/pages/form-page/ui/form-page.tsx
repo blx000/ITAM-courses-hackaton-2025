@@ -89,9 +89,19 @@ export function FormPage() {
       return;
     }
 
+    if (!experience || experience.trim() === "") {
+      setError("Пожалуйста, укажите опыт участия в хакатонах");
+      return;
+    }
+
     const experienceNum = parseInt(experience);
     if (isNaN(experienceNum) || experienceNum < 0) {
       setError("Опыт должен быть положительным числом");
+      return;
+    }
+
+    if (!additionalInfo.trim()) {
+      setError("Пожалуйста, заполните дополнительную информацию");
       return;
     }
 
@@ -101,22 +111,43 @@ export function FormPage() {
       const formData: FormCreate = {
         role: selectedRole,
         skills: selectedSkills,
-        additional_info: additionalInfo,
+        additional_info: additionalInfo.trim(),
         experience: experienceNum,
       };
 
+      console.log("Отправка формы:", formData);
       await HackmateApi.enterHackathon(hackathonId, formData);
       setSuccess(true);
 
       setTimeout(() => {
-        navigate(`/hackathons/${hackathonId}`);
-      }, 2000);
+        navigate(`/hackathons/${hackathonId}/participants`);
+      }, 1500);
     } catch (err: any) {
       console.error("Ошибка отправки формы:", err);
-      setError(
-        err.response?.data?.message ||
-          "Не удалось отправить форму. Пожалуйста, проверьте данные и попробуйте снова."
-      );
+      console.error("Детали ошибки:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+      });
+      
+      let errorMessage = "Не удалось отправить форму. Пожалуйста, проверьте данные и попробуйте снова.";
+      
+      if (err.response?.status === 409) {
+        errorMessage = "Вы уже присоединились к этому хакатону. Перенаправление...";
+        setTimeout(() => {
+          navigate(`/hackathons/${hackathonId}/participants`);
+        }, 1500);
+      } else if (err.response?.status === 400) {
+        errorMessage = err.response?.data?.message || "Неверные данные формы. Проверьте все поля.";
+      } else if (err.response?.status === 401) {
+        errorMessage = "Необходима авторизация. Пожалуйста, войдите в систему.";
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -229,6 +260,7 @@ export function FormPage() {
             value={additionalInfo}
             onChange={(e) => setAdditionalInfo(e.target.value)}
             placeholder="Расскажите о себе..."
+            required
             disabled={submitting}
             className={styles.textarea}
           />
@@ -237,7 +269,7 @@ export function FormPage() {
         <button
           className={styles.createBtn}
           type="submit"
-          disabled={submitting || !selectedRole || selectedSkills.length === 0}
+          disabled={submitting || !selectedRole || selectedSkills.length === 0 || !additionalInfo.trim() || !experience.trim()}
         >
           {submitting ? "Создание..." : "Создать анкету"}
         </button>

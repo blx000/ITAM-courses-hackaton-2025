@@ -21,11 +21,20 @@
   object-fit: cover;
 }
 
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 18, 4, 0.3);
+  z-index: 1;
+}
+
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   padding: 16px 24px;
   padding-bottom: 100px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .header {
@@ -44,6 +53,7 @@
   cursor: pointer;
   font-family: "Roboto Flex", sans-serif;
   padding: 8px 0;
+  transition: opacity 0.2s;
 }
 
 .backButton:hover {
@@ -74,9 +84,10 @@
 
 .tabs {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
 }
 
 .tab {
@@ -90,6 +101,7 @@
   cursor: pointer;
   transition: all 0.2s;
   font-family: "Roboto Flex", sans-serif;
+  position: relative;
 }
 
 .tab.active {
@@ -97,44 +109,52 @@
   border-bottom-color: #aceb4c;
 }
 
-.tab:hover {
-  color: #aceb4c;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.tab:hover:not(.active) {
+  color: rgba(172, 235, 76, 0.8);
 }
 
 .participantsGrid,
 .teamsGrid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  margin-top: 0;
 }
 
 .participantCard,
 .teamCard {
-  background: rgba(17, 18, 4, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 24px;
-  padding: 16px;
+  padding: 12px;
   cursor: pointer;
   transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .participantCard:hover,
 .teamCard:hover {
-  border-color: #aceb4c;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
 }
 
 .participantHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 12px;
+  gap: 12px;
 }
 
 .participantHeader h3 {
@@ -143,6 +163,7 @@
   color: #f9ffee;
   margin: 0;
   font-family: "Roboto Flex", sans-serif;
+  flex: 1;
 }
 
 .teamBadge {
@@ -154,6 +175,7 @@
   font-size: 12px;
   font-weight: 600;
   font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
 }
 
 .freeBadge {
@@ -165,6 +187,7 @@
   font-size: 12px;
   font-weight: 600;
   font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
 }
 
 .participantInfo {
@@ -181,6 +204,7 @@
 
 .role strong {
   font-weight: 600;
+  margin-right: 6px;
 }
 
 .skills {
@@ -213,10 +237,10 @@
 }
 
 .teamName {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #f9ffee;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
   font-family: "Roboto Flex", sans-serif;
 }
 
@@ -240,6 +264,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 8px;
 }
 
 .memberTag {
@@ -263,12 +288,11 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
   font-family: "Roboto Flex", sans-serif;
   margin-top: 20px;
 }
 
 .createTeamButton:hover {
-  background: #9dd83a;
-  transform: translateY(-2px);
+  opacity: 0.9;
 }

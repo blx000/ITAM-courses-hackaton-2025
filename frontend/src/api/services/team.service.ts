@@ -3,7 +3,7 @@ import type { Team, TeamCreate, Request, Invite } from "../types";
 
 export const TeamService = {
   createTeam: (hackId: number, teamData: TeamCreate) =>
-    api.post<Team>(`/api/hacks/${hackId}/teams`, teamData).then((resp) => resp.data),
+    api.post<Team[]>(`/api/hacks/${hackId}/teams`, teamData).then((resp) => resp.data),
   getTeam: (hackId: number, teamId: number) =>
     api.get<Team>(`/api/hacks/${hackId}/teams/${teamId}`).then((resp) => resp.data),
   requestToJoin: (hackId: number, teamId: number) =>

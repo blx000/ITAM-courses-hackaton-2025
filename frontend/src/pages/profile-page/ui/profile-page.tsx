@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { HackmateApi, AuthService } from "../../../api";
-import type { User, TeamShort } from "../../../api";
+import type { User, TeamShort, Participant, HackathonShort } from "../../../api";
 import styles from "./profile-page.module.css";
 import bgImage from "/bg-image.png";
 import editIcon from "/edit-icon.svg";
 import profilePhoto from "/profile-photo.svg";
 
+type ParticipantData = {
+  participant: Participant;
+  hackathon: HackathonShort;
+};
+
 export function ProfilePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [teams, setTeams] = useState<TeamShort[]>([]);
+  const [participantData, setParticipantData] = useState<ParticipantData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,12 +31,43 @@ export function ProfilePage() {
       const userData = await HackmateApi.getCurrentUser();
       setUser(userData);
       const userId = AuthService.getUserId();
+      
       if (userId) {
         try {
           const teamsData = await HackmateApi.getUserTeams(userId);
           setTeams(teamsData);
         } catch (err) {
           console.error("Не удалось загрузить команды:", err);
+        }
+
+        // Загружаем данные анкеты пользователя
+        try {
+          const hackathons = await HackmateApi.getHackathons();
+          
+          // Ищем хакатоны, в которых пользователь участвует
+          for (const hackathon of hackathons) {
+            try {
+              const participants = await HackmateApi.getHackathonParticipants(hackathon.id);
+              const userParticipant = participants.find(
+                (p: Participant) => 
+                  p.first_name === userData.first_name && 
+                  p.last_name === userData.last_name
+              );
+              
+              if (userParticipant) {
+                setParticipantData({
+                  participant: userParticipant,
+                  hackathon: hackathon,
+                });
+                break; // Берем первый найденный
+              }
+            } catch (err) {
+              // Пропускаем, если не удалось загрузить участников
+              console.error(`Не удалось загрузить участников для хакатона ${hackathon.id}:`, err);
+            }
+          }
+        } catch (err) {
+          console.error("Не удалось загрузить данные анкеты:", err);
         }
       }
     } catch (err: any) {
@@ -97,7 +134,47 @@ export function ProfilePage() {
         <strong>Телеграм: </strong> @{user.login || "username"}
       </div>
 
-      {user.bio && (
+      {participantData && (
+        <>
+          <div className={styles.addBox}>
+            <h2>Опыт в хакатонах:</h2>
+            <div className={styles.experience}>
+              {participantData.participant.experience !== undefined && participantData.participant.experience !== null
+                ? `${participantData.participant.experience} ${participantData.participant.experience === 1 ? 'хакатон' : participantData.participant.experience < 5 ? 'хакатона' : 'хакатонов'}`
+                : 'Не указано'}
+            </div>
+          </div>
+
+          <div className={styles.addBox}>
+            <h2>Основная роль:</h2>
+            <div className={styles.role}>
+              {participantData.participant.role?.name || "Не указано"}
+            </div>
+          </div>
+
+          {participantData.participant.skills && participantData.participant.skills.length > 0 && (
+            <div className={styles.addBox}>
+              <h2 className={styles.skillsTitle}>Стек:</h2>
+              <div className={styles.skillsList}>
+                {participantData.participant.skills.map((skill) => (
+                  <span key={skill.id} className={styles.skillTag}>
+                    {skill.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {participantData.participant.add_info && (
+            <div className={styles.addBox}>
+              <h2>Дополнительная информация:</h2>
+              <div className={styles.text}>{participantData.participant.add_info}</div>
+            </div>
+          )}
+        </>
+      )}
+
+      {user.bio && !participantData && (
         <div className={styles.addBox}>
           <h2>Дополнительная информация:</h2>
           <div className={styles.text}>{user.bio}</div>

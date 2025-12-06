@@ -4,7 +4,7 @@ import styles from "./hackathon-info.module.css";
 import hackathonPhoto from "/hackathon-photo.svg";
 import bgImage from "/bg-image.png";
 import { HackmateApi } from "../../../api";
-import type { HackathonPage } from "../../../api";
+import type { HackathonPage, Participant, User } from "../../../api";
 
 export function HackathonInfoPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +14,7 @@ export function HackathonInfoPage() {
   const [participantsCount, setParticipantsCount] = useState<number>(0);
   const [isParticipating, setIsParticipating] = useState(false);
   const [checkingParticipation, setCheckingParticipation] = useState(true);
+  const [, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     const loadHackathon = async () => {
@@ -23,22 +24,55 @@ export function HackathonInfoPage() {
         setLoading(true);
         setCheckingParticipation(true);
         const hackathonId = parseInt(id);
-        const hackathonData = await HackmateApi.getHackathon(hackathonId);
+        
+        // Загружаем данные параллельно
+        const [hackathonData, teams, user] = await Promise.all([
+          HackmateApi.getHackathon(hackathonId),
+          HackmateApi.getHackathonTeams(hackathonId).catch(() => []),
+          HackmateApi.getCurrentUser().catch(() => null),
+        ]);
+        
         setHackathon(hackathonData);
-        const teams = await HackmateApi.getHackathonTeams(hackathonId);
+        setCurrentUser(user);
+        
         const count = teams.reduce(
-          (total, team) => total + team.members.length,
+          (total, team) => total + (team.members?.length || 0),
           0
         );
         setParticipantsCount(count);
         
-        try {
-          setIsParticipating(false);
-        } catch (err) {
+        // Проверяем, является ли пользователь участником
+        // Загружаем участников отдельно для проверки
+        let participants: Participant[] = [];
+        if (user) {
+          try {
+            participants = await HackmateApi.getHackathonParticipants(hackathonId);
+            
+            // Ищем участника в списке по имени и фамилии (без учета регистра)
+            const userParticipant = participants.find((p: Participant) => 
+              p.first_name?.toLowerCase().trim() === user.first_name?.toLowerCase().trim() && 
+              p.last_name?.toLowerCase().trim() === user.last_name?.toLowerCase().trim()
+            );
+            
+            setIsParticipating(userParticipant !== undefined);
+            
+            // Логируем для отладки
+            console.log("Проверка участия:", {
+              user: `${user.first_name} ${user.last_name}`,
+              participantsCount: participants.length,
+              found: userParticipant !== undefined,
+              participantId: userParticipant?.id
+            });
+          } catch (err) {
+            console.error("Ошибка загрузки участников для проверки:", err);
+            setIsParticipating(false);
+          }
+        } else {
           setIsParticipating(false);
         }
       } catch (error) {
         console.error("Ошибка загрузки хакатона:", error);
+        setIsParticipating(false);
       } finally {
         setLoading(false);
         setCheckingParticipation(false);
@@ -71,7 +105,10 @@ export function HackathonInfoPage() {
 
   const handleJoinClick = () => {
     if (hackathon) {
+      console.log("Переход на форму для хакатона:", hackathon.id);
       navigate(`/form?hackathon=${hackathon.id}`);
+    } else {
+      console.error("Hackathon is null, cannot navigate to form");
     }
   };
 
@@ -117,21 +154,21 @@ export function HackathonInfoPage() {
         {!checkingParticipation && (
           <div className={styles.actions}>
             {!isParticipating ? (
-              <button className={styles.btn} onClick={handleJoinClick}>
+              <button 
+                className={styles.btn} 
+                onClick={handleJoinClick}
+                disabled={!hackathon}
+              >
                 Присоединиться к хакатону
               </button>
             ) : (
-              <>
-                <button className={styles.btn} onClick={handleViewParticipants}>
-                  Участники и команды
-                </button>
-                <button 
-                  className={styles.btnSecondary} 
-                  onClick={() => navigate(`/hackathons/${id}/teams`)}
-                >
-                  Список команд
-                </button>
-              </>
+              <button 
+                className={styles.btn} 
+                onClick={handleViewParticipants}
+                disabled={!hackathon}
+              >
+                Просмотреть участников и команды
+              </button>
             )}
           </div>
         )}

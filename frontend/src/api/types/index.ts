@@ -51,6 +51,8 @@ export type Participant = {
   role: Role;
   skills: Skill[];
   team_id: number;
+  add_info?: string;
+  experience?: number;
 }
 export type Team = {
   id: number;
@@ -58,6 +60,7 @@ export type Team = {
   captain_id: number;
   members: Participant[];
   max_size: number;
+  cur_size?: number;
 }
 export type TeamShort = {
   id: number;
@@ -68,7 +71,6 @@ export type TeamShort = {
 }
 export type TeamCreate = {
   name: string;
-  captain_id: number;
 }
 export type Role = {
   id: number;
