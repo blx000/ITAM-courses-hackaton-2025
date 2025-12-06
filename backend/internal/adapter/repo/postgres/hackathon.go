@@ -115,8 +115,59 @@ func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Pa
 }
 
 func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error) {
-	//TODO implement me
-	panic("implement me")
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"t.id",
+		"t.name",
+		"t.captain_id",
+		"t.hackathon_id",
+		"COUNT(tp.participant_id) as member_cnt",
+	).
+		From("hackmate.team t").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp",
+			"t.id = tp.team_id").
+		Where(sb.Equal("t.hackathon_id", hackId)).
+		GroupBy("t.id").
+		OrderByAsc("t.id").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to query teams: %w", err)
+	}
+	defer rows.Close()
+
+	var teams []*repo.TeamShort
+
+	for rows.Next() {
+		var team repo.TeamShort
+
+		err := rows.Scan(
+			&team.ID,
+			&team.Name,
+			&team.CaptainId,
+			&team.HackId,
+			&team.MemberCnt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan team: %w", err)
+		}
+
+		team.Members = []*repo.Participant{}
+
+		teams = append(teams, &team)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return teams, nil
 }
 
 func NewHackRepo(pool *pgxpool.Pool) *HackRepo {

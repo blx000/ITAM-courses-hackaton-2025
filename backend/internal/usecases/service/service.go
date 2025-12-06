@@ -168,8 +168,7 @@ func (s *ServiceImpl) ListParticipants(ctx context.Context, hackId int) ([]*repo
 }
 
 func (s *ServiceImpl) ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.hackRepo.ListTeams(ctx, hackId)
 }
 
 func (s *ServiceImpl) GetTeam(ctx context.Context, teamId int) (*repo.TeamShort, error) {
