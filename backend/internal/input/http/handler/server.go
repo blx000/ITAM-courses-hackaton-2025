@@ -25,8 +25,40 @@ type Server struct {
 }
 
 func (s Server) PatchApiUser(ctx context.Context, request gen.PatchApiUserRequestObject) (gen.PatchApiUserResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return gen.PatchApiUser401Response{}, nil
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return gen.PatchApiUser401Response{}, nil
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return gen.PatchApiUser401Response{}, nil
+	}
+
+	userChange := &repo.UserChange{
+		Id:        user.ID,
+		FirstName: request.Body.FirstName,
+		LastName:  request.Body.LastName,
+		Bio:       request.Body.Bio,
+		Username:  request.Body.Username,
+	}
+
+	newToken, err := s.service.ChangeUserInfo(ctx, userChange, s.hmacSecret)
+
+	changeResponse := gen.UserChangeToken{
+		AccessToken: newToken,
+	}
+
+	return gen.PatchApiUser200JSONResponse(changeResponse), nil
 }
 
 func (s Server) GetApiHacksMy(ctx context.Context, request gen.GetApiHacksMyRequestObject) (gen.GetApiHacksMyResponseObject, error) {
@@ -708,8 +740,40 @@ func (s Server) PostApiLogin(ctx context.Context, request gen.PostApiLoginReques
 }
 
 func (s Server) GetApiUsersUserId(ctx context.Context, request gen.GetApiUsersUserIdRequestObject) (gen.GetApiUsersUserIdResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	_, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	user, err := s.service.GetUserInfo(ctx, request.UserId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	userResponse := gen.User{
+		Id:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Username:  user.UserName,
+		Bio:       user.Bio,
+	}
+
+	return gen.GetApiUsersUserId200JSONResponse(userResponse), nil
 }
 
 func (s Server) GetApiUsersUserIdTeams(ctx context.Context, request gen.GetApiUsersUserIdTeamsRequestObject) (gen.GetApiUsersUserIdTeamsResponseObject, error) {

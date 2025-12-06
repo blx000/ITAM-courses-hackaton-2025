@@ -1641,18 +1641,20 @@ func (response GetApiUser401Response) VisitGetApiUserResponse(w http.ResponseWri
 }
 
 type PatchApiUserRequestObject struct {
+	Body *PatchApiUserJSONRequestBody
 }
 
 type PatchApiUserResponseObject interface {
 	VisitPatchApiUserResponse(w http.ResponseWriter) error
 }
 
-type PatchApiUser200Response struct {
-}
+type PatchApiUser200JSONResponse UserChangeToken
 
-func (response PatchApiUser200Response) VisitPatchApiUserResponse(w http.ResponseWriter) error {
+func (response PatchApiUser200JSONResponse) VisitPatchApiUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type PatchApiUser401Response struct {
@@ -2419,6 +2421,13 @@ func (sh *strictHandler) GetApiUser(w http.ResponseWriter, r *http.Request) {
 // PatchApiUser operation middleware
 func (sh *strictHandler) PatchApiUser(w http.ResponseWriter, r *http.Request) {
 	var request PatchApiUserRequestObject
+
+	var body PatchApiUserJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.PatchApiUser(ctx, request.(PatchApiUserRequestObject))

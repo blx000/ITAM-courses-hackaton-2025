@@ -43,6 +43,8 @@ type Service interface {
 
 	GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error)
 	GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error)
+	ChangeUserInfo(ctx context.Context, change *repo.UserChange, jwtSecret string) (string, error)
+	GetUserInfo(ctx context.Context, userId int64) (*repo.UserDTO, error)
 
 	CreateInvite(ctx context.Context, hackId int, senderId int64, rectId int) error
 	CreateJoinRequest(ctx context.Context, hackId int, teamId int, userId int64) error
@@ -57,6 +59,28 @@ type ServiceImpl struct {
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+}
+
+func (s *ServiceImpl) GetUserInfo(ctx context.Context, userId int64) (*repo.UserDTO, error) {
+	return s.userRepo.Read(ctx, userId)
+}
+
+func (s *ServiceImpl) ChangeUserInfo(ctx context.Context, change *repo.UserChange, jwtSecret string) (string, error) {
+	userDto := &repo.UserDTO{
+		ID:        change.Id,
+		FirstName: change.FirstName,
+		LastName:  change.LastName,
+		UserName:  change.Username,
+		Bio:       change.Bio,
+	}
+
+	err := s.userRepo.Update(ctx, change)
+
+	newToken, err := jwt.NewToken(userDto, time.Hour, jwtSecret)
+	if err != nil {
+		return "", err
+	}
+	return newToken, nil
 }
 
 func (s *ServiceImpl) GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error) {

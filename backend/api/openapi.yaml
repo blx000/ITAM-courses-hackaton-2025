@@ -179,6 +179,7 @@ components:
         - bio
         - login
         - is_admin
+        - username
       properties:
         id:
           type: integer
@@ -192,6 +193,8 @@ components:
         is_admin:
           type: boolean
         login:
+          type: string
+        username:
           type: string
 
     Team:
@@ -306,6 +309,31 @@ components:
         refresh_token:
           type: string
 
+    UserPatch:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - bio
+        - username
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        bio:
+          type: string
+        username:
+          type: string
+
+    UserChangeToken:
+      type: object
+      required:
+        - access_token
+      properties:
+        access_token:
+          type: string
+
 paths:
 
   /api/healthcheсk:
@@ -363,9 +391,19 @@ paths:
       summary: Patch user info
       security:
         - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
       responses:
         '200':
           description: Successful patch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChangeToken'
         '401':
           description: "Unauthorized"
 

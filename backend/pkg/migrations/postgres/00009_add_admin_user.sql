@@ -14,13 +14,13 @@ VALUES
     (1, 'SECOND HACK', 'SECOND HACK DESC', '07-12-2024', '07-20-2024', 15, 5, 558);
 
 --insert fake users
-insert into hackmate.user(id, first_name, last_name, bio)
+insert into hackmate.user(id, first_name, last_name, bio, username)
 values
-    (1234556, 'Ivan', 'Ivanov', 'MyBio');
+    (1234556, 'Ivan', 'Ivanov', 'MyBio', '@ivan_ivanov');
 
-insert into hackmate.user(id, first_name, last_name, bio)
+insert into hackmate.user(id, first_name, last_name, bio, username)
 values
-    (1050682049, 'Semyon', 'Anikin', 'SA BIO');
+    (1050682049, 'Semyon', 'Anikin', 'SA BIO', '@gachimansemen');
 
 insert into hackmate.participant(user_id, role_id, hack_id, experience, additional_info)
 values
@@ -30,13 +30,13 @@ insert into hackmate.participant(user_id, role_id, hack_id, experience, addition
 values
     (1050682049, 1, 1, 5, 'Joined first hack Semyon');
 
-insert into hackmate.auth(code, user_id, first_name, last_name, expires_at)
+insert into hackmate.auth(code, user_id, first_name, last_name, expires_at, username)
 values
-    ('123456', 1234556, 'Ivan', 'Ivanov', '12-12-2025');
+    ('123456', 1234556, 'Ivan', 'Ivanov', '12-12-2025', '@ivan_ivanov');
 
-insert into hackmate.auth(code, user_id, first_name, last_name, expires_at)
+insert into hackmate.auth(code, user_id, first_name, last_name, expires_at, username)
 values
-    ('228337', 1050682049, 'Semyon', 'Anikin', '12-12-2025');
+    ('228337', 1050682049, 'Semyon', 'Anikin', '12-12-2025', '@gachimansemen');
 
 insert into hackmate.team(name, captain_id, hackathon_id, max_size)
 values

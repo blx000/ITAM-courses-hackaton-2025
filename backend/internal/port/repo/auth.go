@@ -23,4 +23,5 @@ type AuthDto struct {
 	FirstName  string
 	LastName   string
 	ExpiresAt  time.Time
+	Username   string
 }

@@ -73,6 +73,7 @@ func (t *TgBot) handleLoginCommand(ctx context.Context, message *tgbotapi.Messag
 		TelegramId: message.From.ID,
 		FirstName:  message.From.FirstName,
 		LastName:   message.From.LastName,
+		Username:   message.From.UserName,
 	}
 
 	err := t.authRepo.Create(ctx, dto)
