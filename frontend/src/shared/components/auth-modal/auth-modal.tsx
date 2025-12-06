@@ -57,7 +57,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
             <p className={styles.subtitle}>
               код можно получить в{" "}
               <a
-                href="https://t.me/hack_mate_bot"
+                href="https://t.me/hack_mate_bot?start=login"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.botLink}

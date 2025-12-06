@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { HackmateApi } from "../../../api";
 import styles from "./create-team-page.module.css";
 import bgImage from "/bg-image.png";
+import teamPhoto from "/team-photo.svg";
 
 export function CreateTeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -73,6 +74,10 @@ export function CreateTeamPage() {
         </button>
 
         <h1 className={styles.title}>Создать команду</h1>
+
+        <div className={styles.teamPhotoContainer}>
+          <img src={teamPhoto} alt="Team" className={styles.teamPhoto} />
+        </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <div className={styles.error}>{error}</div>}

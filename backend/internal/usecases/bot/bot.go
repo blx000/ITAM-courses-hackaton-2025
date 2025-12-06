@@ -58,9 +58,19 @@ func (t *TgBot) handleUpdate(ctx context.Context, update tgbotapi.Update) {
 
 	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
+	// Обработка команды /login
 	if update.Message.IsCommand() && update.Message.Command() == "login" {
 		t.handleLoginCommand(ctx, update.Message)
 		return
+	}
+
+	// Обработка команды /start с параметром login
+	if update.Message.IsCommand() && update.Message.Command() == "start" {
+		args := update.Message.CommandArguments()
+		if args == "login" {
+			t.handleLoginCommand(ctx, update.Message)
+			return
+		}
 	}
 }
 

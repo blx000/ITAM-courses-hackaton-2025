@@ -62,8 +62,9 @@
 }
 
 .featuredCard {
-  background: rgba(17, 18, 4, 0.95);
-  border: 1px solid rgba(172, 235, 76, 0.5);
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
   border-radius: 20px;
   padding: 12px;
   display: flex;
@@ -238,5 +239,3 @@
   width: 106px;
   flex-shrink: 0;
 }
-
-

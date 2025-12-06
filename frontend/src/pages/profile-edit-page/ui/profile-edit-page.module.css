@@ -30,8 +30,7 @@
 .content {
   position: relative;
   z-index: 2;
-  padding: 16px 24px;
-  padding-bottom: 100px;
+  padding: 40px 24px 100px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -183,5 +182,3 @@ select.input {
   font-size: 18px;
   color: #f9ffee;
 }
-
-

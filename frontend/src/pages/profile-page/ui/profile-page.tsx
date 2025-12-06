@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { HackmateApi, AuthService } from "../../../api";
-import type { User, TeamShort, Participant, HackathonShort } from "../../../api";
+import type {
+  User,
+  TeamShort,
+  Participant,
+  HackathonShort,
+} from "../../../api";
 import styles from "./profile-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/bg-image3.png";
 import editIcon from "/edit-icon.svg";
 import profilePhoto from "/profile-photo.svg";
 
@@ -16,7 +21,8 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [teams, setTeams] = useState<TeamShort[]>([]);
-  const [participantData, setParticipantData] = useState<ParticipantData | null>(null);
+  const [participantData, setParticipantData] =
+    useState<ParticipantData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +37,7 @@ export function ProfilePage() {
       const userData = await HackmateApi.getCurrentUser();
       setUser(userData);
       const userId = AuthService.getUserId();
-      
+
       if (userId) {
         try {
           const teamsData = await HackmateApi.getUserTeams(userId);
@@ -43,17 +49,19 @@ export function ProfilePage() {
         // Загружаем данные анкеты пользователя
         try {
           const hackathons = await HackmateApi.getHackathons();
-          
+
           // Ищем хакатоны, в которых пользователь участвует
           for (const hackathon of hackathons) {
             try {
-              const participants = await HackmateApi.getHackathonParticipants(hackathon.id);
+              const participants = await HackmateApi.getHackathonParticipants(
+                hackathon.id
+              );
               const userParticipant = participants.find(
-                (p: Participant) => 
-                  p.first_name === userData.first_name && 
+                (p: Participant) =>
+                  p.first_name === userData.first_name &&
                   p.last_name === userData.last_name
               );
-              
+
               if (userParticipant) {
                 setParticipantData({
                   participant: userParticipant,
@@ -63,7 +71,10 @@ export function ProfilePage() {
               }
             } catch (err) {
               // Пропускаем, если не удалось загрузить участников
-              console.error(`Не удалось загрузить участников для хакатона ${hackathon.id}:`, err);
+              console.error(
+                `Не удалось загрузить участников для хакатона ${hackathon.id}:`,
+                err
+              );
             }
           }
         } catch (err) {
@@ -130,70 +141,80 @@ export function ProfilePage() {
           </button>
         </div>
 
-      <div className={styles.phone}>
-        <strong>Телеграм: </strong> @{user.login || "username"}
-      </div>
+        <div className={styles.phone}>
+          <strong>Телеграм: </strong> @{user.login || "username"}
+        </div>
 
-      {participantData && (
-        <>
-          <div className={styles.addBox}>
-            <h2>Опыт в хакатонах:</h2>
-            <div className={styles.experience}>
-              {participantData.participant.experience !== undefined && participantData.participant.experience !== null
-                ? `${participantData.participant.experience} ${participantData.participant.experience === 1 ? 'хакатон' : participantData.participant.experience < 5 ? 'хакатона' : 'хакатонов'}`
-                : 'Не указано'}
-            </div>
-          </div>
-
-          <div className={styles.addBox}>
-            <h2>Основная роль:</h2>
-            <div className={styles.role}>
-              {participantData.participant.role?.name || "Не указано"}
-            </div>
-          </div>
-
-          {participantData.participant.skills && participantData.participant.skills.length > 0 && (
+        {participantData && (
+          <>
             <div className={styles.addBox}>
-              <h2 className={styles.skillsTitle}>Стек:</h2>
-              <div className={styles.skillsList}>
-                {participantData.participant.skills.map((skill) => (
-                  <span key={skill.id} className={styles.skillTag}>
-                    {skill.name}
-                  </span>
-                ))}
+              <h2>Опыт в хакатонах:</h2>
+              <div className={styles.experience}>
+                {participantData.participant.experience !== undefined &&
+                participantData.participant.experience !== null
+                  ? `${participantData.participant.experience} ${
+                      participantData.participant.experience === 1
+                        ? "хакатон"
+                        : participantData.participant.experience < 5
+                        ? "хакатона"
+                        : "хакатонов"
+                    }`
+                  : "Не указано"}
               </div>
             </div>
-          )}
 
-          {participantData.participant.add_info && (
             <div className={styles.addBox}>
-              <h2>Дополнительная информация:</h2>
-              <div className={styles.text}>{participantData.participant.add_info}</div>
-            </div>
-          )}
-        </>
-      )}
-
-      {user.bio && !participantData && (
-        <div className={styles.addBox}>
-          <h2>Дополнительная информация:</h2>
-          <div className={styles.text}>{user.bio}</div>
-        </div>
-      )}
-
-      {teams.length > 0 && (
-        <div className={styles.teams}>
-          <h2>Мои команды:</h2>
-          <div className={styles.teamsList}>
-            {teams.map((team) => (
-              <div key={team.id} className={styles.teamItem}>
-                <span className={styles.teamName}>{team.name}</span>
-                <span className={styles.teamHack}>{team.hack_name}</span>
+              <h2>Основная роль:</h2>
+              <div className={styles.role}>
+                {participantData.participant.role?.name || "Не указано"}
               </div>
-            ))}
+            </div>
+
+            {participantData.participant.skills &&
+              participantData.participant.skills.length > 0 && (
+                <div className={styles.addBox}>
+                  <h2 className={styles.skillsTitle}>Стек:</h2>
+                  <div className={styles.skillsList}>
+                    {participantData.participant.skills.map((skill) => (
+                      <span key={skill.id} className={styles.skillTag}>
+                        {skill.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            {participantData.participant.add_info && (
+              <div className={styles.addBox}>
+                <h2>Дополнительная информация:</h2>
+                <div className={styles.text}>
+                  {participantData.participant.add_info}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {user.bio && !participantData && (
+          <div className={styles.addBox}>
+            <h2>Дополнительная информация:</h2>
+            <div className={styles.text}>{user.bio}</div>
           </div>
-        </div>
-      )}
+        )}
+
+        {teams.length > 0 && (
+          <div className={styles.teams}>
+            <h2>Мои команды:</h2>
+            <div className={styles.teamsList}>
+              {teams.map((team) => (
+                <div key={team.id} className={styles.teamItem}>
+                  <span className={styles.teamName}>{team.name}</span>
+                  <span className={styles.teamHack}>{team.hack_name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

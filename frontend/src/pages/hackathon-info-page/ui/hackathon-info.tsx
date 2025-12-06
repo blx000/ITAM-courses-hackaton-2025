@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import styles from "./hackathon-info.module.css";
 import hackathonPhoto from "/hackathon-photo.svg";
-import bgImage from "/bg-image.png";
+import bgImage from "/bg-image3.png";
 import { HackmateApi } from "../../../api";
 import type { HackathonPage, Participant, User } from "../../../api";
 
@@ -11,7 +11,6 @@ export function HackathonInfoPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [hackathon, setHackathon] = useState<HackathonPage | null>(null);
-  const [participantsCount, setParticipantsCount] = useState<number>(0);
   const [isParticipating, setIsParticipating] = useState(false);
   const [checkingParticipation, setCheckingParticipation] = useState(true);
   const [, setCurrentUser] = useState<User | null>(null);
@@ -24,45 +23,29 @@ export function HackathonInfoPage() {
         setLoading(true);
         setCheckingParticipation(true);
         const hackathonId = parseInt(id);
-        
-        // Загружаем данные параллельно
-        const [hackathonData, teams, user] = await Promise.all([
+        const [hackathonData, user] = await Promise.all([
           HackmateApi.getHackathon(hackathonId),
-          HackmateApi.getHackathonTeams(hackathonId).catch(() => []),
           HackmateApi.getCurrentUser().catch(() => null),
         ]);
-        
+
         setHackathon(hackathonData);
         setCurrentUser(user);
-        
-        const count = teams.reduce(
-          (total, team) => total + (team.members?.length || 0),
-          0
-        );
-        setParticipantsCount(count);
-        
-        // Проверяем, является ли пользователь участником
-        // Загружаем участников отдельно для проверки
+
         let participants: Participant[] = [];
         if (user) {
           try {
-            participants = await HackmateApi.getHackathonParticipants(hackathonId);
-            
-            // Ищем участника в списке по имени и фамилии (без учета регистра)
-            const userParticipant = participants.find((p: Participant) => 
-              p.first_name?.toLowerCase().trim() === user.first_name?.toLowerCase().trim() && 
-              p.last_name?.toLowerCase().trim() === user.last_name?.toLowerCase().trim()
+            participants = await HackmateApi.getHackathonParticipants(
+              hackathonId
             );
-            
+            const userParticipant = participants.find(
+              (p: Participant) =>
+                p.first_name?.toLowerCase().trim() ===
+                  user.first_name?.toLowerCase().trim() &&
+                p.last_name?.toLowerCase().trim() ===
+                  user.last_name?.toLowerCase().trim()
+            );
+
             setIsParticipating(userParticipant !== undefined);
-            
-            // Логируем для отладки
-            console.log("Проверка участия:", {
-              user: `${user.first_name} ${user.last_name}`,
-              participantsCount: participants.length,
-              found: userParticipant !== undefined,
-              participantId: userParticipant?.id
-            });
           } catch (err) {
             console.error("Ошибка загрузки участников для проверки:", err);
             setIsParticipating(false);
@@ -136,11 +119,6 @@ export function HackathonInfoPage() {
                     )}`
                   : "дата проведения"}
               </h3>
-              <h4>
-                {participantsCount > 0
-                  ? `Участников: ${participantsCount}`
-                  : "кол-во участников"}
-              </h4>
             </div>
             <div className={styles.prize}>
               {hackathon ? formatPrize(hackathon.prize) : "000 000 руб"}
@@ -150,24 +128,24 @@ export function HackathonInfoPage() {
         <div className={styles.description}>
           {hackathon?.description || "описание хакатона"}
         </div>
-        
+
         {!checkingParticipation && (
           <div className={styles.actions}>
             {!isParticipating ? (
-              <button 
-                className={styles.btn} 
+              <button
+                className={styles.btn}
                 onClick={handleJoinClick}
                 disabled={!hackathon}
               >
-                Присоединиться к хакатону
+                Присоединиться
               </button>
             ) : (
-              <button 
-                className={styles.btn} 
+              <button
+                className={styles.btn}
                 onClick={handleViewParticipants}
                 disabled={!hackathon}
               >
-                Просмотреть участников и команды
+                Участники и команды
               </button>
             )}
           </div>

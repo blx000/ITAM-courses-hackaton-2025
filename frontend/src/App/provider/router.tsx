@@ -73,50 +73,10 @@ export const appRouter = createBrowserRouter([
         ),
       },
       {
-        path: "hackathons/:id/participants",
+        path: "hackathons/:id/help",
         element: (
           <ProtectedRoute>
-            <ParticipantsPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "hackathons/:id/participants/:participantId",
-        element: (
-          <ProtectedRoute>
-            <ParticipantProfilePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "hackathons/:id/teams",
-        element: (
-          <ProtectedRoute>
-            <TeamsListPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "hackathons/:id/teams/create",
-        element: (
-          <ProtectedRoute>
-            <CreateTeamPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "hackathons/:id/teams/:teamId",
-        element: (
-          <ProtectedRoute>
-            <TeamProfilePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "search",
-        element: (
-          <ProtectedRoute>
-            <SearchPage />
+            <HelpPage />
           </ProtectedRoute>
         ),
       },
@@ -167,5 +127,53 @@ export const appRouter = createBrowserRouter([
         element: <HelpPage />,
       },
     ],
+  },
+  {
+    path: "/search",
+    element: (
+      <ProtectedRoute>
+        <SearchPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/participants",
+    element: (
+      <ProtectedRoute>
+        <ParticipantsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/participants/:participantId",
+    element: (
+      <ProtectedRoute>
+        <ParticipantProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/teams",
+    element: (
+      <ProtectedRoute>
+        <TeamsListPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/teams/create",
+    element: (
+      <ProtectedRoute>
+        <CreateTeamPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/teams/:teamId",
+    element: (
+      <ProtectedRoute>
+        <TeamProfilePage />
+      </ProtectedRoute>
+    ),
   },
 ]);

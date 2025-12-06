@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { HackmateApi } from "../../../api";
 import type { User, Role, Skill } from "../../../api";
 import styles from "./profile-edit-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/bg-image2.png";
 import profilePhoto from "/profile-photo.svg";
 
 export function ProfileEditPage() {
@@ -214,5 +214,3 @@ export function ProfileEditPage() {
     </div>
   );
 }
-
-

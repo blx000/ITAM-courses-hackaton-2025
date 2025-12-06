@@ -61,6 +61,18 @@
   font-family: "Roboto Flex", sans-serif;
 }
 
+.teamPhotoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.teamPhoto {
+  width: 120px;
+  height: 120px;
+}
+
 .form {
   display: flex;
   flex-direction: column;

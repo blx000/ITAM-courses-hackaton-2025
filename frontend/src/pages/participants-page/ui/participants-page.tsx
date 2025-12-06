@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { HackmateApi } from "../../../api";
-import type { Participant, Team } from "../../../api";
+import type { Participant, Team, HackathonPage, User } from "../../../api";
+import { Navigation } from "../../../modules/navigation";
+import { ParticipantSearch } from "../../../modules/participant-search";
+import { ParticipantsHeader } from "../../../modules/participants-header";
 import styles from "./participants-page.module.css";
 import bgImage from "/bg-image.png";
 
@@ -10,9 +13,17 @@ export function ParticipantsPage() {
   const navigate = useNavigate();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [hackathon, setHackathon] = useState<HackathonPage | null>(null);
+  const [, setCurrentUser] = useState<User | null>(null);
+  const [userParticipant, setUserParticipant] = useState<Participant | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"participants" | "teams">("participants");
+  const [activeTab, setActiveTab] = useState<
+    "participants" | "teams" | "create"
+  >("participants");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -26,27 +37,42 @@ export function ParticipantsPage() {
 
   const loadData = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
       setError(null);
       const hackathonId = parseInt(id);
-      
-      // Загружаем данные с обработкой ошибок для каждого запроса отдельно
       let participantsData: Participant[] = [];
       let teamsData: Team[] = [];
-      
+      let hackathonData: HackathonPage | null = null;
+      let user: User | null = null;
+
       try {
-        participantsData = await HackmateApi.getHackathonParticipants(hackathonId);
+        hackathonData = await HackmateApi.getHackathon(hackathonId);
+        setHackathon(hackathonData);
+      } catch (err: any) {
+        console.error("Ошибка загрузки хакатона:", err);
+      }
+
+      try {
+        user = await HackmateApi.getCurrentUser();
+        setCurrentUser(user);
+      } catch (err: any) {
+        console.error("Ошибка загрузки пользователя:", err);
+      }
+
+      try {
+        participantsData = await HackmateApi.getHackathonParticipants(
+          hackathonId
+        );
       } catch (err: any) {
         console.error("Ошибка загрузки участников:", err);
         if (err.response?.status === 401) {
           setError("Необходима авторизация. Пожалуйста, войдите в систему.");
           return;
         }
-        // Продолжаем, даже если участники не загрузились
       }
-      
+
       try {
         teamsData = await HackmateApi.getHackathonTeams(hackathonId);
       } catch (err: any) {
@@ -55,12 +81,23 @@ export function ParticipantsPage() {
           setError("Необходима авторизация. Пожалуйста, войдите в систему.");
           return;
         }
-        // Продолжаем, даже если команды не загрузились
       }
-      
+
+      if (user) {
+        try {
+          const participant = await HackmateApi.getParticipant(
+            hackathonId,
+            user.id
+          );
+          setUserParticipant(participant);
+        } catch (err: any) {
+          setUserParticipant(null);
+        }
+      }
+
       setParticipants(participantsData);
       setTeams(teamsData);
-      
+
       if (participantsData.length === 0 && teamsData.length === 0) {
         setError("Не удалось загрузить данные. Пожалуйста, попробуйте позже.");
       }
@@ -68,8 +105,8 @@ export function ParticipantsPage() {
       console.error("Ошибка загрузки данных:", err);
       setError(
         err.response?.data?.message ||
-        err.message ||
-        "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
+          err.message ||
+          "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
       );
     } finally {
       setLoading(false);
@@ -92,125 +129,166 @@ export function ParticipantsPage() {
     );
   }
 
+  const hasTeam =
+    userParticipant && userParticipant.team_id && userParticipant.team_id > 0;
+
   return (
     <div className={styles.container}>
+      <ParticipantsHeader title={hackathon?.name || "Участники и команды"} />
       <div className={styles.backgroundImage}>
         <img src={bgImage} alt="background" />
       </div>
       <div className={styles.overlay} />
       <div className={styles.content}>
-        <div className={styles.header}>
-        <button
-          onClick={() => navigate(-1)}
-          className={styles.backButton}
-        >
-          ← Назад
-        </button>
-        <h1 className={styles.title}>Участники и команды</h1>
-      </div>
 
-      {error && <div className={styles.error}>{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
 
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === "participants" ? styles.active : ""}`}
-          onClick={() => setActiveTab("participants")}
-        >
-          Участники ({participants.length})
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === "teams" ? styles.active : ""}`}
-          onClick={() => setActiveTab("teams")}
-        >
-          Команды ({teams.length})
-        </button>
-      </div>
+        <div className={styles.searchContainer}>
+          <ParticipantSearch
+            placeholder={
+              activeTab === "participants"
+                ? "Поиск участника..."
+                : "Поиск команды..."
+            }
+            onSearchChange={setSearchQuery}
+          />
+        </div>
 
-      {activeTab === "participants" && (
-        <div className={styles.content}>
-          {participants.length === 0 ? (
-            <div className={styles.empty}>Участники не найдены</div>
-          ) : (
-            <div className={styles.participantsGrid}>
-              {participants.map((participant) => (
-                <div
-                  key={participant.id}
-                  className={styles.participantCard}
-                  onClick={() => handleParticipantClick(participant)}
-                >
-                  <div className={styles.participantHeader}>
-                    <h3>{`${participant.first_name} ${participant.last_name}`}</h3>
-                    {participant.team_id && participant.team_id > 0 ? (
-                      <span className={styles.teamBadge}>В команде</span>
-                    ) : (
-                      <span className={styles.freeBadge}>Свободен</span>
-                    )}
-                  </div>
-                  <div className={styles.participantInfo}>
-                    <div className={styles.role}>
-                      <strong>Роль:</strong> {participant.role.name}
+        <div className={styles.navigation}>
+          <button
+            className={`${styles.navButton} ${
+              activeTab === "participants" ? styles.active : ""
+            }`}
+            onClick={() => setActiveTab("participants")}
+          >
+            Участники
+          </button>
+          <button
+            className={`${styles.navButton} ${
+              activeTab === "teams" ? styles.active : ""
+            }`}
+            onClick={() => setActiveTab("teams")}
+          >
+            Команды
+          </button>
+          {!hasTeam && (
+            <button
+              className={`${styles.navButton} ${
+                activeTab === "create" ? styles.active : ""
+              }`}
+              onClick={() => navigate(`/hackathons/${id}/teams/create`)}
+            >
+              Создать команду
+            </button>
+          )}
+        </div>
+
+        {activeTab === "participants" && (
+          <div className={styles.listContainer}>
+            {participants.length === 0 ? (
+              <div className={styles.empty}>Участники не найдены</div>
+            ) : (
+              <div className={styles.participantsGrid}>
+                {participants
+                  .filter((participant) => {
+                    if (!searchQuery.trim()) return true;
+                    const query = searchQuery.toLowerCase();
+                    const fullName = `${participant.first_name} ${participant.last_name}`.toLowerCase();
+                    const role = participant.role.name.toLowerCase();
+                    const skills = participant.skills
+                      ?.map((s) => s.name.toLowerCase())
+                      .join(" ") || "";
+                    return (
+                      fullName.includes(query) ||
+                      role.includes(query) ||
+                      skills.includes(query)
+                    );
+                  })
+                  .map((participant) => (
+                  <div
+                    key={participant.id}
+                    className={styles.participantCard}
+                    onClick={() => handleParticipantClick(participant)}
+                  >
+                    <div className={styles.participantHeader}>
+                      <h3>{`${participant.first_name} ${participant.last_name}`}</h3>
+                      {participant.team_id && participant.team_id > 0 ? (
+                        <span className={styles.teamBadge}>В команде</span>
+                      ) : (
+                        <span className={styles.freeBadge}>Свободен</span>
+                      )}
                     </div>
-                    {participant.skills && participant.skills.length > 0 && (
-                      <div className={styles.skills}>
-                        <strong>Навыки:</strong>
-                        <div className={styles.skillsList}>
-                          {participant.skills.map((skill) => (
-                            <span key={skill.id} className={styles.skillTag}>
-                              {skill.name}
-                            </span>
-                          ))}
-                        </div>
+                    <div className={styles.participantInfo}>
+                      <div className={styles.role}>
+                        <strong>Роль:</strong>
+                        <span>{participant.role.name}</span>
                       </div>
-                    )}
+                      {participant.skills && participant.skills.length > 0 && (
+                        <div className={styles.skills}>
+                          <strong>Навыки</strong>
+                          <div className={styles.skillsList}>
+                            {participant.skills.map((skill) => (
+                              <span key={skill.id} className={styles.skillTag}>
+                                {skill.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-      {activeTab === "teams" && (
-        <div className={styles.content}>
-          {teams.length === 0 ? (
-            <div className={styles.empty}>Команды не найдены</div>
-          ) : (
-            <div className={styles.teamsGrid}>
-              {teams.map((team) => (
-                <div
-                  key={team.id}
-                  className={styles.teamCard}
-                  onClick={() => handleTeamClick(team)}
-                >
-                  <h3 className={styles.teamName}>{team.name}</h3>
-                  <div className={styles.teamInfo}>
-                    <div className={styles.teamMembers}>
-                      <strong>Участников:</strong> {team.members.length} / {team.max_size}
-                    </div>
-                    <div className={styles.membersList}>
-                      {team.members.map((member) => (
-                        <span key={member.id} className={styles.memberTag}>
-                          {member.first_name} {member.last_name}
-                        </span>
-                      ))}
+        {activeTab === "teams" && (
+          <div className={styles.listContainer}>
+            {teams.length === 0 ? (
+              <div className={styles.empty}>Команды не найдены</div>
+            ) : (
+              <div className={styles.teamsGrid}>
+                {teams
+                  .filter((team) => {
+                    if (!searchQuery.trim()) return true;
+                    const query = searchQuery.toLowerCase();
+                    const teamName = team.name.toLowerCase();
+                    const members = team.members
+                      .map(
+                        (m) => `${m.first_name} ${m.last_name}`.toLowerCase()
+                      )
+                      .join(" ");
+                    return teamName.includes(query) || members.includes(query);
+                  })
+                  .map((team) => (
+                  <div
+                    key={team.id}
+                    className={styles.teamCard}
+                    onClick={() => handleTeamClick(team)}
+                  >
+                    <h3 className={styles.teamName}>{team.name}</h3>
+                    <div className={styles.teamInfo}>
+                      <div className={styles.teamMembers}>
+                        <strong>Участников:</strong> {team.members.length} /{" "}
+                        {team.max_size}
+                      </div>
+                      <div className={styles.membersList}>
+                        {team.members.map((member) => (
+                          <span key={member.id} className={styles.memberTag}>
+                            {member.first_name} {member.last_name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      
-      {activeTab === "teams" && (
-        <button
-          className={styles.createTeamButton}
-          onClick={() => navigate(`/hackathons/${id}/teams/create`)}
-        >
-          Создать команду
-        </button>
-      )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+      <Navigation />
     </div>
   );
 }
