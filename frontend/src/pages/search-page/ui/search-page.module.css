@@ -1,0 +1,160 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 16px 24px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.searchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.searchIcon img {
+  width: 20px;
+  height: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(17, 18, 4, 0.95);
+  color: #f9ffee;
+  font-size: 16px;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #aceb4c;
+}
+
+.searchInput::placeholder {
+  color: rgba(249, 255, 238, 0.5);
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(249, 255, 238, 0.6);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Roboto Flex", sans-serif;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  color: #aceb4c;
+  border-bottom-color: #aceb4c;
+}
+
+.tab:hover {
+  color: #aceb4c;
+}
+
+.results {
+  flex: 1;
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resultCard {
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(17, 18, 4, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resultCard:hover {
+  border-color: #aceb4c;
+  transform: translateY(-2px);
+}
+
+.resultCard h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.resultCard p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.7);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(249, 255, 238, 0.6);
+  font-size: 16px;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aceb4c;
+  font-size: 16px;
+  font-family: "Roboto Flex", sans-serif;
+}
+

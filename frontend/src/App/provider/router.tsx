@@ -13,8 +13,20 @@ import { NotificationPage } from "../../pages/notification-page";
 import { HackathonInfoPage } from "../../pages/hackathon-info-page";
 import { SearchPage } from "../../pages/search-page";
 import { MyComandPage } from "../../pages/my-comands-page";
+import { LoginPage } from "../../pages/login-page";
+import { ParticipantsPage } from "../../pages/participants-page";
+import { ParticipantProfilePage } from "../../pages/participant-profile-page";
+import { TeamProfilePage } from "../../pages/team-profile-page";
+import { TeamsListPage } from "../../pages/teams-list-page";
+import { CreateTeamPage } from "../../pages/create-team-page";
+import { ProfileEditPage } from "../../pages/profile-edit-page";
+import { ProtectedRoute } from "../../shared/components/protected-route";
 
 export const appRouter = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
   {
     path: "/",
     element: <RootLayout />,
@@ -22,23 +34,83 @@ export const appRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "comands",
-        element: <MyComandPage />,
+        element: (
+          <ProtectedRoute>
+            <MyComandPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "calendar",
-        element: <CalendarPage />,
+        element: (
+          <ProtectedRoute>
+            <CalendarPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "notifications",
-        element: <NotificationPage />,
+        element: (
+          <ProtectedRoute>
+            <NotificationPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "hackathons/:id",
-        element: <HackathonInfoPage />,
+        element: (
+          <ProtectedRoute>
+            <HackathonInfoPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id/participants",
+        element: (
+          <ProtectedRoute>
+            <ParticipantsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id/participants/:participantId",
+        element: (
+          <ProtectedRoute>
+            <ParticipantProfilePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id/teams",
+        element: (
+          <ProtectedRoute>
+            <TeamsListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id/teams/create",
+        element: (
+          <ProtectedRoute>
+            <CreateTeamPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id/teams/:teamId",
+        element: (
+          <ProtectedRoute>
+            <TeamProfilePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "*",
@@ -48,17 +120,29 @@ export const appRouter = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <ProfileLayout />,
+    element: (
+      <ProtectedRoute>
+        <ProfileLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
         element: <ProfilePage />,
       },
+      {
+        path: "edit",
+        element: <ProfileEditPage />,
+      },
     ],
   },
   {
     path: "/form",
-    element: <FormLayout />,
+    element: (
+      <ProtectedRoute>
+        <FormLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -78,6 +162,10 @@ export const appRouter = createBrowserRouter([
   },
   {
     path: "/search",
-    element: <SearchPage />,
+    element: (
+      <ProtectedRoute>
+        <SearchPage />
+      </ProtectedRoute>
+    ),
   },
 ]);

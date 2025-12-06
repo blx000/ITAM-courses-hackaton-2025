@@ -41,18 +41,22 @@ export type User = {
   first_name: string;
   last_name: string;
   bio: string;
+  is_admin?: boolean;
+  login?: string;
 }
 export type Participant = {
   id: number;
   first_name: string;
   last_name: string;
-  roles: string[];
+  role: Role;
+  skills: Skill[];
   team_id: number;
 }
 export type Team = {
   id: number;
   name: string;
-  members: User[];
+  captain_id: number;
+  members: Participant[];
   max_size: number;
 }
 export type TeamShort = {
@@ -87,5 +91,6 @@ export type Request = {
 export type Invite = {
   id: number;
   team_id: number;
-  participant_id: number;
+  participant_id?: number;
+  participant?: Participant;
 }

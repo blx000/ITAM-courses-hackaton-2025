@@ -20,6 +20,7 @@ export const HackmateApi = {
   getRoles: CommonService.getRoles,
   getSkills: CommonService.getSkills,
 
+  getCurrentUser: UserService.getCurrentUser,
   getUser: UserService.getUser,
   getUserTeams: UserService.getUserTeams,
 

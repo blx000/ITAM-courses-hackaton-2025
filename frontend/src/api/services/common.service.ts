@@ -3,7 +3,7 @@ import type { Health, Role, Skill } from "../types";
 
 export const CommonService = {
   healthCheck: () =>
-    api.get<Health>("/api/healthchek").then((resp) => resp.data),
+    api.get<Health>("/api/healthcheсk").then((resp) => resp.data),
   getRoles: () =>
     api.get<Role[]>("/api/roles").then((resp) => resp.data),
   getSkills: () =>

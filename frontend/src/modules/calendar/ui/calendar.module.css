@@ -1,56 +1,156 @@
 .calendar {
-  margin: 30px auto 0;
+  margin: 20px auto 0;
+  max-width: 328px;
 }
+
 .calendarHeader {
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 50px;
+  margin-bottom: 24px;
 }
+
 .currentMonth {
   font-size: 20px;
   font-weight: 600;
   display: flex;
   flex-direction: column;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
 }
+
+.month {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.year {
+  font-size: 14px;
+  text-align: center;
+}
+
 .navButton {
   cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
+
+.navButton:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.navButton img {
+  filter: brightness(0) invert(1);
+}
+
 .weekdays {
-  margin-top: 31px;
+  margin-top: 0;
   height: 32px;
-  gap: 17px;
+  gap: 0;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   justify-content: space-between;
+  margin-bottom: 16px;
 }
+
 .weekday {
   text-align: center;
   font-weight: 600;
   font-size: 14px;
   text-transform: uppercase;
+  color: #d9d9d9;
+  font-family: "Roboto Flex", sans-serif;
 }
+
+.weekday:last-child {
+  color: #aceb4c;
+}
+
 .daysGrid {
   display: grid;
+  justify-items: center;
   grid-template-columns: repeat(7, 1fr);
-  gap: 17px;
+  gap: 0;
+  row-gap: 9px;
 }
+
 .day {
   width: 32px;
   height: 32px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 24px;
   cursor: pointer;
   font-weight: 600;
+  position: relative;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: rgba(217, 217, 217, 1);
 }
+
+.day:hover:not(.otherMonthDay) {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(90, 90, 90, 1);
+}
+
 .otherMonthDay {
   color: rgba(90, 90, 90, 1);
   cursor: default;
 }
+
+.otherMonthDay:hover {
+  background: transparent;
+}
+
 .today {
-  background: rgba(217, 217, 217, 1);
+  background: #aceb4c;
+  color: #111204;
   font-weight: 600;
+}
+
+.dayNumber {
+  position: relative;
+  z-index: 2;
+}
+
+.hackathonIndicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #aceb4c;
+  z-index: 3;
+}
+
+.hasHackathons {
+  background: rgba(172, 235, 76, 0.3);
+}
+
+.hasHackathons .dayNumber {
+  color: #d9d9d9;
+}
+
+.hasHackathons.today {
+  background: #aceb4c;
+}
+
+.hasHackathons.today .dayNumber {
+  color: #111204;
+}
+
+.hasHackathons.today .hackathonIndicator {
+  background: #111204;
 }

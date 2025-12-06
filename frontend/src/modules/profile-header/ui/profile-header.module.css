@@ -1,8 +1,14 @@
 .container {
-  padding: 27px 23px 12px;
+  margin: 0 auto;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 375px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  background-color: black;
 }
 h1 {
   font-size: 20px;
@@ -11,5 +17,17 @@ h1 {
 .icons {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
+}
+.icons img {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+  transition: all 0.2s;
+}
+
+.icons img:hover {
+  opacity: 0.8;
 }

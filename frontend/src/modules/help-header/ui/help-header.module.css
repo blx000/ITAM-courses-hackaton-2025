@@ -1,15 +1,36 @@
-.container {
-  padding: 27px 23px 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 h1 {
   font-size: 20px;
   font-weight: 600;
+  color: rgba(249, 255, 238, 1);
 }
-.icons {
+.container {
+  background-color: rgba(17, 18, 4, 1);
+  margin: 0 auto;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  max-width: 375px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.icons {
+  display: flex;
   gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.icons img {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+  transition: all 0.2s;
+}
+
+.icons img:hover {
+  opacity: 0.8;
 }

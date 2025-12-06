@@ -1,30 +1,403 @@
 .container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 16px 24px;
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  animation: fadeIn 0.3s ease-in;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #f9ffee;
+}
+
+.errorMessage {
+  background-color: rgba(254, 215, 215, 0.2);
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(252, 129, 129, 0.3);
+}
+
+.successMessage {
+  background-color: rgba(198, 246, 213, 0.2);
+  color: #68d391;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(104, 211, 145, 0.3);
+}
+
 .info {
   display: flex;
   gap: 20px;
+  align-items: flex-start;
+  position: relative;
 }
+
+.photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(172, 235, 76, 0.2);
+  border: 2px solid #aceb4c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.textBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.editField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.editField label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.17);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #aceb4c;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 h2 {
   font-size: 16px;
   font-weight: 600;
+  margin: 0;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
 }
+
+.surname {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
 h3 {
   font-size: 14px;
   font-weight: 600;
-  color: rgba(106, 106, 106, 1);
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
 }
+
+.editButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editButton:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.editButton img {
+  width: 24px;
+  height: 24px;
+}
+
+.editActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: -10px;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 10px 16px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.cancelButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f9ffee;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.saveButton {
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.cancelButton:disabled,
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .phone {
   padding: 10px 12px;
-  background-color: rgba(217, 217, 217, 1);
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
 }
+
+.phone strong {
+  color: #f9ffee;
+}
+
 .addBox {
   padding: 10px 12px;
-  background-color: rgba(217, 217, 217, 1);
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 24px;
   min-height: 176px;
   width: 100%;
+}
+
+.addBox h2 {
+  margin-bottom: 12px;
+  color: #f9ffee;
+  font-size: 16px;
+}
+
+.text {
+  color: #f9ffee;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.17);
+  border-radius: 24px;
+  font-size: 14px;
+  font-family: "Roboto Flex", sans-serif;
+  resize: vertical;
+  color: #f9ffee;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #aceb4c;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.textarea::placeholder {
+  color: rgba(249, 255, 238, 0.5);
+}
+
+.teams {
+  margin-top: 12px;
+}
+
+.teams h2 {
+  margin-bottom: 12px;
+  color: #f9ffee;
+  font-size: 16px;
+}
+
+.teamsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.teamItem {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.teamItem:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(4px);
+}
+
+.teamName {
+  font-weight: 600;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.teamHack {
+  font-size: 12px;
+  color: rgba(249, 255, 238, 0.7);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.skills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skillsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 10px 12px;
+  border: 2px solid #f9ffee;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+  background: transparent;
+}
+
+.experience {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.role {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
 }

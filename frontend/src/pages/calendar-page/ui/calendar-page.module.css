@@ -1,24 +1,192 @@
 .container {
-  background-color: black;
-  color: azure;
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  padding: 16px 24px;
+  padding-bottom: 100px;
+  animation: fadeIn 0.3s ease-in;
+  overflow: hidden;
 }
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error {
+  background-color: rgba(254, 215, 215, 0.2);
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(252, 129, 129, 0.3);
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
 .options {
   display: flex;
   justify-content: center;
   gap: 15px;
+  margin-bottom: 20px;
 }
+
 .item {
   width: 78px;
   height: 36px;
   border-radius: 24px;
-  padding: 10px 0;
+  padding: 10px 12px;
   text-align: center;
-  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  color: #f9ffee;
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.item.active {
+  background: #aceb4c;
+  color: #111204;
+}
+
 .hacks {
-  margin-top: 30px;
+  margin-top: 24px;
 }
-h2 {
+
+.hacks h2 {
   font-size: 16px;
   font-weight: 600;
+  color: #f9ffee;
+  margin: 0 0 12px 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #f9ffee;
+  font-size: 16px;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.hackathonsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hackItem {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hackItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hackItem h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0 0 8px 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.hackItem p {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.8);
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.dates {
+  font-size: 12px;
+  color: rgba(249, 255, 238, 0.7);
+  margin-bottom: 12px;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.viewButton {
+  width: 100%;
+  padding: 10px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.viewButton:hover {
+  background: #9dd83a;
+  transform: translateY(-2px);
 }

@@ -2,6 +2,12 @@ import { useState } from "react";
 import styles from "./calendar.module.css";
 import leftArrow from "/left-arrow.svg";
 import rightArrow from "/right-arrow.svg";
+import type { HackathonShort } from "../../../api";
+
+interface CalendarProps {
+  hackathons?: HackathonShort[];
+  onDateClick?: (date: Date) => void;
+}
 
 const getMonthName = (date: Date): string => {
   const months = [
@@ -25,9 +31,30 @@ const getShortDayName = (dayIndex: number): string => {
   return days[dayIndex];
 };
 
-export function Calendar() {
+const isSameDay = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  );
+};
+
+const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
+  return date >= startDate && date <= endDate;
+};
+
+interface DayInfo {
+  date: Date;
+  dayNumber: number;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  hasHackathons: boolean;
+  hackathons: HackathonShort[];
+}
+
+export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const generateDays = () => {
+  const generateDays = (): DayInfo[] => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -35,7 +62,7 @@ export function Calendar() {
     const firstDayOfWeek = firstDay.getDay();
     const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
     const daysInMonth = lastDay.getDate();
-    const days = [];
+    const days: DayInfo[] = [];
 
     for (let i = 0; i < startDay; i++) {
       const prevMonthDate = new Date(year, month, i - startDay + 1);
@@ -44,21 +71,36 @@ export function Calendar() {
         dayNumber: prevMonthDate.getDate(),
         isCurrentMonth: false,
         isToday: false,
+        hasHackathons: false,
+        hackathons: [],
       });
     }
 
     const today = new Date();
     for (let i = 1; i <= daysInMonth; i++) {
       const dayDate = new Date(year, month, i);
-      const isToday =
-        dayDate.getDate() === today.getDate() &&
-        dayDate.getMonth() === today.getMonth() &&
-        dayDate.getFullYear() === today.getFullYear();
+      const isToday = isSameDay(dayDate, today);
+      
+      // Check if this date has hackathons
+      const hasHackathons = hackathons.some((hack) => {
+        const startDate = new Date(hack.start_date);
+        const endDate = new Date(hack.end_date);
+        return isDateInRange(dayDate, startDate, endDate);
+      });
+      
+      const hackathonsOnDate = hackathons.filter((hack) => {
+        const startDate = new Date(hack.start_date);
+        const endDate = new Date(hack.end_date);
+        return isDateInRange(dayDate, startDate, endDate);
+      });
+      
       days.push({
         date: dayDate,
         dayNumber: i,
         isCurrentMonth: true,
         isToday,
+        hasHackathons,
+        hackathons: hackathonsOnDate,
       });
     }
 
@@ -71,6 +113,8 @@ export function Calendar() {
         dayNumber: i,
         isCurrentMonth: false,
         isToday: false,
+        hasHackathons: false,
+        hackathons: [],
       });
     }
     return days;
@@ -117,10 +161,25 @@ export function Calendar() {
             key={index}
             className={`${styles.day} ${
               day.isCurrentMonth ? styles.currentMonthDay : styles.otherMonthDay
-            } ${day.isToday ? styles.today : ""}`}
+            } ${day.isToday ? styles.today : ""} ${
+              day.hasHackathons ? styles.hasHackathons : ""
+            }`}
+            onClick={() => {
+              if (day.isCurrentMonth && onDateClick) {
+                onDateClick(day.date);
+              }
+            }}
+            title={
+              day.hasHackathons
+                ? day.hackathons.map((h) => h.name).join(", ")
+                : undefined
+            }
           >
             <div className={styles.dayNumber}>{day.dayNumber}</div>
             {day.isToday && <div className={styles.todayIndicator} />}
+            {day.hasHackathons && (
+              <div className={styles.hackathonIndicator} />
+            )}
           </div>
         ))}
       </div>

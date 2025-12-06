@@ -1,8 +1,33 @@
 .container {
+  position: relative;
+  min-height: 100vh;
+  padding: 0 24px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 100px;
 }
 .info {
   text-align: center;
@@ -17,19 +42,53 @@
   justify-content: space-between;
 }
 .description {
+  color: rgba(249, 255, 238, 1);
   padding: 16px;
   border-radius: 24px;
   width: 100%;
   min-height: 291px;
-  background-color: rgba(217, 217, 217, 1);
+  background: rgba(17, 18, 4, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 26px auto 50px;
+  width: 100%;
+  max-width: 400px;
+}
+
 .btn {
   color: black;
-  margin: 26px auto 50px;
-  width: fit-content;
-  padding: 10px;
+  width: 100%;
+  padding: 12px 24px;
   border-radius: 24px;
   font-size: 16px;
   font-weight: 600;
   background-color: rgba(172, 235, 76, 1);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btnSecondary {
+  color: rgba(172, 235, 76, 1);
+  width: 100%;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: transparent;
+  border: 1px solid rgba(172, 235, 76, 1);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnSecondary:hover {
+  background-color: rgba(172, 235, 76, 0.1);
 }

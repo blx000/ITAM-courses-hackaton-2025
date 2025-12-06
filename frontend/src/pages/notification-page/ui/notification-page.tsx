@@ -1,3 +1,4 @@
+import styles from './notification-page.module.css'
 export function NotificationPage() {
-  return <div>Страница уведомлений в разработке...</div>;
+  return <div className={styles.page}>Страница уведомлений в разработке...</div>;
 }

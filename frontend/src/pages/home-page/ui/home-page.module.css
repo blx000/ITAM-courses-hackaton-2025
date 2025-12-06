@@ -1,0 +1,242 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+}
+
+.backgroundImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 18, 4, 0.3);
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100vh;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.loading,
+.empty,
+.error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #f9ffee;
+  font-size: 16px;
+}
+
+.error {
+  color: #fc8181;
+}
+
+.featuredCard {
+  background: rgba(17, 18, 4, 0.95);
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 20px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.featuredCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(172, 235, 76, 0.2);
+}
+
+.featuredContent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.featuredIcon {
+  background: #111204;
+  border: 1.25px solid #c0fe62;
+  border-radius: 20px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.featuredInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.featuredHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.featuredTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.featuredCompany {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.featuredDescription {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.featuredPrize {
+  background: #aceb4c;
+  color: #f9ffee;
+  padding: 4px;
+  border-radius: 8px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 600;
+  align-self: flex-end;
+  width: 106px;
+}
+
+.hackathonsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 24px;
+  max-height: calc(100vh - 300px);
+}
+
+.hackathonCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hackathonCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
+}
+
+.hackathonContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.hackathonIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hackathonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hackathonTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonCompany {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonPrize {
+  background: #a0d949;
+  color: #f9ffee;
+  padding: 4px;
+  border-radius: 8px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 600;
+  width: 106px;
+  flex-shrink: 0;
+}
+
+
