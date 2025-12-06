@@ -13,6 +13,28 @@ INSERT INTO hackmate.hackathon(admin_id, name, description, start_date, end_date
 VALUES
     (1, 'SECOND HACK', 'SECOND HACK DESC', '07-12-2024', '07-20-2024', 15, 5);
 
+--insert fake users
+insert into hackmate.user(id, first_name, last_name, bio)
+values
+    (1234556, 'Ivan', 'Ivanov', 'MyBio');
+
+insert into hackmate.participant(user_id, role_id, hack_id, experience, additional_info)
+values
+    (1234556, 1, 1, 5, 'Joined first hack');
+
+insert into hackmate.auth(code, user_id, first_name, last_name, expires_at)
+values
+    ('123456', 1234556, 'Ivan', 'Ivanov', '12-12-2025');
+
+-- insert into hackmate.team(name, captain_id, hackathon_id, max_size)
+-- values
+--     ('Ivanov Team', 1, 1, 5);
+--
+-- insert into hackmate.team_participant(participant_id, team_id)
+-- values
+--     (1, 1);
+
+
 
 -- +goose StatementEnd
 

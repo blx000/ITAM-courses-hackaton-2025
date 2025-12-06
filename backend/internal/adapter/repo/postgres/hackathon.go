@@ -16,6 +16,144 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) AcceptInvite(ctx context.Context, inviteId int, teamId int, participantId int) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertQuery, insertArgs := sb.InsertInto("hackmate.team_participant").
+		Cols("participant_id", "team_id").
+		Values(participantId, teamId).
+		Build()
+
+	_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to add participant to team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	deleteQuery, deleteArgs := sb2.DeleteFrom("hackmate.invite").
+		Where(sb2.Equal("id", inviteId)).
+		Build()
+
+	result, err := tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to delete invite: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("invite not found")
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetParticipantGeneral(ctx context.Context, participantId int) (*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	participantQuery, participantArgs := sb.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"p.experience",
+		"p.additional_info",
+		"p.hack_id",
+		"COALESCE(tp.team_id, -1) as team_id",
+	).
+		From("hackmate.participant p").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp",
+			"p.id = tp.participant_id").
+		Where(sb.Equal("p.id", participantId)).
+		Build()
+
+	var participant repo.Participant
+
+	err := h.pool.QueryRow(ctx, participantQuery, participantArgs...).Scan(
+		&participant.Id,
+		&participant.FirstName,
+		&participant.LastName,
+		&participant.Role.ID,
+		&participant.Role.Name,
+		&participant.Experience,
+		&participant.AddInfo,
+		&participant.HackId,
+		&participant.TeamId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("participant not found")
+		}
+		return nil, fmt.Errorf("failed to get participant: %w", err)
+	}
+	fmt.Println(participant)
+
+	return &participant, nil
+}
+
+func (h *HackRepo) GetInvite(ctx context.Context, inviteId int) (*repo.Invitation, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"i.id",
+		"i.team_id",
+		"i.participant_id",
+		"t.hackathon_id as hack_id",
+	).
+		From("hackmate.invite i").
+		Join("hackmate.team t", "i.team_id = t.id").
+		Where(sb.Equal("i.id", inviteId)).
+		Build()
+
+	var invite repo.Invitation
+
+	err := h.pool.QueryRow(ctx, query, args...).Scan(
+		&invite.Id,
+		&invite.TeamId,
+		&invite.ParticipantId,
+		&invite.HackId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("invite not found")
+		}
+		return nil, fmt.Errorf("failed to get invite: %w", err)
+	}
+
+	return &invite, nil
+}
+
+func (h *HackRepo) CreateInvite(ctx context.Context, teamId int, recId int) error {
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	query, args := sb.InsertInto("hackmate.invite").
+		Cols("team_id", "participant_id").
+		Values(teamId, recId).
+		Build()
+
+	_, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to create invite: %w", err)
+	}
+
+	return nil
+}
+
 func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO) (int, error) {
 	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
 	fmt.Println(dto)

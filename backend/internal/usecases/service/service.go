@@ -14,12 +14,14 @@ const (
 )
 
 var (
-	ErrHackNotFound               = errors.New("hack not found")
-	ErrAuthCodeNotFound           = errors.New("auth code not found")
-	ErrUserAlreadyJoinedHackathon = errors.New("user already joined hackathon")
-	ErrUserAlreadyJoinedTeam      = errors.New("user already joined team")
-	ErrUserNotFound               = errors.New("user not found")
-	ErrInvalidCredentials         = errors.New("invalid credentials")
+	ErrHackNotFound                 = errors.New("hack not found")
+	ErrAuthCodeNotFound             = errors.New("auth code not found")
+	ErrUserAlreadyJoinedHackathon   = errors.New("user already joined hackathon")
+	ErrUserAlreadyJoinedTeam        = errors.New("user already joined team")
+	ErrUserNotFound                 = errors.New("user not found")
+	ErrInvalidCredentials           = errors.New("invalid credentials")
+	ErrOnlyCaptainCanAcceptRequests = errors.New("only captain can accept requests")
+	ErrUserWithoutTeam              = errors.New("user without team")
 )
 
 type Service interface {
@@ -38,6 +40,11 @@ type Service interface {
 	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
 	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
+
+	CreateInvite(ctx context.Context, hackId int, senderId int64, rectId int) error
+	CreateJoinRequest(ctx context.Context, hackId int, teamId int, participantId int) error
+	AcceptInvite(ctx context.Context, hackId int, inviteId int, userId int64) error
+	AcceptJoinRequest(ctx context.Context, hackId int, requestId int, participantId int) error
 }
 
 var _ Service = (*ServiceImpl)(nil)
@@ -47,6 +54,70 @@ type ServiceImpl struct {
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+}
+
+func (s *ServiceImpl) CreateInvite(ctx context.Context, hackId int, senderId int64, rectId int) error {
+	sender, err := s.hackRepo.GetParticipant(ctx, hackId, senderId)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if sender.TeamId == TeamNull {
+		return ErrUserWithoutTeam
+	}
+	receiver, err := s.hackRepo.GetParticipantGeneral(ctx, rectId)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if receiver.TeamId != TeamNull {
+		return ErrUserAlreadyJoinedTeam
+	}
+
+	err = s.hackRepo.CreateInvite(ctx, sender.TeamId, rectId)
+	if err != nil {
+		fmt.Println(err)
+
+		return err
+	}
+
+	return nil
+}
+
+func (s *ServiceImpl) CreateJoinRequest(ctx context.Context, hackId int, teamId int, participantId int) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *ServiceImpl) AcceptInvite(ctx context.Context, hackId int, inviteId int, userId int64) error {
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to get participant")
+	}
+	if participant.TeamId != TeamNull {
+		return ErrUserAlreadyJoinedTeam
+	}
+	invite, err := s.hackRepo.GetInvite(ctx, inviteId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to get invite")
+	}
+	if invite.ParticipantId != participant.Id {
+		return fmt.Errorf("mismatch participant and invite.part_id")
+	}
+
+	err = s.hackRepo.AcceptInvite(ctx, inviteId, invite.TeamId, participant.Id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (s *ServiceImpl) AcceptJoinRequest(ctx context.Context, hackId int, requestId int, participantId int) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (s *ServiceImpl) CreateHack(ctx context.Context, hack *repo.HackathonGeneralDTO) (int, error) {
@@ -170,7 +241,7 @@ func (s *ServiceImpl) GetHack(ctx context.Context, hackId int) (*repo.HackathonG
 func (s *ServiceImpl) EnterHackathon(ctx context.Context, create repo.FormCreate) error {
 	_, err := s.hackRepo.GetParticipant(ctx, create.HackId, create.UserId)
 	if err == nil {
-		fmt.Println("hack already joined hackathon")
+		fmt.Println("user already joined hackathon")
 		return ErrUserAlreadyJoinedHackathon
 	}
 	if !errors.Is(err, repo.ErrParticipantNotFound) {
