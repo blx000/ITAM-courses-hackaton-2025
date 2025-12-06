@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS hackmate.hackathon (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     max_teams INT NOT NULL,
-    max_team_size INT NOT NULL
+    max_team_size INT NOT NULL,
+    prize INT NOT NULL
 );
 
 -- +goose StatementEnd

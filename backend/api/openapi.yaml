@@ -521,6 +521,23 @@ paths:
         '409':
           description: User already joined hackathon
 
+  /api/hacks/my:
+    get:
+      summary: Get users hackathons
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HackathonShort'
+        '401':
+          description: Unauthorized
+
   /api/hacks/{hack_id}/teams:
     get:
       summary: Get hackathon info

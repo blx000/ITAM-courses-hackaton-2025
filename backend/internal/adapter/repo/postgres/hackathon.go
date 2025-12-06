@@ -16,6 +16,151 @@ type HackRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (h *HackRepo) CreateRequest(ctx context.Context, teamId int, senderId int) error {
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	query, args := sb.InsertInto("hackmate.join_request").
+		Cols("team_id", "participant_id").
+		Values(teamId, senderId).
+		Build()
+
+	_, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to create join request: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetRequest(ctx context.Context, requestId int) (*repo.JoinRequest, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"jr.id",
+		"jr.team_id",
+		"jr.participant_id",
+		"t.captain_id",
+		"t.hackathon_id as hack_id",
+	).
+		From("hackmate.join_request jr").
+		Join("hackmate.team t", "jr.team_id = t.id").
+		Where(sb.Equal("jr.id", requestId)).
+		Build()
+
+	var request repo.JoinRequest
+
+	err := h.pool.QueryRow(ctx, query, args...).Scan(
+		&request.Id,
+		&request.TeamId,
+		&request.ParticipantId,
+		&request.CaptainId,
+		&request.HackId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("join request not found")
+		}
+		return nil, fmt.Errorf("failed to get join request: %w", err)
+	}
+
+	return &request, nil
+}
+
+func (h *HackRepo) AcceptRequest(ctx context.Context, requestId int, teamId int, participantId int) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertQuery, insertArgs := sb.InsertInto("hackmate.team_participant").
+		Cols("participant_id", "team_id").
+		Values(participantId, teamId).
+		Build()
+
+	_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+	fmt.Println(participantId, teamId)
+
+	if err != nil {
+		return fmt.Errorf("failed to add participant to team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	deleteQuery, deleteArgs := sb2.DeleteFrom("hackmate.join_request").
+		Where(sb2.Equal("id", requestId)).
+		Build()
+
+	result, err := tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to delete join request: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return nil
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"h.id",
+		"h.admin_id",
+		"h.name",
+		"h.start_date",
+		"h.end_date",
+	).
+		From("hackmate.hackathon h").
+		Join("hackmate.participant p", "h.id = p.hack_id").
+		Where(sb.Equal("p.user_id", userId)).
+		OrderByAsc("h.start_date").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []*repo.HackathonGeneralDTO{}, nil
+		}
+		return nil, fmt.Errorf("failed to query user's hackathons: %w", err)
+	}
+	defer rows.Close()
+
+	var hackathons []*repo.HackathonGeneralDTO
+
+	for rows.Next() {
+		var hackathon repo.HackathonGeneralDTO
+
+		err := rows.Scan(
+			&hackathon.Id,
+			&hackathon.AdminId,
+			&hackathon.Name,
+			&hackathon.StartDate,
+			&hackathon.EndDate,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan hackathon: %w", err)
+		}
+
+		hackathons = append(hackathons, &hackathon)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return hackathons, nil
+}
+
 func (h *HackRepo) AcceptInvite(ctx context.Context, inviteId int, teamId int, participantId int) error {
 	tx, err := h.pool.Begin(ctx)
 	if err != nil {
@@ -166,6 +311,7 @@ func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO
 			"end_date",
 			"max_teams",
 			"max_team_size",
+			"prize",
 		).
 		Values(
 			dto.AdminId,
@@ -175,6 +321,7 @@ func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO
 			dto.EndDate,
 			dto.MaxTeams,
 			dto.MaxTeamSize,
+			dto.Prize,
 		).
 		Returning("id").
 		Build()
