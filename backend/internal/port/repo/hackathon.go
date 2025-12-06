@@ -21,6 +21,11 @@ type Hackathon interface {
 	GetTeamProfile(ctx context.Context, teamId int) (*TeamShort, error)
 	GetParticipantProfile(ctx context.Context, participantId int) (*Participant, error)
 	CreateHack(ctx context.Context, dto *HackathonGeneralDTO) (int, error)
+	GetParticipantGeneral(ctx context.Context, participantId int) (*Participant, error)
+
+	CreateInvite(ctx context.Context, teamId int, recId int) error
+	GetInvite(ctx context.Context, inviteId int) (*Invitation, error)
+	AcceptInvite(ctx context.Context, inviteId int, teamId int, participantId int) error
 }
 
 var (

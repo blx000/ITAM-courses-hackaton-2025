@@ -1185,6 +1185,14 @@ func (response PostApiHacksHackIdEnter400Response) VisitPostApiHacksHackIdEnterR
 	return nil
 }
 
+type PostApiHacksHackIdEnter409Response struct {
+}
+
+func (response PostApiHacksHackIdEnter409Response) VisitPostApiHacksHackIdEnterResponse(w http.ResponseWriter) error {
+	w.WriteHeader(409)
+	return nil
+}
+
 type GetApiHacksHackIdInvitationsRequestObject struct {
 	HackId int `json:"hack_id"`
 }

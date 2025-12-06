@@ -259,6 +259,9 @@ func (s Server) PostApiHacksHackIdEnter(ctx context.Context, request gen.PostApi
 	err = s.service.EnterHackathon(ctx, formCreate)
 	if err != nil {
 		fmt.Println(err)
+		if errors.Is(err, service.ErrUserAlreadyJoinedHackathon) {
+			return gen.PostApiHacksHackIdEnter409Response{}, nil
+		}
 		return nil, fmt.Errorf("failed to enter hackathon: %w", err)
 	}
 	return gen.PostApiHacksHackIdEnter201Response{}, nil
@@ -270,8 +273,30 @@ func (s Server) GetApiHacksHackIdInvitations(ctx context.Context, request gen.Ge
 }
 
 func (s Server) GetApiHacksHackIdInvitationsInviteIdAccept(ctx context.Context, request gen.GetApiHacksHackIdInvitationsInviteIdAcceptRequestObject) (gen.GetApiHacksHackIdInvitationsInviteIdAcceptResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	err = s.service.AcceptInvite(ctx, request.HackId, request.InviteId, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to accept invite: %w", err)
+	}
+	return gen.GetApiHacksHackIdInvitationsInviteIdAccept201Response{}, nil
 }
 
 func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.GetApiHacksHackIdParticipantsRequestObject) (gen.GetApiHacksHackIdParticipantsResponseObject, error) {
@@ -373,8 +398,35 @@ func (s Server) GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, 
 }
 
 func (s Server) PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, request gen.PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject) (gen.PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	err = s.service.CreateInvite(ctx, request.HackId, user.ID, request.ParticipantsId)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, service.ErrUserWithoutTeam) {
+			return nil, fmt.Errorf("Invite sender without team")
+		}
+		return nil, fmt.Errorf("failed to invite: %w", err)
+	}
+
+	return gen.PostApiHacksHackIdParticipantsParticipantsIdInvite201Response{}, nil
 }
 
 func (s Server) GetApiHacksHackIdRequests(ctx context.Context, request gen.GetApiHacksHackIdRequestsRequestObject) (gen.GetApiHacksHackIdRequestsResponseObject, error) {

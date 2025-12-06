@@ -518,6 +518,8 @@ paths:
           description: Successful create
         '400':
           description: Invalid input
+        '409':
+          description: User already joined hackathon
 
   /api/hacks/{hack_id}/teams:
     get:
