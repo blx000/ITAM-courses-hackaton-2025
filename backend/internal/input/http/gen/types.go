@@ -100,12 +100,13 @@ type Skill struct {
 
 // Team defines model for Team.
 type Team struct {
-	CaptainId int           `json:"captain_id"`
-	CurSize   int           `json:"cur_size"`
-	Id        int           `json:"id"`
-	MaxSize   int           `json:"max_size"`
-	Members   []Participant `json:"members"`
-	Name      string        `json:"name"`
+	CaptainId   int            `json:"captain_id"`
+	CurSize     int            `json:"cur_size"`
+	Id          int            `json:"id"`
+	MaxSize     int            `json:"max_size"`
+	Members     []Participant  `json:"members"`
+	Name        string         `json:"name"`
+	NeededRoles *[]Role        `json:"needed_roles,omitempty"`
 }
 
 // TeamCreate defines model for TeamCreate.

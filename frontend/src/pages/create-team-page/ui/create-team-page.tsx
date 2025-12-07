@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { HackmateApi } from "../../../api";
+import { useApp } from "../../../shared/context";
 import type { Role } from "../../../api";
 import { ProfileHeader } from "../../../modules/profile-header";
 import { Navigation } from "../../../modules/navigation";
@@ -12,38 +13,21 @@ import addIcon from "/add-icon.svg";
 export function CreateTeamPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { roles: availableRoles, loading: appLoading } = useApp();
   const [teamName, setTeamName] = useState("");
   const [selectedRoles, setSelectedRoles] = useState<Role[]>([]);
-  const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loadingRoles, setLoadingRoles] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadRoles();
-  }, []);
-
-  const loadRoles = async () => {
-    try {
-      setLoadingRoles(true);
-      const rolesData = await HackmateApi.getRoles();
-      setAvailableRoles(rolesData);
-    } catch (err) {
-      console.error("Ошибка загрузки ролей:", err);
-    } finally {
-      setLoadingRoles(false);
-    }
-  };
 
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
 
   const handleAddRole = () => {
     if (!selectedRoleId) return;
-    
+
     const roleId = parseInt(selectedRoleId);
     const role = availableRoles.find((r) => r.id === roleId);
-    
+
     if (role && !selectedRoles.find((r) => r.id === role.id)) {
       setSelectedRoles([...selectedRoles, role]);
       setSelectedRoleId(""); // Сброс выбора
@@ -73,6 +57,7 @@ export function CreateTeamPage() {
 
       await HackmateApi.createTeam(parseInt(id), {
         name: teamName.trim(),
+        role_ids: selectedRoles.map((r) => r.id),
       });
 
       // После создания команды перенаправляем на страницу участников
@@ -137,7 +122,7 @@ export function CreateTeamPage() {
 
           <div className={styles.inputGroup}>
             <label className={styles.label}>Кого ищем:</label>
-            {loadingRoles ? (
+            {appLoading.roles ? (
               <div className={styles.loadingText}>Загрузка ролей...</div>
             ) : (
               <>
@@ -150,7 +135,9 @@ export function CreateTeamPage() {
                   >
                     <option value="">Выберите роль</option>
                     {availableRoles
-                      .filter((role) => !selectedRoles.find((r) => r.id === role.id))
+                      .filter(
+                        (role) => !selectedRoles.find((r) => r.id === role.id)
+                      )
                       .map((role) => (
                         <option key={role.id} value={role.id.toString()}>
                           {role.name}
@@ -170,7 +157,9 @@ export function CreateTeamPage() {
                   <div className={styles.selectedRolesList}>
                     {selectedRoles.map((role) => (
                       <div key={role.id} className={styles.selectedRoleItem}>
-                        <span className={styles.selectedRoleName}>{role.name}</span>
+                        <span className={styles.selectedRoleName}>
+                          {role.name}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveRole(role.id)}

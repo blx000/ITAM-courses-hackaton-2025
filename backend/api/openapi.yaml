@@ -225,6 +225,10 @@ components:
           type: integer
         cur_size:
           type: integer
+        needed_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
 
     TeamShort:
       type: object
@@ -287,12 +291,23 @@ components:
       type: object
       required:
         - name
-        - captain_id
       properties:
         name:
           type: string
-        captain_id:
-          type: integer
+        role_ids:
+          type: array
+          items:
+            type: integer
+
+    TeamRolesUpdate:
+      type: object
+      required:
+        - role_ids
+      properties:
+        role_ids:
+          type: array
+          items:
+            type: integer
 
     Role:
       type: object
@@ -683,6 +698,36 @@ paths:
                 $ref: '#/components/schemas/Team'
         '404':
           description: Team id not found
+    patch:
+      summary: Update team roles
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRolesUpdate'
+      responses:
+        '200':
+          description: Successful update
+        '401':
+          description: Unauthorized
+        '403':
+          description: Permission denied
+        '404':
+          description: Team not found
 
   /api/hacks/{hack_id}/participants:
     get:

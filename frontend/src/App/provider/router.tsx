@@ -3,6 +3,7 @@ import { RootLayout } from "../layouts/root-layout";
 import { ProfileLayout } from "../layouts/profile-layout";
 import { FormLayout } from "../layouts/form-layout";
 import { HelpLayout } from "../layouts/help-layout";
+import { TeamLayout } from "../layouts/team-layout";
 import { NotFoundPage } from "../../pages/not-found-page";
 import { HomePage } from "../../pages/home-page";
 import { CalendarPage } from "../../pages/calendar-page";
@@ -37,14 +38,6 @@ export const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <HomePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "comands",
-        element: (
-          <ProtectedRoute>
-            <MyComandPage />
           </ProtectedRoute>
         ),
       },
@@ -125,6 +118,20 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         element: <HelpPage />,
+      },
+    ],
+  },
+  {
+    path: "/comands",
+    element: (
+      <ProtectedRoute>
+        <TeamLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <MyComandPage />,
       },
     ],
   },

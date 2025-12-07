@@ -31,7 +31,6 @@ export function ProfilePage() {
     loadProfile();
   }, [location.pathname, location.state]);
 
-  // Перезагружаем данные при изменении state
   useEffect(() => {
     if (location.state?.refresh) {
       loadProfile();
@@ -54,21 +53,24 @@ export function ProfilePage() {
           console.error("Не удалось загрузить команды:", err);
         }
 
-        // Загружаем данные анкеты пользователя
         try {
           const hackathons = await HackmateApi.getHackathons();
 
-          // Если передан participantId и hackathonId из state, загружаем напрямую
-          const state = location.state as { participantId?: number; hackathonId?: number } | null;
+          const state = location.state as {
+            participantId?: number;
+            hackathonId?: number;
+          } | null;
           let participantLoaded = false;
-          
+
           if (state?.participantId && state?.hackathonId) {
             try {
               const participant = await HackmateApi.getParticipant(
                 state.hackathonId,
                 state.participantId
               );
-              const hackathon = hackathons.find(h => h.id === state.hackathonId);
+              const hackathon = hackathons.find(
+                (h) => h.id === state.hackathonId
+              );
               if (participant && hackathon) {
                 setParticipantData({
                   participant: participant,
@@ -78,20 +80,16 @@ export function ProfilePage() {
               }
             } catch (err) {
               console.error("Ошибка прямой загрузки участника:", err);
-              // Продолжаем обычный поиск
             }
           }
 
-          // Если данные не загружены напрямую, ищем по имени/фамилии
           if (!participantLoaded) {
             for (const hackathon of hackathons) {
               try {
-                // Получаем список участников хакатона
                 const participants = await HackmateApi.getHackathonParticipants(
                   hackathon.id
                 );
-                
-                // Ищем участника по имени и фамилии из обновленных данных пользователя
+
                 const userParticipant = participants.find(
                   (p: Participant) =>
                     p.first_name === userData.first_name &&
@@ -103,10 +101,9 @@ export function ProfilePage() {
                     participant: userParticipant,
                     hackathon: hackathon,
                   });
-                  break; // Берем первый найденный
+                  break;
                 }
               } catch (err) {
-                // Пропускаем, если не удалось загрузить участника
                 console.error(
                   `Не удалось загрузить участников для хакатона ${hackathon.id}:`,
                   err
@@ -179,7 +176,7 @@ export function ProfilePage() {
         </div>
 
         <div className={styles.phone}>
-          <strong>Телеграм: </strong> @{user.username || user.login || "username"}
+          <strong>Тег tg: </strong> @{user.username || user.login || "username"}
         </div>
 
         {participantData && (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { HackmateApi } from "../../../api";
+import { useApp } from "../../../shared/context/app-context";
 import type { HackathonShort } from "../../../api";
 import styles from "./hackathon-search.module.css";
 import searchIcon from "/search-icon.svg";
@@ -16,16 +16,12 @@ export function HackathonSearch({
   className,
 }: HackathonSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [hackathons, setHackathons] = useState<HackathonShort[]>([]);
+  const { hackathons } = useApp();
   const [filteredHackathons, setFilteredHackathons] = useState<
     HackathonShort[]
   >([]);
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    HackmateApi.getHackathons().then(setHackathons).catch(console.error);
-  }, []);
 
   useEffect(() => {
     if (searchQuery.trim()) {

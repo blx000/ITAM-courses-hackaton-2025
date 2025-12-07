@@ -27,4 +27,5 @@ type TeamShort struct {
 	MemberCnt   int
 	MaxTeamSize int
 	HackName    string
+	NeededRoles []*Role
 }

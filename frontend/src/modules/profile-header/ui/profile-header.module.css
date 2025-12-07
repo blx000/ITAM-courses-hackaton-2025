@@ -4,11 +4,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 375px;
   width: 100%;
   position: relative;
   z-index: 10;
-  background-color: black;
 }
 h1 {
   font-size: 20px;

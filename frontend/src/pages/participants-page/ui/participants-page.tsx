@@ -8,6 +8,8 @@ import { ParticipantsHeader } from "../../../modules/participants-header";
 import styles from "./participants-page.module.css";
 import bgImage from "/bg-image.png";
 import addIcon from "/add-icon.svg";
+import profileIcon from "/profile-icon.svg";
+import teamIcon from "/team-icon.svg";
 
 export function ParticipantsPage() {
   const { id } = useParams<{ id: string }>();
@@ -90,21 +92,23 @@ export function ParticipantsPage() {
 
       if (user) {
         try {
-          const participant = await HackmateApi.getParticipant(
-            hackathonId,
-            user.id
+          const userParticipant = participantsData.find(
+            (p) =>
+              p.first_name === user.first_name && p.last_name === user.last_name
           );
-          setUserParticipant(participant);
 
-          // Находим команду пользователя
-          if (participant.team_id && participant.team_id > 0) {
-            const team = teamsData.find(
-              (t) =>
-                t.members.some((m) => m.id === participant.id) ||
-                t.id === participant.team_id
-            );
-            if (team) {
-              setUserTeam(team);
+          if (userParticipant) {
+            setUserParticipant(userParticipant);
+
+            if (userParticipant.team_id && userParticipant.team_id > 0) {
+              const team = teamsData.find(
+                (t) =>
+                  t.members.some((m) => m.id === userParticipant.id) ||
+                  t.id === userParticipant.team_id
+              );
+              if (team) {
+                setUserTeam(team);
+              }
             }
           }
         } catch (err: any) {
@@ -128,7 +132,11 @@ export function ParticipantsPage() {
   };
 
   const handleParticipantClick = (participant: Participant) => {
-    navigate(`/hackathons/${id}/participants/${participant.id}`);
+    if (userParticipant && participant.id === userParticipant.id) {
+      navigate("/profile");
+    } else {
+      navigate(`/hackathons/${id}/participants/${participant.id}`);
+    }
   };
 
   const handleTeamClick = (team: Team) => {
@@ -171,14 +179,12 @@ export function ParticipantsPage() {
       )
     : teams;
 
-  // Сортируем участников: сначала текущий пользователь
   const sortedParticipants = [...filteredParticipants].sort((a, b) => {
     if (userParticipant && a.id === userParticipant.id) return -1;
     if (userParticipant && b.id === userParticipant.id) return 1;
     return 0;
   });
 
-  // Сортируем команды: сначала команда пользователя
   const sortedTeams = [...filteredTeams].sort((a, b) => {
     if (userTeam && a.id === userTeam.id) return -1;
     if (userTeam && b.id === userTeam.id) return 1;
@@ -251,31 +257,34 @@ export function ParticipantsPage() {
                     }`}
                     onClick={() => handleParticipantClick(participant)}
                   >
-                    <div className={styles.participantHeader}>
-                      <h3>{`${participant.first_name} ${participant.last_name}`}</h3>
-                      {participant.team_id && participant.team_id > 0 ? (
-                        <span className={styles.teamBadge}>В команде</span>
-                      ) : (
-                        <span className={styles.freeBadge}>Свободен</span>
-                      )}
-                    </div>
-                    <div className={styles.participantInfo}>
-                      <div className={styles.role}>
-                        <strong>Роль:</strong>
-                        <span>{participant.role.name}</span>
+                    <div className={styles.participantContent}>
+                      <div className={styles.participantIcon}>
+                        <img src={profileIcon} alt="profile" />
                       </div>
-                      {participant.skills && participant.skills.length > 0 && (
-                        <div className={styles.skills}>
-                          <strong>Навыки</strong>
-                          <div className={styles.skillsList}>
-                            {participant.skills.map((skill) => (
-                              <span key={skill.id} className={styles.skillTag}>
-                                {skill.name}
-                              </span>
-                            ))}
-                          </div>
+                      <div className={styles.participantInfo}>
+                        <div className={styles.participantHeader}>
+                          <h3>{`${participant.first_name} ${participant.last_name}`}</h3>
+                          {participant.team_id && participant.team_id > 0 ? (
+                            <span className={styles.teamBadge}>В команде</span>
+                          ) : (
+                            <span className={styles.freeBadge}>Свободен</span>
+                          )}
                         </div>
-                      )}
+                        <div className={styles.role}>
+                          <span>{participant.role.name}</span>
+                        </div>
+                        {participant.skills && participant.skills.length > 0 && (
+                          <div className={styles.skills}>
+                            <div className={styles.skillsList}>
+                              {participant.skills.map((skill) => (
+                                <span key={skill.id} className={styles.skillTag}>
+                                  {skill.name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -302,18 +311,38 @@ export function ParticipantsPage() {
                     }`}
                     onClick={() => handleTeamClick(team)}
                   >
-                    <h3 className={styles.teamName}>{team.name}</h3>
-                    <div className={styles.teamInfo}>
-                      <div className={styles.teamMembers}>
-                        <strong>Участников:</strong> {team.members.length} /{" "}
-                        {team.max_size}
+                    <div className={styles.teamContent}>
+                      <div className={styles.teamIcon}>
+                        <img src={teamIcon} alt="team" />
                       </div>
-                      <div className={styles.membersList}>
-                        {team.members.map((member) => (
-                          <span key={member.id} className={styles.memberTag}>
-                            {member.first_name} {member.last_name}
-                          </span>
-                        ))}
+                      <div className={styles.teamInfo}>
+                        <h3 className={styles.teamName}>{team.name}</h3>
+                        <div className={styles.teamMembers}>
+                          <strong>Участников:</strong>{" "}
+                          {team.cur_size ?? team.members.length} / {team.max_size}
+                        </div>
+                        {team.needed_roles && team.needed_roles.length > 0 && (
+                          <div className={styles.neededRoles}>
+                            <strong>Ищем:</strong>
+                            <div className={styles.neededRolesList}>
+                              {team.needed_roles.map((role) => (
+                                <span
+                                  key={role.id}
+                                  className={styles.neededRoleTag}
+                                >
+                                  {role.name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div className={styles.membersList}>
+                          {team.members.map((member) => (
+                            <span key={member.id} className={styles.memberTag}>
+                              {member.first_name} {member.last_name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>

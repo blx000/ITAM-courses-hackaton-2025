@@ -452,7 +452,6 @@ func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int)
 		return nil, fmt.Errorf("failed to get participant: %w", err)
 	}
 	fmt.Println(participant)
-	// 2. Получаем навыки участника
 	sb2 := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
 	skillsQuery, skillsArgs := sb2.Select(
@@ -506,7 +505,6 @@ func (h *HackRepo) UpdateParticipant(ctx context.Context, participantId int, hac
 		}
 	}()
 
-	// Обновляем основные поля участника
 	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder()
 	ub.Update("hackmate.participant")
 	
@@ -539,9 +537,7 @@ func (h *HackRepo) UpdateParticipant(ctx context.Context, participantId int, hac
 		}
 	}
 
-	// Обновляем навыки, если они указаны (даже если это пустой массив - значит удалить все)
 	if skillIds != nil {
-		// Удаляем старые навыки
 		db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
 		deleteQuery, deleteArgs := db.DeleteFrom("hackmate.participant_skill").
 			Where(db.Equal("participant_id", participantId)).
@@ -552,7 +548,6 @@ func (h *HackRepo) UpdateParticipant(ctx context.Context, participantId int, hac
 			return fmt.Errorf("failed to delete old skills: %w", err)
 		}
 
-		// Добавляем новые навыки (если они есть)
 		if len(skillIds) > 0 {
 			ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 			ib.InsertInto("hackmate.participant_skill").
@@ -568,7 +563,6 @@ func (h *HackRepo) UpdateParticipant(ctx context.Context, participantId int, hac
 				return fmt.Errorf("failed to insert skills: %w", err)
 			}
 		}
-		// Если skillIds пустой массив, просто удаляем все навыки (уже сделано выше)
 	}
 
 	if err = tx.Commit(ctx); err != nil {
@@ -587,13 +581,17 @@ func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamSh
 		"t.captain_id",
 		"t.hackathon_id",
 		"h.max_team_size",
+		"COUNT(DISTINCT tp.participant_id) as member_count",
 	).
 		From("hackmate.team t").
 		Where(sb.Equal("t.id", teamId)).
 		Join("hackmate.hackathon h", "h.id = t.hackathon_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant tp", "t.id = tp.team_id").
+		GroupBy("t.id", "t.name", "t.captain_id", "t.hackathon_id", "h.max_team_size").
 		Build()
 
 	var team repo.TeamShort
+	var memberCount int
 
 	err := h.pool.QueryRow(ctx, teamQuery, teamArgs...).Scan(
 		&team.ID,
@@ -601,6 +599,7 @@ func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamSh
 		&team.CaptainId,
 		&team.HackId,
 		&team.MaxTeamSize,
+		&memberCount,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -671,17 +670,45 @@ func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamSh
 	}
 
 	team.Members = members
+	team.MemberCnt = memberCount
+
+	sb3 := sqlbuilder.PostgreSQL.NewSelectBuilder()
+	rolesQuery, rolesArgs := sb3.Select(
+		"r.id",
+		"r.name",
+	).
+		From("hackmate.team_role tr").
+		Join("hackmate.role r", "tr.role_id = r.id").
+		Where(sb3.Equal("tr.team_id", teamId)).
+		Build()
+
+	rolesRows, err := h.pool.Query(ctx, rolesQuery, rolesArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team roles: %w", err)
+	}
+	defer rolesRows.Close()
+
+	var neededRoles []*repo.Role
+	for rolesRows.Next() {
+		var role repo.Role
+		err := rolesRows.Scan(&role.ID, &role.Name)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan role: %w", err)
+		}
+		neededRoles = append(neededRoles, &role)
+	}
+
+	team.NeededRoles = neededRoles
 
 	return &team, nil
 }
 
-func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int, name string) error {
+func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int, name string) (int, error) {
 	const defaultMaxSize = 5
 
-	// Начнем транзакцию
 	tx, err := h.pool.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
@@ -695,7 +722,7 @@ func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int
 	var teamId int
 	err = tx.QueryRow(ctx, insertTeamQuery, insertTeamArgs...).Scan(&teamId)
 	if err != nil {
-		return fmt.Errorf("failed to create team: %w", err)
+		return 0, fmt.Errorf("failed to create team: %w", err)
 	}
 
 	sb2 := sqlbuilder.PostgreSQL.NewInsertBuilder()
@@ -706,14 +733,14 @@ func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int
 
 	_, err = tx.Exec(ctx, insertParticipantQuery, insertParticipantArgs...)
 	if err != nil {
-		return fmt.Errorf("failed to add captain to team: %w", err)
+		return 0, fmt.Errorf("failed to add captain to team: %w", err)
 	}
 
 	if err = tx.Commit(ctx); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
+		return 0, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	return nil
+	return teamId, nil
 }
 
 func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error) {
@@ -761,7 +788,6 @@ func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Pa
 			Name: roleName,
 		}
 
-		// Получаем навыки участника
 		skills, err := h.getParticipantSkills(ctx, participant.Id)
 		if err != nil {
 			fmt.Printf("Failed to get skills for participant %d: %v\n", participant.Id, err)
@@ -830,6 +856,13 @@ func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort
 
 		team.Members = []*repo.Participant{}
 
+		roles, err := h.GetTeamRoles(ctx, team.ID)
+		if err != nil {
+			team.NeededRoles = []*repo.Role{}
+		} else {
+			team.NeededRoles = roles
+		}
+
 		teams = append(teams, &team)
 	}
 
@@ -839,6 +872,81 @@ func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort
 	}
 
 	return teams, nil
+}
+
+func (h *HackRepo) GetTeamRoles(ctx context.Context, teamId int) ([]*repo.Role, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+	
+	query, args := sb.Select(
+		"r.id",
+		"r.name",
+	).
+		From("hackmate.team_role tr").
+		Join("hackmate.role r", "tr.role_id = r.id").
+		Where(sb.Equal("tr.team_id", teamId)).
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team roles: %w", err)
+	}
+	defer rows.Close()
+
+	var roles []*repo.Role
+	for rows.Next() {
+		var role repo.Role
+		err := rows.Scan(&role.ID, &role.Name)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan role: %w", err)
+		}
+		roles = append(roles, &role)
+	}
+
+	return roles, nil
+}
+
+func (h *HackRepo) UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	deleteQuery, deleteArgs := db.DeleteFrom("hackmate.team_role").
+		Where(db.Equal("team_id", teamId)).
+		Build()
+
+	_, err = tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to delete old roles: %w", err)
+	}
+
+	if len(roleIds) > 0 {
+		ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+		ib.InsertInto("hackmate.team_role").
+			Cols("team_id", "role_id")
+
+		for _, roleId := range roleIds {
+			ib.Values(teamId, roleId)
+		}
+
+		insertQuery, insertArgs := ib.Build()
+		_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+		if err != nil {
+			return fmt.Errorf("failed to insert roles: %w", err)
+		}
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func NewHackRepo(pool *pgxpool.Pool) *HackRepo {
@@ -962,13 +1070,11 @@ func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64)
 		return nil, fmt.Errorf("failed to get participant: %w", err)
 	}
 
-	// Заполняем роль
 	participant.Role = repo.Role{
 		ID:   roleId,
 		Name: roleName,
 	}
 
-	// Получаем навыки участника
 	skills, err := h.getParticipantSkills(ctx, participant.Id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get participant skills: %w", err)
@@ -1054,7 +1160,6 @@ func (h *HackRepo) Read(ctx context.Context, hackId int) (*repo.HackathonGeneral
 func (h *HackRepo) List(ctx context.Context) ([]*repo.HackathonGeneralDTO, error) {
 	sb := sqlbuilder.NewSelectBuilder()
 
-	// Выбираем все поля из таблицы hackathon
 	sb.Select(
 		"id",
 		"admin_id",

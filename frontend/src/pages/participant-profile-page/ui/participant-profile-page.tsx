@@ -4,6 +4,7 @@ import { HackmateApi, AuthService } from "../../../api";
 import type { Participant } from "../../../api";
 import { ProfileHeader } from "../../../modules/profile-header";
 import { Navigation } from "../../../modules/navigation";
+import { Toast } from "../../../shared/components/toast";
 import styles from "./participant-profile-page.module.css";
 import bgImage from "/bg-image3.png";
 import profilePhoto from "/profile-photo.svg";
@@ -14,10 +15,18 @@ export function ParticipantProfilePage() {
     participantId: string;
   }>();
   const [participant, setParticipant] = useState<Participant | null>(null);
+  const [participantUsername, setParticipantUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [inviting, setInviting] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isCaptain, setIsCaptain] = useState(false);
+  const [userTeamId, setUserTeamId] = useState<number | null>(null);
+  const [hasInvitation, setHasInvitation] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   useEffect(() => {
     if (!id || !participantId) {
@@ -38,16 +47,70 @@ export function ParticipantProfilePage() {
       const hackathonId = parseInt(id);
       const partId = parseInt(participantId);
 
-      const participantData = await HackmateApi.getParticipant(
-        hackathonId,
-        partId
-      );
+      const [participantData, currentUser] = await Promise.all([
+        HackmateApi.getParticipant(hackathonId, partId),
+        AuthService.isAuthenticated()
+          ? HackmateApi.getCurrentUser()
+          : Promise.resolve(null),
+      ]);
+
       setParticipant(participantData);
-      
-      // Проверяем, является ли это текущий пользователь
+
+      try {
+        const userData = await HackmateApi.getUser(participantData.id);
+        setParticipantUsername(userData.username || userData.login || null);
+      } catch (err) {
+        console.error("Ошибка загрузки username участника:", err);
+      }
+
       const userId = AuthService.getUserId();
       if (userId && participantData.id === userId) {
         setIsCurrentUser(true);
+      }
+
+      if (currentUser && userId) {
+        try {
+          const participants = await HackmateApi.getHackathonParticipants(
+            hackathonId
+          );
+          const userParticipant = participants.find(
+            (p: Participant) =>
+              p.first_name === currentUser.first_name &&
+              p.last_name === currentUser.last_name
+          );
+
+          if (
+            userParticipant &&
+            userParticipant.team_id &&
+            userParticipant.team_id > 0
+          ) {
+            setUserTeamId(userParticipant.team_id);
+            const team = await HackmateApi.getTeam(
+              hackathonId,
+              userParticipant.team_id
+            );
+            if (team.captain_id === userParticipant.id) {
+              setIsCaptain(true);
+
+              try {
+                const invitations = await HackmateApi.getInvitations(
+                  hackathonId
+                );
+                const hasInvite = invitations.some(
+                  (inv) =>
+                    (inv.participant?.id === participantData.id ||
+                      inv.participant_id === participantData.id) &&
+                    inv.team_id === userParticipant.team_id
+                );
+                setHasInvitation(hasInvite);
+              } catch (err) {
+                console.error("Ошибка проверки приглашений:", err);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Ошибка проверки капитана:", err);
+        }
       }
     } catch (err: any) {
       console.error("Ошибка загрузки участника:", err);
@@ -70,13 +133,31 @@ export function ParticipantProfilePage() {
       const partId = parseInt(participantId);
 
       await HackmateApi.inviteParticipant(hackathonId, partId);
-      alert("Приглашение отправлено!");
+      setToast({ message: "Приглашение успешно отправлено!", type: "success" });
+      setHasInvitation(true);
+      loadParticipant();
     } catch (err: any) {
       console.error("Ошибка отправки приглашения:", err);
-      setError(
-        err.response?.data?.message ||
-          "Не удалось отправить приглашение. Пожалуйста, попробуйте позже."
-      );
+      let errorMessage =
+        "Не удалось отправить приглашение. Пожалуйста, попробуйте позже.";
+
+      if (err.response?.status === 403) {
+        if (
+          err.response?.data?.message?.includes("without team") ||
+          err.response?.data?.message?.includes("captain")
+        ) {
+          errorMessage = "Только капитан команды может приглашать участников";
+        } else if (err.response?.data?.message?.includes("already joined")) {
+          errorMessage = "Участник уже состоит в команде";
+        } else {
+          errorMessage = "Недостаточно прав для отправки приглашения";
+        }
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+
+      setError(errorMessage);
+      setToast({ message: errorMessage, type: "error" });
     } finally {
       setInviting(false);
     }
@@ -116,6 +197,11 @@ export function ParticipantProfilePage() {
           <div className={styles.textBox}>
             <h2 className={styles.surname}>{participant.last_name}</h2>
             <h2 className={styles.name}>{participant.first_name}</h2>
+            {participantUsername && (
+              <div className={styles.username}>
+                @{participantUsername}
+              </div>
+            )}
             {participant.experience !== undefined &&
               participant.experience !== null && (
                 <div className={styles.experience}>
@@ -154,27 +240,33 @@ export function ParticipantProfilePage() {
           </div>
         )}
 
-        {participant.team_id && participant.team_id > 0 ? (
-          <div className={styles.teamBadgeContainer}>
-            <span className={styles.teamBadge}>В команде</span>
-          </div>
-        ) : (
-          <div className={styles.freeBadgeContainer}>
-            <span className={styles.freeBadge}>Свободен</span>
-          </div>
-        )}
-
-        {!participant.team_id && !isCurrentUser && (
-          <button
-            className={styles.inviteButton}
-            onClick={handleInvite}
-            disabled={inviting}
-          >
-            {inviting ? "Отправка..." : "Пригласить в команду"}
-          </button>
-        )}
+        {(!participant.team_id || participant.team_id <= 0) &&
+          !isCurrentUser &&
+          isCaptain &&
+          userTeamId &&
+          userTeamId > 0 &&
+          (hasInvitation ? (
+            <div className={styles.invitationSent}>
+              Приглашение уже отправлено
+            </div>
+          ) : (
+            <button
+              className={styles.inviteButton}
+              onClick={handleInvite}
+              disabled={inviting}
+            >
+              {inviting ? "Отправка..." : "Пригласить в команду"}
+            </button>
+          ))}
       </div>
       <Navigation />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

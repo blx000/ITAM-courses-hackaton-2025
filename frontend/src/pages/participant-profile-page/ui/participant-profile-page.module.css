@@ -125,6 +125,14 @@ h2 {
   font-family: "Roboto Flex", sans-serif;
 }
 
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 0.8);
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
 .role {
   font-size: 14px;
   font-weight: 600;
@@ -253,6 +261,19 @@ h2 {
 .inviteButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.invitationSent {
+  width: 100%;
+  padding: 10px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  font-family: "Roboto Flex", sans-serif;
 }
 
 

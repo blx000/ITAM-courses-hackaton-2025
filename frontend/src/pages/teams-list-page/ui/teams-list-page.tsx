@@ -88,7 +88,7 @@ export function TeamsListPage() {
               <h3 className={styles.teamName}>{myTeam.name}</h3>
               <div className={styles.teamInfo}>
                 <p className={styles.membersCount}>
-                  Участников: {myTeam.members.length} / {myTeam.max_size}
+                  Участников: {myTeam.cur_size ?? myTeam.members.length} / {myTeam.max_size}
                 </p>
               </div>
             </div>
@@ -124,9 +124,9 @@ export function TeamsListPage() {
                     <h3 className={styles.teamName}>{team.name}</h3>
                     <div className={styles.teamInfo}>
                       <p className={styles.membersCount}>
-                        Участников: {team.members.length} / {team.max_size}
+                        Участников: {team.cur_size ?? team.members.length} / {team.max_size}
                       </p>
-                      {team.members.length < team.max_size && (
+                      {(team.cur_size ?? team.members.length) < team.max_size && (
                         <span className={styles.openBadge}>Открыт набор</span>
                       )}
                     </div>

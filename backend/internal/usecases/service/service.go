@@ -38,7 +38,7 @@ type Service interface {
 	ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error)
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
 	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
-	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
+	CreateTeam(ctx context.Context, userId int64, hackId int, name string, roleIds []int) error
 	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
 	UpdateParticipant(ctx context.Context, hackId int, participantId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
 
@@ -51,6 +51,9 @@ type Service interface {
 	CreateJoinRequest(ctx context.Context, hackId int, teamId int, userId int64) error
 	AcceptInvite(ctx context.Context, hackId int, inviteId int, userId int64) error
 	AcceptJoinRequest(ctx context.Context, hackId int, requestId int, userId int64) error
+
+	GetTeamRoles(ctx context.Context, teamId int) ([]*repo.Role, error)
+	UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error
 }
 
 var _ Service = (*ServiceImpl)(nil)
@@ -101,6 +104,16 @@ func (s *ServiceImpl) CreateInvite(ctx context.Context, hackId int, senderId int
 	if sender.TeamId == TeamNull {
 		return ErrUserWithoutTeam
 	}
+
+	team, err := s.hackRepo.GetTeamProfile(ctx, sender.TeamId)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to get team: %w", err)
+	}
+	if team.CaptainId != sender.Id {
+		return ErrOnlyCaptainCanAcceptRequests
+	}
+
 	receiver, err := s.hackRepo.GetParticipantGeneral(ctx, rectId)
 	if err != nil {
 		fmt.Println(err)
@@ -113,7 +126,6 @@ func (s *ServiceImpl) CreateInvite(ctx context.Context, hackId int, senderId int
 	err = s.hackRepo.CreateInvite(ctx, sender.TeamId, rectId)
 	if err != nil {
 		fmt.Println(err)
-
 		return err
 	}
 
@@ -195,6 +207,14 @@ func (s *ServiceImpl) AcceptJoinRequest(ctx context.Context, hackId int, request
 	return nil
 }
 
+func (s *ServiceImpl) GetTeamRoles(ctx context.Context, teamId int) ([]*repo.Role, error) {
+	return s.hackRepo.GetTeamRoles(ctx, teamId)
+}
+
+func (s *ServiceImpl) UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error {
+	return s.hackRepo.UpdateTeamRoles(ctx, teamId, roleIds)
+}
+
 func (s *ServiceImpl) CreateHack(ctx context.Context, hack *repo.HackathonGeneralDTO) (int, error) {
 	hackId, err := s.hackRepo.CreateHack(ctx, hack)
 
@@ -219,7 +239,6 @@ func (s *ServiceImpl) GetParticipantProfile(ctx context.Context, hackId int, par
 }
 
 func (s *ServiceImpl) UpdateParticipant(ctx context.Context, hackId int, participantId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error {
-	// Проверяем, что участник существует и принадлежит этому хакатону
 	participant, err := s.hackRepo.GetParticipantProfile(ctx, participantId)
 	if err != nil {
 		return fmt.Errorf("failed to get participant: %w", err)
@@ -229,7 +248,6 @@ func (s *ServiceImpl) UpdateParticipant(ctx context.Context, hackId int, partici
 		return ErrHackNotFound
 	}
 
-	// Обновляем данные участника
 	err = s.hackRepo.UpdateParticipant(ctx, participantId, hackId, roleId, skillIds, experience, additionalInfo)
 	if err != nil {
 		return fmt.Errorf("failed to update participant: %w", err)
@@ -274,13 +292,11 @@ func (s *ServiceImpl) LoginUser(ctx context.Context, code string, secret string)
 	} else if err != nil {
 		return "", "", fmt.Errorf("failed to read user: %w", err)
 	} else {
-		// Обновляем username при каждом логине, если он изменился
 		if userDto.UserName != "" {
 			updateDto := &repo.UserChange{
 				Id:       userDto.ID,
 				Username: userDto.UserName,
 			}
-			// Обновляем только username, если он изменился
 			existingUser, _ := s.userRepo.Read(ctx, userDto.ID)
 			if existingUser != nil && existingUser.UserName != userDto.UserName {
 				updateDto.FirstName = existingUser.FirstName
@@ -394,8 +410,7 @@ func (s *ServiceImpl) GetTeam(ctx context.Context, hackId int, teamId int) (*rep
 	return team, nil
 }
 
-func (s *ServiceImpl) CreateTeam(ctx context.Context, userId int64, hackId int, name string) error {
-	//TODO implement me
+func (s *ServiceImpl) CreateTeam(ctx context.Context, userId int64, hackId int, name string, roleIds []int) error {
 	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
 	if err != nil {
 		fmt.Println(err)
@@ -409,10 +424,18 @@ func (s *ServiceImpl) CreateTeam(ctx context.Context, userId int64, hackId int, 
 		return ErrUserAlreadyJoinedTeam
 	}
 
-	err = s.hackRepo.CreateTeam(ctx, participant.Id, hackId, name)
+	teamId, err := s.hackRepo.CreateTeam(ctx, participant.Id, hackId, name)
 	if err != nil {
 		fmt.Println(err)
 		return fmt.Errorf("failed to create hack team: %w", err)
+	}
+
+	if len(roleIds) > 0 {
+		err = s.hackRepo.UpdateTeamRoles(ctx, teamId, roleIds)
+		if err != nil {
+			fmt.Println(err)
+			return fmt.Errorf("failed to set team roles: %w", err)
+		}
 	}
 
 	return nil

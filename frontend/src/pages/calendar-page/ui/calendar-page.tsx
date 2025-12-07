@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import styles from "./calendar-page.module.css";
 import { Calendar } from "../../../modules/calendar";
 import { HackmateApi, AuthService } from "../../../api";
+import { useApp } from "../../../shared/context";
 import type { HackathonShort } from "../../../api";
 import bgImage from "/bg-image.png";
 
@@ -10,38 +11,28 @@ type ViewMode = "month" | "week" | "year";
 
 export function CalendarPage() {
   const navigate = useNavigate();
-  const [hackathons, setHackathons] = useState<HackathonShort[]>([]);
+  const { hackathons, loading } = useApp();
   const [userHackathons, setUserHackathons] = useState<HackathonShort[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("month");
 
   useEffect(() => {
     loadUserHackathons();
-  }, []);
+  }, [hackathons]);
 
   const loadUserHackathons = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const allHackathons = await HackmateApi.getHackathons();
-      setHackathons(allHackathons);
-
       const userHacks: HackathonShort[] = [];
       const userId = AuthService.getUserId();
 
-      if (userId) {
-        // Получаем текущего пользователя для проверки участия
+      if (userId && hackathons.length > 0) {
         const currentUser = await HackmateApi.getCurrentUser();
 
-        for (const hack of allHackathons) {
+        for (const hack of hackathons) {
           try {
-            // Получаем список участников хакатона
             const participants = await HackmateApi.getHackathonParticipants(
               hack.id
             );
 
-            // Проверяем, является ли текущий пользователь участником
             const isParticipant = participants.some(
               (p: any) =>
                 p.first_name === currentUser.first_name &&
@@ -51,13 +42,11 @@ export function CalendarPage() {
             if (isParticipant) {
               const now = new Date();
               const startDate = new Date(hack.start_date);
-              // Проверяем, что хакатон еще не начался или идет
               if (startDate >= now) {
                 userHacks.push(hack);
               }
             }
           } catch (err) {
-            // Пропускаем, если не удалось загрузить участников
             console.error(
               `Ошибка загрузки участников для хакатона ${hack.id}:`,
               err
@@ -68,10 +57,7 @@ export function CalendarPage() {
 
       setUserHackathons(userHacks);
     } catch (err: any) {
-      console.error("Ошибка загрузки хакатонов:", err);
-      setError("Не удалось загрузить хакатоны. Пожалуйста, попробуйте позже.");
-    } finally {
-      setLoading(false);
+      console.error("Ошибка загрузки календаря:", err);
     }
   };
 
@@ -133,14 +119,12 @@ export function CalendarPage() {
           </button>
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
-
         <Calendar hackathons={userHackathons} onDateClick={handleDateClick} />
 
         <div className={styles.hacks}>
           <h2>Предстоящие хакатоны</h2>
 
-          {loading ? (
+          {loading.hackathons ? (
             <p className={styles.loading}>Загрузка...</p>
           ) : upcomingHackathons.length === 0 ? (
             <p className={styles.empty}>Нет предстоящих хакатонов</p>

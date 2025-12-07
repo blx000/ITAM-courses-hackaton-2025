@@ -17,7 +17,7 @@ type Hackathon interface {
 	GetParticipant(ctx context.Context, hackId int, userId int64) (*Participant, error)
 	ListParticipants(ctx context.Context, hackId int) ([]*Participant, error)
 	ListTeams(ctx context.Context, hackId int) ([]*TeamShort, error)
-	CreateTeam(ctx context.Context, participantId int, hackId int, name string) error
+	CreateTeam(ctx context.Context, participantId int, hackId int, name string) (int, error)
 	GetTeamProfile(ctx context.Context, teamId int) (*TeamShort, error)
 	GetParticipantProfile(ctx context.Context, participantId int) (*Participant, error)
 	UpdateParticipant(ctx context.Context, participantId int, hackId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
@@ -34,6 +34,9 @@ type Hackathon interface {
 	CreateRequest(ctx context.Context, teamId int, senderId int) error
 	GetRequest(ctx context.Context, requestId int) (*JoinRequest, error)
 	AcceptRequest(ctx context.Context, requestId int, teamId int, participantId int) error
+
+	GetTeamRoles(ctx context.Context, teamId int) ([]*Role, error)
+	UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error
 }
 
 var (

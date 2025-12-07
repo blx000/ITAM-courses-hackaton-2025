@@ -134,7 +134,6 @@ func (s Server) GetApiUser(ctx context.Context, request gen.GetApiUserRequestObj
 		return gen.GetApiUser401Response{}, nil
 	}
 
-	// Получаем полную информацию о пользователе из базы данных
 	userInfo, err := s.service.GetUserInfo(ctx, userFromToken.ID)
 	if err != nil {
 		fmt.Println(err)
@@ -562,9 +561,15 @@ func (s Server) PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.C
 	if err != nil {
 		fmt.Println(err)
 		if errors.Is(err, service.ErrUserWithoutTeam) {
-			return nil, fmt.Errorf("Invite sender without team")
+			return gen.PostApiHacksHackIdParticipantsParticipantsIdInvite403Response{}, nil
 		}
-		return nil, fmt.Errorf("failed to invite: %w", err)
+		if errors.Is(err, service.ErrOnlyCaptainCanAcceptRequests) {
+			return gen.PostApiHacksHackIdParticipantsParticipantsIdInvite403Response{}, nil
+		}
+		if errors.Is(err, service.ErrUserAlreadyJoinedTeam) {
+			return gen.PostApiHacksHackIdParticipantsParticipantsIdInvite403Response{}, nil
+		}
+		return gen.PostApiHacksHackIdParticipantsParticipantsIdInvite403Response{}, nil
 	}
 
 	return gen.PostApiHacksHackIdParticipantsParticipantsIdInvite201Response{}, nil
@@ -623,6 +628,14 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 				AddInfo: participants[j].AddInfo,
 			}
 		}
+		neededRolesResponse := make([]gen.Role, len(teams[i].NeededRoles))
+		for k := range teams[i].NeededRoles {
+			neededRolesResponse[k] = gen.Role{
+				Id:   teams[i].NeededRoles[k].ID,
+				Name: teams[i].NeededRoles[k].Name,
+			}
+		}
+
 		teamsResponse[i] = gen.Team{
 			Name:      teams[i].Name,
 			Id:        teams[i].ID,
@@ -630,6 +643,10 @@ func (s Server) GetApiHacksHackIdTeams(ctx context.Context, request gen.GetApiHa
 			Members:   participantsResponse,
 			MaxSize:   teams[i].MaxTeamSize,
 			CurSize:   teams[i].MemberCnt,
+		}
+		
+		if len(neededRolesResponse) > 0 {
+			teamsResponse[i].NeededRoles = &neededRolesResponse
 		}
 	}
 	return gen.GetApiHacksHackIdTeams200JSONResponse(teamsResponse), nil
@@ -655,7 +672,15 @@ func (s Server) PostApiHacksHackIdTeams(ctx context.Context, request gen.PostApi
 		return nil, fmt.Errorf("Unauthorized")
 	}
 
-	err = s.service.CreateTeam(ctx, user.ID, request.HackId, request.Body.Name)
+	var roleIds []int
+	if request.Body.RoleIds != nil {
+		roleIds = make([]int, len(*request.Body.RoleIds))
+		for i, id := range *request.Body.RoleIds {
+			roleIds[i] = int(id)
+		}
+	}
+
+	err = s.service.CreateTeam(ctx, user.ID, request.HackId, request.Body.Name, roleIds)
 	if err != nil {
 		fmt.Println(err)
 		if errors.Is(err, service.ErrUserAlreadyJoinedTeam) {
@@ -664,7 +689,6 @@ func (s Server) PostApiHacksHackIdTeams(ctx context.Context, request gen.PostApi
 		return nil, fmt.Errorf("failed to create hack team: %w", err)
 	}
 
-	// Возвращаем пустой массив команд (согласно спецификации)
 	return gen.PostApiHacksHackIdTeams201JSONResponse{}, nil
 }
 
@@ -714,14 +738,74 @@ func (s Server) GetApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.Ge
 		}
 	}
 
+	neededRolesResponse := make([]gen.Role, len(team.NeededRoles))
+	for i := range team.NeededRoles {
+		neededRolesResponse[i] = gen.Role{
+			Id:   team.NeededRoles[i].ID,
+			Name: team.NeededRoles[i].Name,
+		}
+	}
+
 	teamsResponse := gen.Team{
 		Id:        team.ID,
 		Members:   participantsResponse,
 		Name:      team.Name,
 		CaptainId: team.CaptainId,
+		MaxSize:   team.MaxTeamSize,
+		CurSize:   team.MemberCnt,
+	}
+	
+	if len(neededRolesResponse) > 0 {
+		teamsResponse.NeededRoles = &neededRolesResponse
 	}
 
 	return gen.GetApiHacksHackIdTeamsTeamId200JSONResponse(teamsResponse), nil
+}
+
+func (s Server) PatchApiHacksHackIdTeamsTeamId(ctx context.Context, request gen.PatchApiHacksHackIdTeamsTeamIdRequestObject) (gen.PatchApiHacksHackIdTeamsTeamIdResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	team, err := s.service.GetTeam(ctx, request.HackId, request.TeamId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("team not found: %w", err)
+	}
+
+	if team.CaptainId != int(user.ID) {
+		return nil, fmt.Errorf("permission denied")
+	}
+
+	var roleIds []int
+	if request.Body != nil && len(request.Body.RoleIds) > 0 {
+		roleIds = make([]int, len(request.Body.RoleIds))
+		for i, id := range request.Body.RoleIds {
+			roleIds[i] = int(id)
+		}
+	}
+
+	err = s.service.UpdateTeamRoles(ctx, request.TeamId, roleIds)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to update team roles: %w", err)
+	}
+
+	return gen.PatchApiHacksHackIdTeamsTeamId200Response{}, nil
 }
 
 func (s Server) PostApiHacksHackIdTeamsTeamIdRequest(ctx context.Context, request gen.PostApiHacksHackIdTeamsTeamIdRequestRequestObject) (gen.PostApiHacksHackIdTeamsTeamIdRequestResponseObject, error) {

@@ -1,3 +1,289 @@
-.page {
-  color: rgba(249, 255, 238, 1);
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 16px 24px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #f9ffee;
+}
+
+.error {
+  color: #fc8181;
+}
+
+.info {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.photo {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.textBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.teamName {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.membersCount {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+}
+
+.hackathonName {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.6);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.teamCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.teamCard:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.teamInfo {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.rolesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roleTag {
+  padding: 10px 12px;
+  border: 2px solid #f9ffee;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aceb4c;
+  background: transparent;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.membersList,
+.requestsList,
+.invitationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.memberCard {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.memberCard:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.memberInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.memberName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.captainBadge {
+  padding: 4px 10px;
+  background: rgba(172, 235, 76, 0.2);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.memberRole {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.8);
+  margin-bottom: 8px;
+}
+
+.memberSkills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 4px 10px;
+  background: rgba(172, 235, 76, 0.1);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.moreSkills {
+  padding: 4px 10px;
+  color: rgba(249, 255, 238, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.emptyText {
+  text-align: center;
+  padding: 20px;
+  color: rgba(249, 255, 238, 0.6);
+  font-size: 14px;
+}
+
+.requestCard,
+.invitationCard {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.requestInfo,
+.invitationInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.requestId,
+.participantName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.invitationStatus {
+  font-size: 12px;
+  color: rgba(249, 255, 238, 0.6);
+}
+
+.acceptButton {
+  padding: 8px 20px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.acceptButton:hover:not(:disabled) {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.acceptButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -89,7 +89,6 @@ export function ProfileEditPage() {
           }
         } catch (err) {
           console.error("Ошибка загрузки данных участника:", err);
-          // В случае ошибки используем bio пользователя
           setBio(userData.bio || "");
         }
       }

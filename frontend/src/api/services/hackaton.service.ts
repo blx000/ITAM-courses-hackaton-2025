@@ -23,7 +23,6 @@ export const HackathonService = {
     experience?: number;
     additional_info?: string;
   }) => {
-    // Убеждаемся, что ID являются числами
     const hackIdNum = Number(hackId);
     const partIdNum = Number(participantId);
     

@@ -60,7 +60,7 @@
   padding: 12px 16px 12px 48px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.35);
+  background: #ffffff2b;
   backdrop-filter: blur(12px);
   color: rgba(249, 255, 238, 1);
   font-size: 16px;
@@ -202,4 +202,41 @@
   padding: 40px 20px;
   color: #aceb4c;
   font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: 24px 48px;
+    max-width: 768px;
+    margin: 0 auto;
+  }
+
+  .hackathonsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 32px 64px;
+    max-width: 1024px;
+  }
+
+  .hackathonsList {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .content {
+    padding: 40px 80px;
+    max-width: 1440px;
+  }
+
+  .hackathonsList {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

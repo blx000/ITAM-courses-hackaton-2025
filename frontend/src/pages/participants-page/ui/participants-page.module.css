@@ -126,10 +126,35 @@
   background: rgba(255, 255, 255, 0.17);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 24px;
-  padding: 12px;
+  padding: 16px;
   cursor: pointer;
   transition: all 0.2s;
   animation: slideUp 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.teamContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.teamIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.teamIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .currentUserTeamCard {
@@ -152,6 +177,36 @@
 .teamCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
+}
+
+.participantContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.participantIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.participantIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.participantInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 .participantHeader {
@@ -195,79 +250,45 @@
   flex-shrink: 0;
 }
 
-.participantInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .role {
   font-size: 14px;
   color: rgba(249, 255, 238, 0.9);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.role strong {
-  font-weight: 600;
-  color: #aceb4c;
-  min-width: 50px;
-}
-
-.role span {
-  color: #f9ffee;
 }
 
 .skills {
   font-size: 14px;
-  color: #f9ffee;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.skills strong {
-  font-weight: 600;
-  color: #aceb4c;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: rgba(249, 255, 238, 1);
 }
 
 .skillsList {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
 }
 
 .skillTag {
   padding: 6px 12px;
-  border: 1px solid rgba(172, 235, 76, 0.5);
-  border-radius: 16px;
   font-size: 12px;
   font-weight: 600;
-  color: #aceb4c;
-  background: rgba(172, 235, 76, 0.1);
+  color: rgba(249, 255, 238, 1);
   transition: all 0.2s;
 }
 
-.skillTag:hover {
-  background: rgba(172, 235, 76, 0.2);
-  border-color: #aceb4c;
-}
-
 .teamName {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #f9ffee;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
 }
 
 .teamInfo {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 .teamMembers {
@@ -296,6 +317,35 @@
   font-weight: 600;
 }
 
+.neededRoles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.neededRoles strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 0.8);
+}
+
+.neededRolesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.neededRoleTag {
+  padding: 4px 10px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .createTeamButton {
   width: 100%;
   padding: 12px 24px;
@@ -312,4 +362,42 @@
 
 .createTeamButton:hover {
   opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: 24px 48px;
+    max-width: 768px;
+  }
+
+  .participantsGrid,
+  .teamsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 32px 64px;
+    max-width: 1024px;
+  }
+
+  .participantsGrid,
+  .teamsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .content {
+    padding: 40px 80px;
+    max-width: 1440px;
+  }
+
+  .participantsGrid,
+  .teamsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

@@ -20,4 +20,7 @@ export const TeamService = {
   acceptInvitation: (hackId: number, inviteId: number) =>
     api.get<void>(`/api/hacks/${hackId}/invitations/${inviteId}/accept`)
       .then((resp) => resp.data),
+  updateTeamRoles: (hackId: number, teamId: number, roleIds: number[]) =>
+    api.patch<void>(`/api/hacks/${hackId}/teams/${teamId}`, { role_ids: roleIds })
+      .then((resp) => resp.data),
 };

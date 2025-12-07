@@ -42,4 +42,5 @@ export const HackmateApi = {
   inviteParticipant: TeamService.inviteParticipant,
   getInvitations: TeamService.getInvitations,
   acceptInvitation: TeamService.acceptInvitation,
+  updateTeamRoles: TeamService.updateTeamRoles,
 };

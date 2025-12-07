@@ -69,6 +69,7 @@ export type Team = {
   members: Participant[];
   max_size: number;
   cur_size?: number;
+  needed_roles?: Role[];
 }
 export type TeamShort = {
   id: number;
@@ -76,9 +77,12 @@ export type TeamShort = {
   hack_id: number;
   hack_name: string;
   max_size: number;
+  cur_size?: number;
+  needed_roles?: Role[];
 }
 export type TeamCreate = {
   name: string;
+  role_ids?: number[];
 }
 export type Role = {
   id: number;
