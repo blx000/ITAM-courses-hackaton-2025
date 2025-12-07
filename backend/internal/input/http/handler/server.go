@@ -24,6 +24,90 @@ type Server struct {
 	hmacSecret string
 }
 
+func (s Server) GetApiUserInvites(ctx context.Context, request gen.GetApiUserInvitesRequestObject) (gen.GetApiUserInvitesResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return gen.GetApiUserInvites401Response{}, nil
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return gen.GetApiUserInvites401Response{}, nil
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return gen.GetApiUserInvites401Response{}, nil
+	}
+
+	invites, err := s.service.GetUsersInvites(ctx, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("get user invites: %w", err)
+	}
+
+	response := make([]gen.Invite, len(invites))
+
+	for i, invite := range invites {
+		response[i] = gen.Invite{
+			Id:            invite.Id,
+			ParticipantId: invite.ParticipantId,
+			HackId:        invite.HackId,
+			HackName:      invite.HackName,
+			TeamId:        invite.TeamId,
+			TeamName:      invite.TeamName,
+		}
+	}
+
+	return gen.GetApiUserInvites200JSONResponse(response), nil
+}
+
+func (s Server) GetApiHacksHackIdTeamsTeamIdRequests(ctx context.Context, request gen.GetApiHacksHackIdTeamsTeamIdRequestsRequestObject) (gen.GetApiHacksHackIdTeamsTeamIdRequestsResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return gen.GetApiHacksHackIdTeamsTeamIdRequests401Response{}, nil
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return gen.GetApiHacksHackIdTeamsTeamIdRequests401Response{}, nil
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return gen.GetApiHacksHackIdTeamsTeamIdRequests401Response{}, nil
+	}
+
+	joinRequests, err := s.service.GetTeamsRequests(ctx, request.HackId, request.TeamId, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, service.ErrUserWithoutTeam) {
+			return gen.GetApiHacksHackIdTeamsTeamIdRequests403Response{}, nil
+		}
+	}
+
+	response := make([]gen.Request, len(joinRequests))
+	for i, req := range joinRequests {
+		response[i] = gen.Request{
+			Id:            req.Id,
+			TeamId:        req.TeamId,
+			FirstName:     req.FirstName,
+			LastName:      req.LastName,
+			ParticipantId: req.ParticipantId,
+		}
+	}
+
+	return gen.GetApiHacksHackIdTeamsTeamIdRequests200JSONResponse(response), nil
+}
+
 func (s Server) PatchApiUser(ctx context.Context, request gen.PatchApiUserRequestObject) (gen.PatchApiUserResponseObject, error) {
 	bearer, ok := ctx.Value(AuthorizationHeader).(string)
 	if !ok {

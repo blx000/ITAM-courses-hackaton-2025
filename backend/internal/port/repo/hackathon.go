@@ -33,6 +33,9 @@ type Hackathon interface {
 	CreateRequest(ctx context.Context, teamId int, senderId int) error
 	GetRequest(ctx context.Context, requestId int) (*JoinRequest, error)
 	AcceptRequest(ctx context.Context, requestId int, teamId int, participantId int) error
+
+	GetTeamRequests(ctx context.Context, teamId int) ([]*JoinRequest, error)
+	GetUsersInvites(ctx context.Context, userId int64) ([]*Invitation, error)
 }
 
 var (

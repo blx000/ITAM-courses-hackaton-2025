@@ -50,6 +50,11 @@ insert into hackmate.join_request(team_id, participant_id)
 values
     (1, 2);
 
+
+insert into hackmate.invite(team_id, participant_id)
+values
+    (1, 2);
+
 -- +goose StatementEnd
 
 -- +goose Down
