@@ -192,6 +192,8 @@ components:
         end_date:
           type: string
           format: date
+        prize:
+          type: integer
 
     User:
       type: object
@@ -536,6 +538,35 @@ paths:
                 $ref: '#/components/schemas/HackathonShort'
         '403':
           description: Permission denied
+
+  /api/admin/hacks/{hack_id}:
+    patch:
+      summary: Update hack
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackathonShort'
+        '403':
+          description: Permission denied
+        '404':
+          description: Hack not found
 
   /api/users/{user_id}:
     get:

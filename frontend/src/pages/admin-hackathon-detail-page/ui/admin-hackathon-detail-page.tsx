@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import { HackmateApi } from "../../../api";
 import type { HackathonPage, Participant, Team } from "../../../api";
 import styles from "./admin-hackathon-detail-page.module.css";
@@ -12,6 +12,7 @@ type Tab = "info" | "participants" | "teams" | "analytics";
 export function AdminHackathonDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<Tab>("info");
   const [hackathon, setHackathon] = useState<HackathonPage | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -26,7 +27,8 @@ export function AdminHackathonDetailPage() {
       return;
     }
     loadData();
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, location.search]);
 
   const loadData = async () => {
     if (!id) return;
@@ -100,6 +102,12 @@ export function AdminHackathonDetailPage() {
             Назад
           </button>
           <h1 className={styles.title}>{hackathon.name}</h1>
+          <button
+            className={styles.editButton}
+            onClick={() => navigate(`/admin/hackathons/${hackathon.id}/edit`)}
+          >
+            Редактировать
+          </button>
         </div>
 
         <div className={styles.tabs}>

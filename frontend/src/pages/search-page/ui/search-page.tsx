@@ -85,7 +85,9 @@ export function SearchPage() {
                         <p className={styles.hackathonCompany}>направление</p>
                       </div>
                     </div>
-                    <div className={styles.hackathonPrize}>{formatPrize(0)}</div>
+                    <div className={styles.hackathonPrize}>
+                      {formatPrize(hack.prize ?? 0)}
+                    </div>
                   </div>
                 ))
               )}

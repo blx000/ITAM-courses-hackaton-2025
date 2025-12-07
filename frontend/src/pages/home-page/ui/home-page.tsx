@@ -52,7 +52,9 @@ export function HomePage() {
                   </p>
                 </div>
               </div>
-              <div className={styles.featuredPrize}>{formatPrize(0)}</div>
+              <div className={styles.featuredPrize}>
+                {formatPrize(featuredHackathon.prize ?? 0)}
+              </div>
             </div>
           )}
         </div>
@@ -80,7 +82,9 @@ export function HomePage() {
                       <p className={styles.hackathonCompany}>направление</p>
                     </div>
                   </div>
-                  <div className={styles.hackathonPrize}>{formatPrize(0)}</div>
+                  <div className={styles.hackathonPrize}>
+                    {formatPrize(hack.prize ?? 0)}
+                  </div>
                 </div>
               ))}
             </div>

@@ -43,7 +43,9 @@
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .backButton {
@@ -70,6 +72,25 @@
   color: #f9ffee;
   margin: 0;
   font-family: "Roboto Flex", sans-serif;
+  flex: 1;
+}
+
+.editButton {
+  padding: 10px 16px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.editButton:hover {
+  background: #9dd83a;
+  transform: translateY(-2px);
 }
 
 .tabs {

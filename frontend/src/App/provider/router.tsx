@@ -27,6 +27,7 @@ import { AdminLoginPage } from "../../pages/admin-login-page";
 import { AdminDashboardPage } from "../../pages/admin-dashboard-page";
 import { AdminHackathonCreatePage } from "../../pages/admin-hackathon-create-page";
 import { AdminHackathonDetailPage } from "../../pages/admin-hackathon-detail-page";
+import { AdminHackathonEditPage } from "../../pages/admin-hackathon-edit-page";
 import { AdminLayout } from "../layouts/admin-layout";
 
 export const appRouter = createBrowserRouter([
@@ -212,6 +213,10 @@ export const appRouter = createBrowserRouter([
       {
         path: "hackathons/:id",
         element: <AdminHackathonDetailPage />,
+      },
+      {
+        path: "hackathons/:id/edit",
+        element: <AdminHackathonEditPage />,
       },
     ],
   },
