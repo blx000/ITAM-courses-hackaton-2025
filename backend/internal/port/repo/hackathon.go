@@ -22,6 +22,8 @@ type Hackathon interface {
 	GetParticipantProfile(ctx context.Context, participantId int) (*Participant, error)
 	UpdateParticipant(ctx context.Context, participantId int, hackId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
 	CreateHack(ctx context.Context, dto *HackathonGeneralDTO) (int, error)
+	UpdateHack(ctx context.Context, hackId int, dto *HackathonGeneralDTO) error
+	DeleteHack(ctx context.Context, hackId int) error
 	GetParticipantGeneral(ctx context.Context, participantId int) (*Participant, error)
 
 	GetUsersHacks(ctx context.Context, userId int64) ([]*HackathonGeneralDTO, error)

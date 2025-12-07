@@ -519,6 +519,52 @@ func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO
 	return hackId, nil
 }
 
+func (h *HackRepo) UpdateHack(ctx context.Context, hackId int, dto *repo.HackathonGeneralDTO) error {
+	sb := sqlbuilder.PostgreSQL.NewUpdateBuilder()
+	
+	query, args := sb.Update("hackmate.hackathon").
+		Set(
+			sb.Assign("name", dto.Name),
+			sb.Assign("description", dto.Desc),
+			sb.Assign("start_date", dto.StartDate),
+			sb.Assign("end_date", dto.EndDate),
+			sb.Assign("max_team_size", dto.MaxTeamSize),
+			sb.Assign("prize", dto.Prize),
+		).
+		Where(sb.Equal("id", hackId)).
+		Build()
+
+	result, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update hackathon: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return repo.ErrHackathonNotFound
+	}
+
+	return nil
+}
+
+func (h *HackRepo) DeleteHack(ctx context.Context, hackId int) error {
+	sb := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	
+	query, args := sb.DeleteFrom("hackmate.hackathon").
+		Where(sb.Equal("id", hackId)).
+		Build()
+
+	result, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to delete hackathon: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return repo.ErrHackathonNotFound
+	}
+
+	return nil
+}
+
 func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int) (*repo.Participant, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 

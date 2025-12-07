@@ -339,6 +339,109 @@ func (s Server) PostApiAdminHacks(ctx context.Context, request gen.PostApiAdminH
 	return gen.PostApiAdminHacks200JSONResponse(hackResponse), nil
 }
 
+func (s Server) PatchApiAdminHacksHackId(ctx context.Context, request gen.PatchApiAdminHacksHackIdRequestObject) (gen.PatchApiAdminHacksHackIdResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	if !user.IsAdmin {
+		fmt.Println("User is not admin")
+		return nil, fmt.Errorf("Permission denied")
+	}
+
+	hackDTO := &repo.HackathonGeneralDTO{
+		Name:        request.Body.Name,
+		Desc:        request.Body.Description,
+		StartDate:   request.Body.StartDate.Time,
+		EndDate:     request.Body.EndDate.Time,
+		MaxTeamSize: request.Body.MaxTeamSize,
+		Prize:       request.Body.Prize,
+	}
+
+	err = s.service.UpdateHack(ctx, request.HackId, hackDTO)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, repo.ErrHackathonNotFound) {
+			return gen.PatchApiAdminHacksHackId404Response{}, nil
+		}
+		return nil, fmt.Errorf("Update hack failed")
+	}
+
+	hack, err := s.service.GetHack(ctx, request.HackId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Failed to get updated hack")
+	}
+
+	var prize *int
+	if hack.Prize > 0 {
+		prize = &hack.Prize
+	}
+
+	hackResponse := gen.HackathonShort{
+		Id:          hack.Id,
+		Name:        hack.Name,
+		Description: hack.Desc,
+		StartDate:   openapi_types.Date{hack.StartDate},
+		EndDate:     openapi_types.Date{hack.EndDate},
+		Prize:       prize,
+	}
+
+	return gen.PatchApiAdminHacksHackId200JSONResponse(hackResponse), nil
+}
+
+func (s Server) DeleteApiAdminHacksHackId(ctx context.Context, request gen.DeleteApiAdminHacksHackIdRequestObject) (gen.DeleteApiAdminHacksHackIdResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("Empty token")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	if !user.IsAdmin {
+		fmt.Println("User is not admin")
+		return nil, fmt.Errorf("Permission denied")
+	}
+
+	err = s.service.DeleteHack(ctx, request.HackId)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, repo.ErrHackathonNotFound) {
+			return gen.DeleteApiAdminHacksHackId404Response{}, nil
+		}
+		return nil, fmt.Errorf("Delete hack failed")
+	}
+
+	return gen.DeleteApiAdminHacksHackId200Response{}, nil
+}
+
 func (s Server) PostApiAdminLogin(ctx context.Context, request gen.PostApiAdminLoginRequestObject) (gen.PostApiAdminLoginResponseObject, error) {
 	if request.Body.Password == "" {
 		return nil, fmt.Errorf("Wrong Password")

@@ -35,6 +35,7 @@ type Service interface {
 	GetHack(ctx context.Context, hackId int) (*repo.HackathonGeneralDTO, error)
 	CreateHack(ctx context.Context, hack *repo.HackathonGeneralDTO) (int, error)
 	UpdateHack(ctx context.Context, hackId int, hack *repo.HackathonGeneralDTO) error
+	DeleteHack(ctx context.Context, hackId int) error
 	EnterHackathon(ctx context.Context, create repo.FormCreate) error
 	ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error)
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
@@ -264,6 +265,10 @@ func (s *ServiceImpl) CreateHack(ctx context.Context, hack *repo.HackathonGenera
 
 func (s *ServiceImpl) UpdateHack(ctx context.Context, hackId int, hack *repo.HackathonGeneralDTO) error {
 	return s.hackRepo.UpdateHack(ctx, hackId, hack)
+}
+
+func (s *ServiceImpl) DeleteHack(ctx context.Context, hackId int) error {
+	return s.hackRepo.DeleteHack(ctx, hackId)
 }
 
 func (s *ServiceImpl) GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error) {

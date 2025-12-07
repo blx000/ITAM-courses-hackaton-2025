@@ -567,6 +567,23 @@ paths:
           description: Permission denied
         '404':
           description: Hack not found
+    delete:
+      summary: Delete hack
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful deletion
+        '403':
+          description: Permission denied
+        '404':
+          description: Hack not found
 
   /api/users/{user_id}:
     get:
