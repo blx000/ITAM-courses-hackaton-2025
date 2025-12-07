@@ -159,11 +159,6 @@
   transition: all 0.2s;
 }
 
-.hackathonCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
-}
-
 .hackathonContent {
   display: flex;
   gap: 12px;

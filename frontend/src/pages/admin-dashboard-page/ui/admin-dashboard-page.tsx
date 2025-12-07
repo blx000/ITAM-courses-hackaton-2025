@@ -5,7 +5,7 @@ import { useApp } from "../../../shared/context/app-context";
 import type { HackathonShort } from "../../../api";
 import { AdminHeader } from "../../../modules/admin-header";
 import styles from "./admin-dashboard-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/admin-bg1.png";
 import hackathonIcon from "/hackathon-photo.svg";
 import addIcon from "/add-icon.svg";
 import peopleIcon from "/people-icon.svg";
@@ -112,7 +112,6 @@ export function AdminDashboardPage() {
       <AdminHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <div className={styles.content}>
-
         {loading.hackathons && (
           <div className={styles.loading}>Загрузка...</div>
         )}
@@ -127,7 +126,12 @@ export function AdminDashboardPage() {
             className={styles.gridContainer}
             style={{
               gridTemplateAreas: `"add-button stats stats stats" ${getFilteredHackathonsWithStats()
-                .map((_, i) => `"hackathon-${i + 1} hackathon-${i + 1} hackathon-${i + 1} hackathon-${i + 1}"`)
+                .map(
+                  (_, i) =>
+                    `"hackathon-${i + 1} hackathon-${i + 1} hackathon-${
+                      i + 1
+                    } hackathon-${i + 1}"`
+                )
                 .join(" ")}`,
             }}
           >
@@ -156,7 +160,11 @@ export function AdminDashboardPage() {
                 <span>Команды</span>
               </div>
               <div className={styles.headerWithIcon}>
-                <img src={prizeIcon} alt="prize" className={styles.headerIcon} />
+                <img
+                  src={prizeIcon}
+                  alt="prize"
+                  className={styles.headerIcon}
+                />
                 <span>Приз</span>
               </div>
             </div>
