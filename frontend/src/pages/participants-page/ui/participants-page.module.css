@@ -38,9 +38,7 @@
   padding: 16px 24px;
   padding-bottom: 100px;
   max-width: 1200px;
-  margin: 0 auto;
 }
-
 
 .loading,
 .error,
@@ -57,40 +55,43 @@
 }
 
 .searchContainer {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .navigation {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .navButton {
-  padding: 12px 24px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  font-size: 16px;
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  font-size: 14px;
   font-weight: 600;
   color: rgba(249, 255, 238, 0.8);
   cursor: pointer;
   transition: all 0.2s;
-  font-family: "Roboto Flex", sans-serif;
 }
 
 .navButton:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
-
 .navButton.active {
   background: #aceb4c;
   color: #111204;
   border-color: #aceb4c;
 }
-
+.teamBtn {
+  border-radius: 24px;
+  padding: 10px;
+}
 .listContainer {
   margin-top: 0;
   width: 100%;

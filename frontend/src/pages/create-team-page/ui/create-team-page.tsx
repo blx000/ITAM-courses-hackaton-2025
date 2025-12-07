@@ -1,16 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { HackmateApi } from "../../../api";
+import type { Role } from "../../../api";
+import { ProfileHeader } from "../../../modules/profile-header";
+import { Navigation } from "../../../modules/navigation";
 import styles from "./create-team-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/bg-image2.png";
 import teamPhoto from "/team-photo.svg";
+import addIcon from "/add-icon.svg";
 
 export function CreateTeamPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [teamName, setTeamName] = useState("");
+  const [selectedRoles, setSelectedRoles] = useState<Role[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
+  const [additionalInfo, setAdditionalInfo] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingRoles, setLoadingRoles] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadRoles();
+  }, []);
+
+  const loadRoles = async () => {
+    try {
+      setLoadingRoles(true);
+      const rolesData = await HackmateApi.getRoles();
+      setAvailableRoles(rolesData);
+    } catch (err) {
+      console.error("Ошибка загрузки ролей:", err);
+    } finally {
+      setLoadingRoles(false);
+    }
+  };
+
+  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+
+  const handleAddRole = () => {
+    if (!selectedRoleId) return;
+    
+    const roleId = parseInt(selectedRoleId);
+    const role = availableRoles.find((r) => r.id === roleId);
+    
+    if (role && !selectedRoles.find((r) => r.id === role.id)) {
+      setSelectedRoles([...selectedRoles, role]);
+      setSelectedRoleId(""); // Сброс выбора
+    }
+  };
+
+  const handleRemoveRole = (roleId: number) => {
+    setSelectedRoles(selectedRoles.filter((r) => r.id !== roleId));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,17 +106,12 @@ export function CreateTeamPage() {
 
   return (
     <div className={styles.container}>
+      <ProfileHeader title="Создать команду" />
       <div className={styles.backgroundImage}>
         <img src={bgImage} alt="background" />
       </div>
       <div className={styles.overlay} />
       <div className={styles.content}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          ← Назад
-        </button>
-
-        <h1 className={styles.title}>Создать команду</h1>
-
         <div className={styles.teamPhotoContainer}>
           <img src={teamPhoto} alt="Team" className={styles.teamPhoto} />
         </div>
@@ -98,6 +135,74 @@ export function CreateTeamPage() {
             />
           </div>
 
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Кого ищем:</label>
+            {loadingRoles ? (
+              <div className={styles.loadingText}>Загрузка ролей...</div>
+            ) : (
+              <>
+                <div className={styles.roleSelector}>
+                  <select
+                    value={selectedRoleId}
+                    onChange={(e) => setSelectedRoleId(e.target.value)}
+                    className={styles.roleSelect}
+                    disabled={loading}
+                  >
+                    <option value="">Выберите роль</option>
+                    {availableRoles
+                      .filter((role) => !selectedRoles.find((r) => r.id === role.id))
+                      .map((role) => (
+                        <option key={role.id} value={role.id.toString()}>
+                          {role.name}
+                        </option>
+                      ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleAddRole}
+                    className={styles.addRoleButton}
+                    disabled={loading || !selectedRoleId}
+                  >
+                    <img src={addIcon} alt="add" />
+                  </button>
+                </div>
+                {selectedRoles.length > 0 && (
+                  <div className={styles.selectedRolesList}>
+                    {selectedRoles.map((role) => (
+                      <div key={role.id} className={styles.selectedRoleItem}>
+                        <span className={styles.selectedRoleName}>{role.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveRole(role.id)}
+                          className={styles.removeRoleButton}
+                          disabled={loading}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Дополнительная информация:</label>
+            <textarea
+              value={additionalInfo}
+              onChange={(e) => {
+                setAdditionalInfo(e.target.value);
+                setError(null);
+              }}
+              placeholder="Расскажите о команде, какие участники вам нужны..."
+              className={styles.textarea}
+              disabled={loading}
+              maxLength={500}
+              rows={4}
+            />
+          </div>
+
           <button
             type="submit"
             className={styles.submitButton}
@@ -107,6 +212,7 @@ export function CreateTeamPage() {
           </button>
         </form>
       </div>
+      <Navigation />
     </div>
   );
 }

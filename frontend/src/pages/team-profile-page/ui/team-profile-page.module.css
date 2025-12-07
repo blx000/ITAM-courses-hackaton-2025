@@ -3,12 +3,15 @@
   min-height: 100vh;
   width: 100%;
   background: #111204;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .backgroundImage {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
 }
 
@@ -16,25 +19,28 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 50%;
-  pointer-events: none;
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(17, 18, 4, 0.3);
-  z-index: 1;
 }
 
 .content {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   padding: 16px 24px;
   padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .backButton {
@@ -65,18 +71,42 @@
   color: #fc8181;
 }
 
+.info {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.photo {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.textBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
 .teamName {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: #f9ffee;
   margin: 0;
   font-family: "Roboto Flex", sans-serif;
-}
-
-.teamInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .membersCount {
@@ -84,6 +114,14 @@
   font-weight: 600;
   color: #f9ffee;
   margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #f9ffee;
   font-family: "Roboto Flex", sans-serif;
 }
 
@@ -99,6 +137,46 @@
   color: #f9ffee;
   margin: 0;
   font-family: "Roboto Flex", sans-serif;
+}
+
+.rolesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roleTag {
+  padding: 10px 12px;
+  border: 2px solid #f9ffee;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+  background: transparent;
+}
+
+.additionalInfo {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin-top: 8px;
+  line-height: 1.6;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.emptyText {
+  color: rgba(249, 255, 238, 0.6);
+  font-size: 14px;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.errorMessage {
+  background-color: rgba(254, 215, 215, 0.2);
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(252, 129, 129, 0.3);
 }
 
 .membersList {

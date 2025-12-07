@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { HackmateApi, AuthService } from "../../../api";
 import type { Team } from "../../../api";
+import { ProfileHeader } from "../../../modules/profile-header";
+import { Navigation } from "../../../modules/navigation";
 import styles from "./team-profile-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/bg-image3.png";
+import teamPhoto from "/team-photo.svg";
 
 export function TeamProfilePage() {
   const { id, teamId } = useParams<{ id: string; teamId: string }>();
@@ -78,45 +81,73 @@ export function TeamProfilePage() {
     );
   }
 
+  // Получаем уникальные роли участников команды (кого ищут)
+  const neededRoles = Array.from(
+    new Set(team.members.map((m) => m.role.name))
+  );
+
   return (
     <div className={styles.container}>
+      <ProfileHeader title={team.name} />
       <div className={styles.backgroundImage}>
         <img src={bgImage} alt="background" />
       </div>
-      <div className={styles.overlay} />
       <div className={styles.content}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          ← Назад
-        </button>
+        {error && <div className={styles.errorMessage}>{error}</div>}
 
-        <h1 className={styles.teamName}>{team.name}</h1>
-        <div className={styles.teamInfo}>
-          <p className={styles.membersCount}>
-            Участников: {team.members.length} / {team.max_size}
-          </p>
+        <div className={styles.info}>
+          <div className={styles.photo}>
+            <img src={teamPhoto} alt="team" />
+          </div>
+          <div className={styles.textBox}>
+            <h2 className={styles.teamName}>{team.name}</h2>
+            <div className={styles.membersCount}>
+              Участников: {team.members.length} / {team.max_size}
+            </div>
+            {team.members.length > 0 && team.members[0].add_info && (
+              <div className={styles.additionalInfo}>
+                {team.members[0].add_info}
+              </div>
+            )}
+          </div>
         </div>
+
+        {neededRoles.length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Кого ищем:</h2>
+            <div className={styles.rolesList}>
+              {neededRoles.map((roleName, index) => (
+                <span key={index} className={styles.roleTag}>
+                  {roleName}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Участники команды:</h2>
           <div className={styles.membersList}>
-            {team.members.map((member) => (
-              <div
-                key={member.id}
-                className={styles.memberCard}
-                onClick={() => navigate(`/hackathons/${id}/participants/${member.id}`)}
-              >
-                <div className={styles.memberInfo}>
-                  <h3 className={styles.memberName}>
-                    {member.first_name} {member.last_name}
-                  </h3>
-                  {member.id === team.captain_id && (
-                    <span className={styles.captainBadge}>Капитан</span>
-                  )}
-                </div>
-                <div className={styles.memberRole}>{member.role.name}</div>
-                <div className={styles.memberSkills}>
+            {team.members.length === 0 ? (
+              <div className={styles.emptyText}>Участники не найдены</div>
+            ) : (
+              team.members.map((member) => (
+                <div
+                  key={member.id}
+                  className={styles.memberCard}
+                  onClick={() => navigate(`/hackathons/${id}/participants/${member.id}`)}
+                >
+                  <div className={styles.memberInfo}>
+                    <h3 className={styles.memberName}>
+                      {member.first_name} {member.last_name}
+                    </h3>
+                    {member.id === team.captain_id && (
+                      <span className={styles.captainBadge}>Капитан</span>
+                    )}
+                  </div>
+                  <div className={styles.memberRole}>{member.role.name}</div>
                   {member.skills && member.skills.length > 0 && (
-                    <>
+                    <div className={styles.memberSkills}>
                       {member.skills.slice(0, 3).map((skill) => (
                         <span key={skill.id} className={styles.skillTag}>
                           {skill.name}
@@ -127,11 +158,11 @@ export function TeamProfilePage() {
                           +{member.skills.length - 3}
                         </span>
                       )}
-                    </>
+                    </div>
                   )}
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -144,6 +175,7 @@ export function TeamProfilePage() {
           </button>
         )}
       </div>
+      <Navigation />
     </div>
   );
 }

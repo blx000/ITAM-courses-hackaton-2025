@@ -1,7 +1,7 @@
 .container {
   position: relative;
-  width: 327px;
-  height: 44px;
+  width: 100%;
+  height: auto;
 }
 
 .searchForm {
@@ -13,13 +13,15 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 12px;
-  gap: 269px;
+  padding: 12px 16px;
+  gap: 8px;
 
   width: 100%;
-  height: 100%;
+  height: auto;
 
-  background: #d9d9d9;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 24px;
 
   flex: none;
@@ -34,7 +36,7 @@
   padding: 0px;
   gap: 8px;
 
-  width: 21.74px;
+  width: 20px;
   height: 20px;
 
   flex: none;
@@ -42,17 +44,23 @@
   flex-grow: 0;
 }
 
+.searchIcon img {
+  width: 100%;
+  height: 100%;
+}
+
 .searchInput {
-  width: 128px;
-  height: 10px;
+  width: 100%;
+  height: auto;
+  padding: 0;
 
   font-family: "Roboto Flex", sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 16px;
 
-  color: #6a6a6a;
+  color: rgba(249, 255, 238, 1);
   font-stretch: 125;
   font-variation-settings: "GRAD" 0, "XOPQ" 96, "XTRA" 468, "YOPQ" 79,
     "YTAS" 750, "YTDE" -203, "YTFI" 738, "YTLC" 514, "YTUC" 712, "slnt" 0;
@@ -61,25 +69,26 @@
   border: none;
   outline: none;
 
-  flex: none;
+  flex: 1;
   order: 1;
-  flex-grow: 0;
+  flex-grow: 1;
 }
 
 .searchInput::placeholder {
-  color: #6a6a6a;
+  color: rgba(249, 255, 238, 1);
   opacity: 1;
 }
 
 .clearIcon {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   padding: 0px;
-  gap: 10px;
+  gap: 0px;
 
-  width: 17.5px;
-  height: 10.58px;
+  width: 20px;
+  height: 20px;
 
   background: none;
   border: none;
@@ -90,19 +99,9 @@
   flex-grow: 0;
 }
 
-.rightIcon {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0px;
-  gap: 10px;
-
-  width: 17.5px;
-  height: 10.58px;
-
-  flex: none;
-  order: 2;
-  flex-grow: 0;
+.clearIcon svg {
+  width: 18px;
+  height: 11px;
 }
 
 @supports not (font-variation-settings: normal) {

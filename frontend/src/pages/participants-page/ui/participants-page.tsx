@@ -3,10 +3,11 @@ import { useParams, useNavigate } from "react-router";
 import { HackmateApi } from "../../../api";
 import type { Participant, Team, HackathonPage, User } from "../../../api";
 import { Navigation } from "../../../modules/navigation";
-import { HackathonSearch } from "../../../modules/hackathon-search";
+import { ParticipantSearch } from "../../../modules/participant-search";
 import { ParticipantsHeader } from "../../../modules/participants-header";
 import styles from "./participants-page.module.css";
 import bgImage from "/bg-image.png";
+import addIcon from "/add-icon.svg";
 
 export function ParticipantsPage() {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,7 @@ export function ParticipantsPage() {
   const [activeTab, setActiveTab] = useState<
     "participants" | "teams" | "create"
   >("participants");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -131,6 +133,32 @@ export function ParticipantsPage() {
   const hasTeam =
     userParticipant && userParticipant.team_id && userParticipant.team_id > 0;
 
+  const filteredParticipants = searchQuery
+    ? participants.filter(
+        (p) =>
+          `${p.first_name} ${p.last_name}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          p.role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.skills?.some((s) =>
+            s.name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+      )
+    : participants;
+
+  const filteredTeams = searchQuery
+    ? teams.filter(
+        (t) =>
+          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.members.some(
+            (m) =>
+              `${m.first_name} ${m.last_name}`
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
+          )
+      )
+    : teams;
+
   return (
     <div className={styles.container}>
       <ParticipantsHeader title={hackathon?.name || "Участники и команды"} />
@@ -139,12 +167,7 @@ export function ParticipantsPage() {
       </div>
       <div className={styles.overlay} />
       <div className={styles.content}>
-
         {error && <div className={styles.error}>{error}</div>}
-
-        <div className={styles.searchContainer}>
-          <HackathonSearch placeholder="Поиск хакатона..." />
-        </div>
 
         <div className={styles.navigation}>
           <button
@@ -165,23 +188,36 @@ export function ParticipantsPage() {
           </button>
           {!hasTeam && (
             <button
-              className={`${styles.navButton} ${
+              className={`${styles.navButton} ${styles.teamBtn} ${
                 activeTab === "create" ? styles.active : ""
               }`}
               onClick={() => navigate(`/hackathons/${id}/teams/create`)}
             >
-              Создать команду
+              <img src={addIcon} alt="add-icon" />
             </button>
           )}
         </div>
-
+        <div className={styles.searchContainer}>
+          <ParticipantSearch
+            placeholder={
+              activeTab === "participants"
+                ? "Поиск участников..."
+                : "Поиск команд..."
+            }
+            onSearchChange={setSearchQuery}
+          />
+        </div>
         {activeTab === "participants" && (
           <div className={styles.listContainer}>
-            {participants.length === 0 ? (
-              <div className={styles.empty}>Участники не найдены</div>
+            {filteredParticipants.length === 0 ? (
+              <div className={styles.empty}>
+                {searchQuery
+                  ? "Участники не найдены"
+                  : "Участники не найдены"}
+              </div>
             ) : (
               <div className={styles.participantsGrid}>
-                {participants.map((participant) => (
+                {filteredParticipants.map((participant) => (
                   <div
                     key={participant.id}
                     className={styles.participantCard}
@@ -222,11 +258,13 @@ export function ParticipantsPage() {
 
         {activeTab === "teams" && (
           <div className={styles.listContainer}>
-            {teams.length === 0 ? (
-              <div className={styles.empty}>Команды не найдены</div>
+            {filteredTeams.length === 0 ? (
+              <div className={styles.empty}>
+                {searchQuery ? "Команды не найдены" : "Команды не найдены"}
+              </div>
             ) : (
               <div className={styles.teamsGrid}>
-                {teams.map((team) => (
+                {filteredTeams.map((team) => (
                   <div
                     key={team.id}
                     className={styles.teamCard}

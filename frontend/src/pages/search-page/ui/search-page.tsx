@@ -6,6 +6,7 @@ import type { HackathonShort } from "../../../api";
 import { Navigation } from "../../../modules/navigation";
 import bgImage from "/bg-image3.png";
 import searchIcon from "/search-icon.svg";
+import hackathonIcon from "/hackathon-photo.svg";
 
 export function SearchPage() {
   const navigate = useNavigate();
@@ -34,6 +35,10 @@ export function SearchPage() {
       h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       h.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const formatPrize = (amount: number) => {
+    return new Intl.NumberFormat("ru-RU").format(amount) + " ₽";
+  };
 
   return (
     <div className={styles.container}>
@@ -68,11 +73,19 @@ export function SearchPage() {
                 filteredHackathons.map((hack) => (
                   <div
                     key={hack.id}
-                    className={styles.resultCard}
+                    className={styles.hackathonCard}
                     onClick={() => navigate(`/hackathons/${hack.id}`)}
                   >
-                    <h3>{hack.name}</h3>
-                    <p>{hack.description}</p>
+                    <div className={styles.hackathonContent}>
+                      <div className={styles.hackathonIcon}>
+                        <img src={hackathonIcon} alt="hackathon" />
+                      </div>
+                      <div className={styles.hackathonInfo}>
+                        <h3 className={styles.hackathonTitle}>{hack.name}</h3>
+                        <p className={styles.hackathonCompany}>направление</p>
+                      </div>
+                    </div>
+                    <div className={styles.hackathonPrize}>{formatPrize(0)}</div>
                   </div>
                 ))
               )}

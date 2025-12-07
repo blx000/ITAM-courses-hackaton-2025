@@ -59,11 +59,11 @@
   width: 100%;
   padding: 12px 16px 12px 48px;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(17, 18, 4, 0.95);
-  color: #f9ffee;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  color: rgba(249, 255, 238, 1);
   font-size: 16px;
-  font-family: "Roboto Flex", sans-serif;
 }
 
 .searchInput:focus {
@@ -72,35 +72,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(249, 255, 238, 0.5);
-}
-
-.tabs {
-  display: flex;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.tab {
-  padding: 12px 24px;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: rgba(249, 255, 238, 0.6);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: "Roboto Flex", sans-serif;
-  transition: all 0.2s;
-}
-
-.tab.active {
-  color: #aceb4c;
-  border-bottom-color: #aceb4c;
-}
-
-.tab:hover {
-  color: #aceb4c;
+  color: rgba(249, 255, 238, 1);
 }
 
 .results {
@@ -132,14 +104,90 @@
   font-size: 16px;
   font-weight: 600;
   color: #f9ffee;
-  font-family: "Roboto Flex", sans-serif;
 }
 
 .resultCard p {
   margin: 0;
   font-size: 14px;
   color: rgba(249, 255, 238, 0.7);
-  font-family: "Roboto Flex", sans-serif;
+}
+
+.hackathonCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hackathonCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
+}
+
+.hackathonContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.hackathonIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hackathonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hackathonTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonCompany {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonPrize {
+  background: #a0d949;
+  color: #f9ffee;
+  padding: 4px;
+  border-radius: 8px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 600;
+  width: 106px;
+  flex-shrink: 0;
 }
 
 .empty {
@@ -147,7 +195,6 @@
   padding: 40px 20px;
   color: rgba(249, 255, 238, 0.6);
   font-size: 16px;
-  font-family: "Roboto Flex", sans-serif;
 }
 
 .loading {
@@ -155,6 +202,4 @@
   padding: 40px 20px;
   color: #aceb4c;
   font-size: 16px;
-  font-family: "Roboto Flex", sans-serif;
 }
-

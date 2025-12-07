@@ -3,12 +3,15 @@
   min-height: 100vh;
   width: 100%;
   background: #111204;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .backgroundImage {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
 }
 
@@ -16,25 +19,28 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 50%;
-  pointer-events: none;
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(17, 18, 4, 0.3);
-  z-index: 1;
 }
 
 .content {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   padding: 16px 24px;
   padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .backButton {
@@ -65,33 +71,42 @@
   color: #fc8181;
 }
 
-.profileHeader {
+.info {
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  position: relative;
 }
 
-.profilePhoto {
+.photo {
   width: 120px;
   height: 120px;
-  border-radius: 50%;
   flex-shrink: 0;
-  background: rgba(172, 235, 76, 0.2);
-  border: 2px solid #aceb4c;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  font-weight: 600;
-  color: #aceb4c;
-  font-family: "Roboto Flex", sans-serif;
 }
 
-.profileInfo {
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.textBox {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.surname {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
 }
 
 .name {
@@ -102,44 +117,55 @@
   font-family: "Roboto Flex", sans-serif;
 }
 
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
+}
+
 .role {
   font-size: 14px;
   font-weight: 600;
   color: #f9ffee;
+  margin: 0;
   font-family: "Roboto Flex", sans-serif;
 }
 
-.teamBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  background: rgba(172, 235, 76, 0.2);
-  color: #aceb4c;
-  border: 1px solid #aceb4c;
-  border-radius: 12px;
-  font-size: 12px;
+.experience {
+  font-size: 14px;
   font-weight: 600;
-  font-family: "Roboto Flex", sans-serif;
-}
-
-.freeBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.1);
   color: #f9ffee;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  font-size: 12px;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.addBox {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  min-height: 176px;
+  width: 100%;
+}
+
+.addBox h2 {
+  margin-bottom: 12px;
+  color: #f9ffee;
+  font-size: 16px;
+}
+
+.text {
+  color: #f9ffee;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  font-size: 14px;
   font-weight: 600;
   font-family: "Roboto Flex", sans-serif;
 }
 
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.sectionTitle {
+.skillsTitle {
   font-size: 16px;
   font-weight: 600;
   color: #f9ffee;
@@ -164,10 +190,45 @@
   background: transparent;
 }
 
-.emptyText {
-  color: rgba(249, 255, 238, 0.6);
-  font-size: 14px;
+.teamBadgeContainer,
+.freeBadgeContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.teamBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
   font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
+}
+
+.freeBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 255, 238, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
+}
+
+.errorMessage {
+  background-color: rgba(254, 215, 215, 0.2);
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(252, 129, 129, 0.3);
 }
 
 .inviteButton {
@@ -184,9 +245,14 @@
   font-family: "Roboto Flex", sans-serif;
 }
 
-.inviteButton:hover {
+.inviteButton:hover:not(:disabled) {
   background: #9dd83a;
   transform: translateY(-2px);
+}
+
+.inviteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 

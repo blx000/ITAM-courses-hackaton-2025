@@ -3,10 +3,14 @@ import questionIcon from "/question-icon.svg";
 import bellIcon from "/bell-icon.svg";
 import { NavLink } from "react-router";
 
-export function ProfileHeader() {
+interface ProfileHeaderProps {
+  title?: string;
+}
+
+export function ProfileHeader({ title = "Мой профиль" }: ProfileHeaderProps) {
   return (
     <div className={styles.container}>
-      <h1>Мой профиль</h1>
+      <h1>{title}</h1>
       <div className={styles.icons}>
         <NavLink to={"/help"}>
           <img src={questionIcon} alt="question-icon" />

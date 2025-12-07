@@ -93,7 +93,7 @@ export function HomePage() {
                     </div>
                     <div className={styles.hackathonInfo}>
                       <h3 className={styles.hackathonTitle}>{hack.name}</h3>
-                      <p className={styles.hackathonCompany}>компания</p>
+                      <p className={styles.hackathonCompany}>направление</p>
                     </div>
                   </div>
                   <div className={styles.hackathonPrize}>{formatPrize(0)}</div>

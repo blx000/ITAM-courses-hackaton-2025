@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import { HackmateApi } from "../../../api";
 import type { Participant } from "../../../api";
+import { ProfileHeader } from "../../../modules/profile-header";
+import { Navigation } from "../../../modules/navigation";
 import styles from "./participant-profile-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/bg-image3.png";
+import profilePhoto from "/profile-photo.svg";
 
 export function ParticipantProfilePage() {
-  const { id, participantId } = useParams<{ id: string; participantId: string }>();
-  const navigate = useNavigate();
+  const { id, participantId } = useParams<{
+    id: string;
+    participantId: string;
+  }>();
   const [participant, setParticipant] = useState<Participant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,14 +36,17 @@ export function ParticipantProfilePage() {
       setError(null);
       const hackathonId = parseInt(id);
       const partId = parseInt(participantId);
-      
-      const participantData = await HackmateApi.getParticipant(hackathonId, partId);
+
+      const participantData = await HackmateApi.getParticipant(
+        hackathonId,
+        partId
+      );
       setParticipant(participantData);
     } catch (err: any) {
       console.error("Ошибка загрузки участника:", err);
       setError(
         err.response?.data?.message ||
-        "Не удалось загрузить профиль участника. Пожалуйста, попробуйте позже."
+          "Не удалось загрузить профиль участника. Пожалуйста, попробуйте позже."
       );
     } finally {
       setLoading(false);
@@ -53,14 +61,14 @@ export function ParticipantProfilePage() {
       setError(null);
       const hackathonId = parseInt(id);
       const partId = parseInt(participantId);
-      
+
       await HackmateApi.inviteParticipant(hackathonId, partId);
       alert("Приглашение отправлено!");
     } catch (err: any) {
       console.error("Ошибка отправки приглашения:", err);
       setError(
         err.response?.data?.message ||
-        "Не удалось отправить приглашение. Пожалуйста, попробуйте позже."
+          "Не удалось отправить приглашение. Пожалуйста, попробуйте позже."
       );
     } finally {
       setInviting(false);
@@ -85,51 +93,72 @@ export function ParticipantProfilePage() {
 
   return (
     <div className={styles.container}>
+      <ProfileHeader
+        title={`${participant.first_name} ${participant.last_name}`}
+      />
       <div className={styles.backgroundImage}>
         <img src={bgImage} alt="background" />
       </div>
-      <div className={styles.overlay} />
       <div className={styles.content}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          ← Назад
-        </button>
+        {error && <div className={styles.errorMessage}>{error}</div>}
 
-        <div className={styles.profileHeader}>
-          <div className={styles.profilePhoto}>
-            {participant.first_name?.[0]}{participant.last_name?.[0]}
+        <div className={styles.info}>
+          <div className={styles.photo}>
+            <img src={profilePhoto} alt="profile" />
           </div>
-          <div className={styles.profileInfo}>
-            <h1 className={styles.name}>
-              {participant.first_name} {participant.last_name}
-            </h1>
-            <div className={styles.role}>
-              {participant.role.name}
-            </div>
-            {participant.team_id ? (
-              <span className={styles.teamBadge}>В команде</span>
-            ) : (
-              <span className={styles.freeBadge}>Свободен</span>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Стек:</h2>
-          <div className={styles.skillsList}>
-            {participant.skills && participant.skills.length > 0 ? (
-              participant.skills.map((skill) => (
-                <div key={skill.id} className={styles.skillTag}>
-                  {skill.name}
+          <div className={styles.textBox}>
+            <h2 className={styles.surname}>{participant.last_name}</h2>
+            <h2 className={styles.name}>{participant.first_name}</h2>
+            {participant.experience !== undefined &&
+              participant.experience !== null && (
+                <div className={styles.experience}>
+                  {`${participant.experience} ${
+                    participant.experience === 1
+                      ? "хакатон"
+                      : participant.experience < 5
+                      ? "хакатона"
+                      : "хакатонов"
+                  }`}
                 </div>
-              ))
-            ) : (
-              <p className={styles.emptyText}>Навыки не указаны</p>
-            )}
+              )}
+            <div className={styles.role}>
+              {participant.role?.name || "Не указано"}
+            </div>
           </div>
         </div>
+
+        {participant.skills && participant.skills.length > 0 && (
+          <div className={styles.addBox}>
+            <h2 className={styles.skillsTitle}>Стек:</h2>
+            <div className={styles.skillsList}>
+              {participant.skills.map((skill) => (
+                <span key={skill.id} className={styles.skillTag}>
+                  {skill.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {participant.add_info && (
+          <div className={styles.addBox}>
+            <h2>Дополнительная информация:</h2>
+            <div className={styles.text}>{participant.add_info}</div>
+          </div>
+        )}
+
+        {participant.team_id && participant.team_id > 0 ? (
+          <div className={styles.teamBadgeContainer}>
+            <span className={styles.teamBadge}>В команде</span>
+          </div>
+        ) : (
+          <div className={styles.freeBadgeContainer}>
+            <span className={styles.freeBadge}>Свободен</span>
+          </div>
+        )}
 
         {!participant.team_id && (
-          <button 
+          <button
             className={styles.inviteButton}
             onClick={handleInvite}
             disabled={inviting}
@@ -138,10 +167,7 @@ export function ParticipantProfilePage() {
           </button>
         )}
       </div>
+      <Navigation />
     </div>
   );
 }
-
-
-
-
