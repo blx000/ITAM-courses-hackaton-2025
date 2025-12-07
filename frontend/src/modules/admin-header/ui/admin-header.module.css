@@ -3,9 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .leftSection {
@@ -14,13 +12,8 @@
   gap: 12px;
 }
 
-.adminIcon {
-  width: 40px;
-  height: 40px;
-}
-
 .adminText {
-  font-size: 18px;
+  font-size: 32px;
   font-weight: 600;
   color: #ffffff;
 }
@@ -31,7 +24,7 @@
   flex: 1;
   display: flex;
   justify-content: flex-end;
-  max-width: 400px;
+  max-width: 500px;
 }
 
 .searchBox {
@@ -43,24 +36,11 @@
   padding: 8px 16px;
   gap: 8px;
   width: 100%;
-  max-width: 350px;
 }
-
-.searchIcon {
-  width: 20px;
-  height: 20px;
-  opacity: 0.7;
-}
-
 .searchInput {
   flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #ffffff;
-  font-size: 14px;
+  color: rgba(249, 255, 238, 1);
   width: 100%;
-  min-width: 0;
 }
 
 .searchInput:focus {
@@ -68,7 +48,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(249, 255, 238, 1);
 }
 
 @media (max-width: 768px) {

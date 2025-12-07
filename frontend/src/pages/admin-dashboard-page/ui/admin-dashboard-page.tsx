@@ -78,7 +78,8 @@ export function AdminDashboardPage() {
             ...hack,
             participantsCount,
             teamsCount,
-            prize: hack.prize !== undefined && hack.prize !== null ? hack.prize : 0,
+            prize:
+              hack.prize !== undefined && hack.prize !== null ? hack.prize : 0,
           });
         } catch (err) {
           console.error(`Error loading stats for hack ${hack.id}:`, err);
@@ -86,7 +87,8 @@ export function AdminDashboardPage() {
             ...hack,
             participantsCount: 0,
             teamsCount: 0,
-            prize: hack.prize !== undefined && hack.prize !== null ? hack.prize : 0,
+            prize:
+              hack.prize !== undefined && hack.prize !== null ? hack.prize : 0,
           });
         }
       }
@@ -108,102 +110,107 @@ export function AdminDashboardPage() {
       </div>
       <div className={styles.overlay} />
       <AdminHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <button
-            className={styles.addButton}
-            onClick={() => navigate("/admin/hackathons/create")}
-          >
-            <img src={addIcon} alt="add" />
-            Создать хакатон
-          </button>
-        </div>
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Хакатоны</h2>
-          {loading.hackathons && (
-            <div className={styles.loading}>Загрузка...</div>
+      <div className={styles.content}>
+
+        {loading.hackathons && (
+          <div className={styles.loading}>Загрузка...</div>
+        )}
+        {!loading.hackathons &&
+          getFilteredHackathonsWithStats().length === 0 && (
+            <div className={styles.empty}>
+              {searchQuery ? "Хакатоны не найдены" : "Хакатоны не найдены"}
+            </div>
           )}
-          {!loading.hackathons &&
-            getFilteredHackathonsWithStats().length === 0 && (
-              <div className={styles.empty}>
-                {searchQuery ? "Хакатоны не найдены" : "Хакатоны не найдены"}
+        {!loading.hackathons && getFilteredHackathonsWithStats().length > 0 && (
+          <div
+            className={styles.gridContainer}
+            style={{
+              gridTemplateAreas: `"add-button stats stats stats" ${getFilteredHackathonsWithStats()
+                .map((_, i) => `"hackathon-${i + 1} hackathon-${i + 1} hackathon-${i + 1} hackathon-${i + 1}"`)
+                .join(" ")}`,
+            }}
+          >
+            <button
+              className={styles.addButton}
+              onClick={() => navigate("/admin/hackathons/create")}
+            >
+              <img src={addIcon} alt="add" />
+              Создать хакатон
+            </button>
+            <div className={styles.stats}>
+              <div className={styles.headerWithIcon}>
+                <img
+                  src={peopleIcon}
+                  alt="people"
+                  className={styles.headerIcon}
+                />
+                <span>Участники</span>
               </div>
-            )}
-          {!loading.hackathons &&
-            getFilteredHackathonsWithStats().length > 0 && (
-              <div className={styles.tableContainer}>
-                <table className={styles.hackathonsTable}>
-                 <thead>
-                   <tr>
-                     <th className={styles.tableHeader}>Хакатон</th>
-                     <th className={styles.tableHeader}>
-                       <div className={styles.headerWithIcon}>
-                         <img src={peopleIcon} alt="people" className={styles.headerIcon} />
-                         <span>Участники</span>
-                       </div>
-                     </th>
-                     <th className={styles.tableHeader}>
-                       <div className={styles.headerWithIcon}>
-                         <img src={puzzleIcon} alt="puzzle" className={styles.headerIcon} />
-                         <span>Команды</span>
-                       </div>
-                     </th>
-                     <th className={styles.tableHeader}>
-                       <div className={styles.headerWithIcon}>
-                         <img src={prizeIcon} alt="prize" className={styles.headerIcon} />
-                         <span>Приз</span>
-                       </div>
-                     </th>
-                   </tr>
-                 </thead>
-                  <tbody>
-                    {getFilteredHackathonsWithStats().map((hack) => (
-                      <tr
-                        key={hack.id}
-                        className={styles.tableRow}
-                        onClick={() => navigate(`/admin/hackathons/${hack.id}`)}
-                      >
-                        <td className={styles.hackathonCell}>
-                          <div className={styles.hackathonInfo}>
-                            <div className={styles.hackathonIcon}>
-                              <img src={hackathonIcon} alt="hackathon" />
-                            </div>
-                            <div className={styles.hackathonDetails}>
-                              <h3 className={styles.hackathonTitle}>
-                                {hack.name}
-                              </h3>
-                              <p className={styles.hackathonDate}>
-                                {new Date(hack.start_date).toLocaleDateString(
-                                  "ru-RU",
-                                  {
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                  }
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className={styles.tableCell}>
-                          {hack.participantsCount ?? 0}
-                        </td>
-                        <td className={styles.tableCell}>
-                          {hack.teamsCount ?? 0}
-                        </td>
-                         <td className={styles.tableCell}>
-                           <span className={styles.prizeBadge}>
-                             {hack.prize !== undefined && hack.prize !== null ? formatPrize(hack.prize) : "0 ₽"}
-                           </span>
-                         </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className={styles.headerWithIcon}>
+                <img
+                  src={puzzleIcon}
+                  alt="puzzle"
+                  className={styles.headerIcon}
+                />
+                <span>Команды</span>
               </div>
-            )}
-        </div>
+              <div className={styles.headerWithIcon}>
+                <img src={prizeIcon} alt="prize" className={styles.headerIcon} />
+                <span>Приз</span>
+              </div>
+            </div>
+            {getFilteredHackathonsWithStats().map((hack, index) => (
+              <div
+                key={hack.id}
+                className={styles.hackathonCard}
+                style={{ gridArea: `hackathon-${index + 1}` }}
+                onClick={() => navigate(`/admin/hackathons/${hack.id}`)}
+              >
+                <div className={styles.hackathonInfo}>
+                  <div className={styles.hackathonIcon}>
+                    <img src={hackathonIcon} alt="hackathon" />
+                  </div>
+                  <div className={styles.hackathonDetails}>
+                    <h3 className={styles.hackathonTitle}>{hack.name}</h3>
+                    <p className={styles.hackathonDate}>
+                      {new Date(hack.start_date).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}{" "}
+                      -{" "}
+                      {new Date(hack.end_date).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className={styles.hackathonStats}>
+                  <div className={styles.statItem}>
+                    <span className={styles.statValue}>
+                      {hack.participantsCount ?? 0}
+                    </span>
+                  </div>
+                  <div className={styles.statItem}>
+                    <span className={styles.statValue}>
+                      {hack.teamsCount ?? 0}
+                    </span>
+                  </div>
+                  <div className={styles.statItem}>
+                    <span className={styles.prizeBadge}>
+                      {hack.prize !== undefined && hack.prize !== null
+                        ? formatPrize(hack.prize)
+                        : "0 ₽"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
