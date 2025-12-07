@@ -3,34 +3,8 @@
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
+  background: rgba(17, 18, 4, 1);
 }
-
-.backgroundImage {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
-
-.backgroundImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 50%;
-  pointer-events: none;
-}
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.01);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 1;
-}
-
 .content {
   position: relative;
   z-index: 2;
@@ -42,8 +16,8 @@
 }
 
 .loginForm {
-  background: white;
-  border-radius: 24px;
+  border-radius: 37px;
+  border: 2px solid rgba(172, 235, 76, 1);
   padding: 24px;
   width: 100%;
   max-width: 320px;
@@ -62,27 +36,17 @@
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  text-align: center;
   margin-bottom: 20px;
+  text-align: center;
 }
 
-.title {
-  font-size: 20px;
+.adminText {
+  font-size: 23px;
   font-weight: 600;
-  color: #111204;
-  margin: 0;
-  font-family: "Roboto Flex", sans-serif;
+  color: rgba(249, 255, 238, 1);
 }
-
-.subtitle {
-  font-size: 14px;
-  color: #111204;
-  margin: 0;
-  font-family: "Roboto Flex", sans-serif;
+.adminText span {
+  color: rgba(172, 235, 76, 1);
 }
 
 .form {
@@ -96,23 +60,17 @@
   height: 40px;
   padding: 0 16px;
   border: none;
-  background: #d8dad6;
+  background: rgba(216, 218, 214, 1);
   border-radius: 24px;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: "Roboto Flex", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
   transition: all 0.2s;
-  color: #111204;
+  color: rgba(0, 0, 0, 1);
 }
 
 .input:focus {
   outline: none;
-  background: #c8cac6;
-}
-
-.input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  border-color: rgba(172, 235, 76, 1);
 }
 
 .inputError {
@@ -144,15 +102,20 @@
 .submitButton {
   width: 100%;
   height: 40px;
-  background: #aceb4c;
-  color: #111204;
+  background: rgba(172, 235, 76, 1);
+  color: rgba(17, 18, 4, 1);
   border: none;
   border-radius: 24px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: "Roboto Flex", sans-serif;
+  box-shadow: 0px 0px 5.47px 0px rgba(172, 235, 76, 1),
+    0px 0px 10.94px 0px rgba(172, 235, 76, 1),
+    0px 0px 38.3px 0px rgba(172, 235, 76, 1),
+    0px 0px 76.6px 0px rgba(172, 235, 76, 1),
+    0px 0px 131.32px 0px rgba(172, 235, 76, 1),
+    0px 0px 229.8px 0px rgba(172, 235, 76, 1);
 }
 
 .submitButton:hover:not(:disabled) {
@@ -168,30 +131,3 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-.backButton {
-  width: 100%;
-  height: 40px;
-  background: transparent;
-  color: #111204;
-  border: 2px solid #aceb4c;
-  border-radius: 24px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: "Roboto Flex", sans-serif;
-  margin-top: 12px;
-}
-
-.backButton:hover {
-  background: #aceb4c;
-  transform: translateY(-2px);
-}
-
-.backButton:active {
-  transform: translateY(0);
-}
-
-
-

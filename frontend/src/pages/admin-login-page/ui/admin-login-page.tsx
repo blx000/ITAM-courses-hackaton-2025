@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { HackmateApi, AuthService } from "../../../api";
 import styles from "./admin-login-page.module.css";
-import bgImage from "/bg-image.png";
 
 export function AdminLoginPage() {
   const [login, setLogin] = useState("");
@@ -51,17 +50,12 @@ export function AdminLoginPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.backgroundImage}>
-        <img src={bgImage} alt="background" />
-      </div>
-      <div className={styles.overlay} />
       <div className={styles.content}>
         <div className={styles.loginForm}>
           <div className={styles.header}>
-            <h2 className={styles.title}>Вход для администратора</h2>
-            <p className={styles.subtitle}>
-              Введите логин и пароль для доступа к панели управления
-            </p>
+            <span className={styles.adminText}>
+              Hack <span>Mate</span> admin
+            </span>
           </div>
           <form onSubmit={handleSubmit} className={styles.form}>
             <input
@@ -74,7 +68,6 @@ export function AdminLoginPage() {
               className={`${styles.input} ${error ? styles.inputError : ""}`}
               placeholder="Логин"
               disabled={loading}
-              autoComplete="username"
             />
             <input
               type="password"
@@ -86,7 +79,6 @@ export function AdminLoginPage() {
               className={`${styles.input} ${error ? styles.inputError : ""}`}
               placeholder="Пароль"
               disabled={loading}
-              autoComplete="current-password"
             />
             {error && <div className={styles.error}>{error}</div>}
             <button
@@ -97,18 +89,8 @@ export function AdminLoginPage() {
               {loading ? "Вход..." : "Войти"}
             </button>
           </form>
-          <button
-            type="button"
-            className={styles.backButton}
-            onClick={() => navigate("/login")}
-          >
-            Вернуться к обычному входу
-          </button>
         </div>
       </div>
     </div>
   );
 }
-
-
-

@@ -23,7 +23,7 @@ export function AdminHeader({ searchQuery, onSearchChange }: AdminHeaderProps) {
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Поиск хакатона по названию..."
+            placeholder="Поиск хакатона"
             className={styles.searchInput}
           />
         </div>
@@ -31,4 +31,3 @@ export function AdminHeader({ searchQuery, onSearchChange }: AdminHeaderProps) {
     </div>
   );
 }
-
