@@ -127,20 +127,28 @@ func (s Server) GetApiUser(ctx context.Context, request gen.GetApiUserRequestObj
 		return gen.GetApiUser401Response{}, nil
 	}
 
-	user, err := jwt.ValidateToken(token, s.hmacSecret)
+	userFromToken, err := jwt.ValidateToken(token, s.hmacSecret)
 
 	if err != nil {
 		fmt.Println(err)
 		return gen.GetApiUser401Response{}, nil
 	}
 
+	// Получаем полную информацию о пользователе из базы данных
+	userInfo, err := s.service.GetUserInfo(ctx, userFromToken.ID)
+	if err != nil {
+		fmt.Println(err)
+		return gen.GetApiUser401Response{}, nil
+	}
+
 	userResponse := gen.User{
-		Id:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Bio:       user.Bio,
-		IsAdmin:   user.IsAdmin,
-		Login:     user.Login,
+		Id:        userInfo.ID,
+		FirstName: userInfo.FirstName,
+		LastName:  userInfo.LastName,
+		Bio:       userInfo.Bio,
+		IsAdmin:   userInfo.IsAdmin,
+		Login:     userInfo.Login,
+		Username:  userInfo.UserName,
 	}
 
 	return gen.GetApiUser200JSONResponse(userResponse), nil
@@ -419,7 +427,8 @@ func (s Server) GetApiHacksHackIdParticipants(ctx context.Context, request gen.G
 				Id:   participants[i].Role.ID,
 				Name: participants[i].Role.Name,
 			},
-			AddInfo: participants[i].AddInfo,
+			AddInfo:    participants[i].AddInfo,
+			Experience: participants[i].Experience,
 		}
 	}
 	return gen.GetApiHacksHackIdParticipants200JSONResponse(participantsResponse), nil
@@ -469,10 +478,64 @@ func (s Server) GetApiHacksHackIdParticipantsParticipantId(ctx context.Context, 
 			Id:   participant.Role.ID,
 			Name: participant.Role.Name,
 		},
-		AddInfo: participant.AddInfo,
+		AddInfo:    participant.AddInfo,
+		Experience: participant.Experience,
 	}
 
 	return gen.GetApiHacksHackIdParticipantsParticipantId200JSONResponse(participantResponse), nil
+}
+
+func (s Server) PatchApiHacksHackIdParticipantsParticipantId(ctx context.Context, request gen.PatchApiHacksHackIdParticipantsParticipantIdRequestObject) (gen.PatchApiHacksHackIdParticipantsParticipantIdResponseObject, error) {
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return gen.PatchApiHacksHackIdParticipantsParticipantId401Response{}, nil
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return gen.PatchApiHacksHackIdParticipantsParticipantId401Response{}, nil
+	}
+
+	_, err := jwt.ValidateToken(token, s.hmacSecret)
+	if err != nil {
+		fmt.Println(err)
+		return gen.PatchApiHacksHackIdParticipantsParticipantId401Response{}, nil
+	}
+
+	var roleId *int
+	if request.Body.RoleId != nil {
+		roleIdValue := int(*request.Body.RoleId)
+		roleId = &roleIdValue
+	}
+
+	var skillIds []int
+	if request.Body.SkillIds != nil {
+		skillIds = make([]int, len(*request.Body.SkillIds))
+		for i, id := range *request.Body.SkillIds {
+			skillIds[i] = int(id)
+		}
+	}
+
+	var experience *int
+	if request.Body.Experience != nil {
+		expValue := int(*request.Body.Experience)
+		experience = &expValue
+	}
+
+	var additionalInfo *string
+	if request.Body.AdditionalInfo != nil {
+		additionalInfo = request.Body.AdditionalInfo
+	}
+
+	err = s.service.UpdateParticipant(ctx, request.HackId, request.ParticipantId, roleId, skillIds, experience, additionalInfo)
+	if err != nil {
+		fmt.Println(err)
+		return gen.PatchApiHacksHackIdParticipantsParticipantId404Response{}, nil
+	}
+
+	return gen.PatchApiHacksHackIdParticipantsParticipantId200Response{}, nil
 }
 
 func (s Server) PostApiHacksHackIdParticipantsParticipantsIdInvite(ctx context.Context, request gen.PostApiHacksHackIdParticipantsParticipantsIdInviteRequestObject) (gen.PostApiHacksHackIdParticipantsParticipantsIdInviteResponseObject, error) {

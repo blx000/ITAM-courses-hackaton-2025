@@ -43,12 +43,14 @@ export type User = {
   bio: string;
   is_admin?: boolean;
   login?: string;
+  username?: string;
 }
 
 export type UserUpdate = {
   first_name?: string;
   last_name?: string;
   bio?: string;
+  username?: string;
 }
 export type Participant = {
   id: number;

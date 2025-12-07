@@ -6,7 +6,7 @@ VALUES
 
 INSERT INTO hackmate.hackathon(admin_id, name, description, start_date, end_date, max_teams, max_team_size, prize)
 VALUES
-(1, 'ITAM HACK NAME', 'ITAM HACK DESC', '07-13-2025', '08-13-2025', 15, 5, 1800);
+(1, 'ITAM HACK NAME', 'ITAM HACK DESC', '2025-12-09', '2025-12-10', 15, 5, 1800);
 
 
 INSERT INTO hackmate.hackathon(admin_id, name, description, start_date, end_date, max_teams, max_team_size, prize)

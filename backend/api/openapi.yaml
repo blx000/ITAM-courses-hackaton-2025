@@ -130,6 +130,7 @@ components:
         - team_id
         - skills
         - add_info
+        - experience
       properties:
         id:
           type: integer
@@ -147,6 +148,9 @@ components:
           type: integer
         add_info:
           type: string
+        experience:
+          type: integer
+          description: Количество хакатонов
 
     HackathonShort:
       type: object
@@ -264,6 +268,20 @@ components:
         experience:
           type: integer
           description: Количество хакатонов
+
+    ParticipantUpdate:
+      type: object
+      properties:
+        role_id:
+          type: integer
+        skill_ids:
+          type: array
+          items:
+            type: integer
+        experience:
+          type: integer
+        additional_info:
+          type: string
 
     TeamCreate:
       type: object
@@ -714,6 +732,34 @@ paths:
                 $ref: '#/components/schemas/Participant'
         '404':
           description: Hack id not found
+    patch:
+      summary: Update participant info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantUpdate'
+      responses:
+        '200':
+          description: Successful update
+        '401':
+          description: Unauthorized
+        '404':
+          description: Participant not found
 
   /api/hacks/{hack_id}/teams/{team_id}/request:
     post:

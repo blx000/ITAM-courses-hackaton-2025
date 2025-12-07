@@ -8,10 +8,13 @@ import profilePhoto from "/profile-photo.svg";
 
 export function ProfileEditPage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const [, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [, setParticipantData] = useState<Participant | null>(null);
+  const [participantData, setParticipantData] = useState<Participant | null>(
+    null
+  );
+  const [hackathonId, setHackathonId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +23,8 @@ export function ProfileEditPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
+  const [username, setUsername] = useState("");
+  const [experience, setExperience] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
 
@@ -41,31 +46,51 @@ export function ProfileEditPage() {
       setUser(userData);
       setFirstName(userData.first_name || "");
       setLastName(userData.last_name || "");
-      setBio(userData.bio || "");
+      setUsername(userData.username || userData.login || "");
       setRoles(rolesData);
       setSkills(skillsData);
-
-      // Загружаем данные участника для получения роли и стека
-      const userId = AuthService.getUserId();
-      if (userId) {
+      if (userData) {
         try {
           const hackathons = await HackmateApi.getHackathons();
           for (const hackathon of hackathons) {
             try {
-              const participant = await HackmateApi.getParticipant(
-                hackathon.id,
-                userId
+              const participants = await HackmateApi.getHackathonParticipants(
+                hackathon.id
               );
-              setParticipantData(participant);
-              setSelectedRole(participant.role || null);
-              setSelectedSkills(participant.skills || []);
-              break;
+              const userParticipant = participants.find(
+                (p: Participant) =>
+                  p.first_name === userData.first_name &&
+                  p.last_name === userData.last_name
+              );
+
+              if (userParticipant) {
+                setParticipantData(userParticipant);
+                setHackathonId(hackathon.id);
+                setSelectedRole(userParticipant.role || null);
+                setSelectedSkills(userParticipant.skills || []);
+                if (
+                  userParticipant.experience !== undefined &&
+                  userParticipant.experience !== null
+                ) {
+                  setExperience(userParticipant.experience.toString());
+                }
+                setBio(userParticipant.add_info || userData.bio || "");
+                break;
+              }
             } catch (err) {
-              // Продолжаем поиск
+              console.error(
+                `Ошибка загрузки участников для хакатона ${hackathon.id}:`,
+                err
+              );
             }
+          }
+          if (!participantData) {
+            setBio(userData.bio || "");
           }
         } catch (err) {
           console.error("Ошибка загрузки данных участника:", err);
+          // В случае ошибки используем bio пользователя
+          setBio(userData.bio || "");
         }
       }
     } catch (err: any) {
@@ -107,18 +132,82 @@ export function ProfileEditPage() {
     }
 
     try {
-      // Обновляем профиль пользователя
-      const updatedUser = await HackmateApi.updateUser({
+      const response = await HackmateApi.updateUser({
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         bio: bio.trim() || undefined,
+        username: username.trim() || undefined,
       });
-
+      if (response.access_token) {
+        AuthService.setTokens({
+          access_token: response.access_token,
+          refresh_token: AuthService.getRefreshToken() || "",
+        });
+      }
+      const updatedUser = await HackmateApi.getCurrentUser();
       setUser(updatedUser);
-      setSuccess(true);
+      if (participantData && hackathonId) {
+        try {
+          const hackId =
+            typeof hackathonId === "number"
+              ? hackathonId
+              : parseInt(String(hackathonId));
+          const partId =
+            typeof participantData.id === "number"
+              ? participantData.id
+              : parseInt(String(participantData.id));
 
+          if (isNaN(hackId) || isNaN(partId)) {
+            throw new Error(
+              `Неверные ID: hackathonId=${hackathonId}, participantId=${participantData.id}`
+            );
+          }
+
+          const updateData: {
+            role_id?: number;
+            skill_ids?: number[];
+            experience?: number;
+            additional_info?: string;
+          } = {};
+
+          if (selectedRole?.id) {
+            updateData.role_id = selectedRole.id;
+          }
+          updateData.skill_ids =
+            selectedSkills.length > 0 ? selectedSkills.map((s) => s.id) : [];
+          if (experience && experience.trim() !== "") {
+            const expValue = parseInt(experience);
+            if (!isNaN(expValue) && expValue >= 0) {
+              updateData.experience = expValue;
+            }
+          }
+          updateData.additional_info = bio.trim() || "";
+
+          console.log("Обновление участника:", { hackId, partId, updateData });
+          await HackmateApi.updateParticipant(hackId, partId, updateData);
+          console.log("Данные участника успешно обновлены:", updateData);
+        } catch (err: any) {
+          console.error("Ошибка обновления данных участника:", err);
+          setError(
+            err.response?.data?.message ||
+              err.message ||
+              "Не удалось обновить данные участника"
+          );
+          setSaving(false);
+          return;
+        }
+      }
+
+      setSuccess(true);
       setTimeout(() => {
-        navigate("/profile");
+        navigate("/profile", {
+          replace: true,
+          state: {
+            refresh: Date.now(),
+            participantId: participantData?.id,
+            hackathonId,
+          },
+        });
       }, 1500);
     } catch (err: any) {
       console.error("Ошибка сохранения:", err);
@@ -159,8 +248,18 @@ export function ProfileEditPage() {
             </div>
           )}
 
-          <div className={styles.usernameDisplay}>
-            <strong>Телеграм:</strong> @{user?.login || "username"}
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Тег tg:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Телеграм тег (без @)"
+              className={styles.input}
+              disabled={true}
+              readOnly
+              title="Телеграм тег нельзя изменить"
+            />
           </div>
 
           <div className={styles.inputGroup}>
@@ -188,6 +287,7 @@ export function ProfileEditPage() {
           </div>
 
           <div className={styles.inputGroup}>
+            <label className={styles.label}>Основная роль:</label>
             <select
               value={selectedRole?.id || ""}
               onChange={(e) => {
@@ -199,13 +299,31 @@ export function ProfileEditPage() {
               className={styles.input}
               disabled={saving}
             >
-              <option value="">Основная роль</option>
+              <option value="">Выберите роль</option>
               {roles.map((role) => (
                 <option key={role.id} value={role.id}>
                   {role.name}
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Опыт участия в хакатонах:</label>
+            <input
+              type="number"
+              min="0"
+              value={experience}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || /^\d+$/.test(value)) {
+                  setExperience(value);
+                }
+              }}
+              placeholder="0"
+              className={styles.input}
+              disabled={saving}
+            />
           </div>
 
           <div className={styles.skillsSection}>

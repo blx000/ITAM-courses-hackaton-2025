@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { HackmateApi } from "../../../api";
+import { HackmateApi, AuthService } from "../../../api";
 import type { Participant } from "../../../api";
 import { ProfileHeader } from "../../../modules/profile-header";
 import { Navigation } from "../../../modules/navigation";
@@ -17,6 +17,7 @@ export function ParticipantProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [inviting, setInviting] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
 
   useEffect(() => {
     if (!id || !participantId) {
@@ -42,6 +43,12 @@ export function ParticipantProfilePage() {
         partId
       );
       setParticipant(participantData);
+      
+      // Проверяем, является ли это текущий пользователь
+      const userId = AuthService.getUserId();
+      if (userId && participantData.id === userId) {
+        setIsCurrentUser(true);
+      }
     } catch (err: any) {
       console.error("Ошибка загрузки участника:", err);
       setError(
@@ -157,7 +164,7 @@ export function ParticipantProfilePage() {
           </div>
         )}
 
-        {!participant.team_id && (
+        {!participant.team_id && !isCurrentUser && (
           <button
             className={styles.inviteButton}
             onClick={handleInvite}

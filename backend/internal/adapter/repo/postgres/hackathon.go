@@ -495,6 +495,89 @@ func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int)
 	return &participant, nil
 }
 
+func (h *HackRepo) UpdateParticipant(ctx context.Context, participantId int, hackId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	// Обновляем основные поля участника
+	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder()
+	ub.Update("hackmate.participant")
+	
+	hasUpdates := false
+
+	if roleId != nil {
+		ub.Set(ub.Assign("role_id", *roleId))
+		hasUpdates = true
+	}
+
+	if experience != nil {
+		ub.Set(ub.Assign("experience", *experience))
+		hasUpdates = true
+	}
+
+	if additionalInfo != nil {
+		ub.Set(ub.Assign("additional_info", *additionalInfo))
+		hasUpdates = true
+	}
+
+	if hasUpdates {
+		ub.Where(ub.Equal("id", participantId))
+		ub.Where(ub.Equal("hack_id", hackId))
+
+		updateQuery, updateArgs := ub.Build()
+
+		_, err = tx.Exec(ctx, updateQuery, updateArgs...)
+		if err != nil {
+			return fmt.Errorf("failed to update participant: %w", err)
+		}
+	}
+
+	// Обновляем навыки, если они указаны (даже если это пустой массив - значит удалить все)
+	if skillIds != nil {
+		// Удаляем старые навыки
+		db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+		deleteQuery, deleteArgs := db.DeleteFrom("hackmate.participant_skill").
+			Where(db.Equal("participant_id", participantId)).
+			Build()
+
+		_, err = tx.Exec(ctx, deleteQuery, deleteArgs...)
+		if err != nil {
+			return fmt.Errorf("failed to delete old skills: %w", err)
+		}
+
+		// Добавляем новые навыки (если они есть)
+		if len(skillIds) > 0 {
+			ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+			ib.InsertInto("hackmate.participant_skill").
+				Cols("participant_id", "skill_id")
+
+			for _, skillId := range skillIds {
+				ib.Values(participantId, skillId)
+			}
+
+			insertQuery, insertArgs := ib.Build()
+			_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+			if err != nil {
+				return fmt.Errorf("failed to insert skills: %w", err)
+			}
+		}
+		// Если skillIds пустой массив, просто удаляем все навыки (уже сделано выше)
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
 func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamShort, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 

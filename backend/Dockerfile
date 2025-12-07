@@ -7,6 +7,8 @@ RUN go mod download
 
 COPY . .
 
+RUN cd api && go generate ./...
+
 RUN --mount=type=cache,target="./root/.cache/go-build" CGO_ENABLED=0 GOOS=linux go build -o /out/cmd ./cmd
 
 FROM gcr.io/distroless/static:nonroot AS backend

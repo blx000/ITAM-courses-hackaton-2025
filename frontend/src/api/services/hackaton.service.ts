@@ -17,4 +17,24 @@ export const HackathonService = {
   getParticipant: (hackId: number, participantId: number) =>
     api.get<Participant>(`/api/hacks/${hackId}/participants/${participantId}`)
       .then((resp) => resp.data),
+  updateParticipant: (hackId: number, participantId: number, data: {
+    role_id?: number;
+    skill_ids?: number[];
+    experience?: number;
+    additional_info?: string;
+  }) => {
+    // Убеждаемся, что ID являются числами
+    const hackIdNum = Number(hackId);
+    const partIdNum = Number(participantId);
+    
+    if (isNaN(hackIdNum) || isNaN(partIdNum)) {
+      return Promise.reject(new Error(`Invalid IDs: hackId=${hackId}, participantId=${participantId}`));
+    }
+    
+    const url = `/api/hacks/${hackIdNum}/participants/${partIdNum}`;
+    console.log("Update participant URL:", url);
+    
+    return api.patch<void>(url, data)
+      .then((resp) => resp.data);
+  },
 };

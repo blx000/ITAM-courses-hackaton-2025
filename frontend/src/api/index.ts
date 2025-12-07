@@ -32,6 +32,7 @@ export const HackmateApi = {
   getHackathonTeams: HackathonService.getHackathonTeams,
   getHackathonParticipants: HackathonService.getHackathonParticipants,
   getParticipant: HackathonService.getParticipant,
+  updateParticipant: HackathonService.updateParticipant,
 
   createTeam: TeamService.createTeam,
   getTeam: TeamService.getTeam,

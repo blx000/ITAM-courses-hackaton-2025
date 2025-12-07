@@ -20,6 +20,7 @@ type Hackathon interface {
 	CreateTeam(ctx context.Context, participantId int, hackId int, name string) error
 	GetTeamProfile(ctx context.Context, teamId int) (*TeamShort, error)
 	GetParticipantProfile(ctx context.Context, participantId int) (*Participant, error)
+	UpdateParticipant(ctx context.Context, participantId int, hackId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
 	CreateHack(ctx context.Context, dto *HackathonGeneralDTO) (int, error)
 	GetParticipantGeneral(ctx context.Context, participantId int) (*Participant, error)
 

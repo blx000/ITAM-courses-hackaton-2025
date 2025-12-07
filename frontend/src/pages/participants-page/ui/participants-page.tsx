@@ -19,6 +19,7 @@ export function ParticipantsPage() {
   const [userParticipant, setUserParticipant] = useState<Participant | null>(
     null
   );
+  const [userTeam, setUserTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
@@ -84,6 +85,9 @@ export function ParticipantsPage() {
         }
       }
 
+      setParticipants(participantsData);
+      setTeams(teamsData);
+
       if (user) {
         try {
           const participant = await HackmateApi.getParticipant(
@@ -91,13 +95,22 @@ export function ParticipantsPage() {
             user.id
           );
           setUserParticipant(participant);
+
+          // Находим команду пользователя
+          if (participant.team_id && participant.team_id > 0) {
+            const team = teamsData.find(
+              (t) =>
+                t.members.some((m) => m.id === participant.id) ||
+                t.id === participant.team_id
+            );
+            if (team) {
+              setUserTeam(team);
+            }
+          }
         } catch (err: any) {
           setUserParticipant(null);
         }
       }
-
-      setParticipants(participantsData);
-      setTeams(teamsData);
 
       if (participantsData.length === 0 && teamsData.length === 0) {
         setError("Не удалось загрузить данные. Пожалуйста, попробуйте позже.");
@@ -150,14 +163,27 @@ export function ParticipantsPage() {
     ? teams.filter(
         (t) =>
           t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.members.some(
-            (m) =>
-              `${m.first_name} ${m.last_name}`
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase())
+          t.members.some((m) =>
+            `${m.first_name} ${m.last_name}`
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
           )
       )
     : teams;
+
+  // Сортируем участников: сначала текущий пользователь
+  const sortedParticipants = [...filteredParticipants].sort((a, b) => {
+    if (userParticipant && a.id === userParticipant.id) return -1;
+    if (userParticipant && b.id === userParticipant.id) return 1;
+    return 0;
+  });
+
+  // Сортируем команды: сначала команда пользователя
+  const sortedTeams = [...filteredTeams].sort((a, b) => {
+    if (userTeam && a.id === userTeam.id) return -1;
+    if (userTeam && b.id === userTeam.id) return 1;
+    return 0;
+  });
 
   return (
     <div className={styles.container}>
@@ -211,16 +237,18 @@ export function ParticipantsPage() {
           <div className={styles.listContainer}>
             {filteredParticipants.length === 0 ? (
               <div className={styles.empty}>
-                {searchQuery
-                  ? "Участники не найдены"
-                  : "Участники не найдены"}
+                {searchQuery ? "Участники не найдены" : "Участники не найдены"}
               </div>
             ) : (
               <div className={styles.participantsGrid}>
-                {filteredParticipants.map((participant) => (
+                {sortedParticipants.map((participant) => (
                   <div
                     key={participant.id}
-                    className={styles.participantCard}
+                    className={`${styles.participantCard} ${
+                      userParticipant && participant.id === userParticipant.id
+                        ? styles.currentUserCard
+                        : ""
+                    }`}
                     onClick={() => handleParticipantClick(participant)}
                   >
                     <div className={styles.participantHeader}>
@@ -264,10 +292,14 @@ export function ParticipantsPage() {
               </div>
             ) : (
               <div className={styles.teamsGrid}>
-                {filteredTeams.map((team) => (
+                {sortedTeams.map((team) => (
                   <div
                     key={team.id}
-                    className={styles.teamCard}
+                    className={`${styles.teamCard} ${
+                      userTeam && team.id === userTeam.id
+                        ? styles.currentUserTeamCard
+                        : ""
+                    }`}
                     onClick={() => handleTeamClick(team)}
                   >
                     <h3 className={styles.teamName}>{team.name}</h3>

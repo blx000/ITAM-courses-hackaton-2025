@@ -9,5 +9,5 @@ export const UserService = {
   getUserTeams: (userId: number) =>
     api.get<TeamShort[]>(`/api/users/${userId}/teams`).then((resp) => resp.data),
   updateUser: (data: UserUpdate) =>
-    api.put<User>("/api/user", data).then((resp) => resp.data),
+    api.patch<{ access_token: string }>("/api/user", data).then((resp) => resp.data),
 };

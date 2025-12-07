@@ -40,6 +40,7 @@ type Service interface {
 	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string) error
 	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
+	UpdateParticipant(ctx context.Context, hackId int, participantId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
 
 	GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error)
 	GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error)
@@ -217,6 +218,26 @@ func (s *ServiceImpl) GetParticipantProfile(ctx context.Context, hackId int, par
 	return s.hackRepo.GetParticipantProfile(ctx, participantId)
 }
 
+func (s *ServiceImpl) UpdateParticipant(ctx context.Context, hackId int, participantId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error {
+	// Проверяем, что участник существует и принадлежит этому хакатону
+	participant, err := s.hackRepo.GetParticipantProfile(ctx, participantId)
+	if err != nil {
+		return fmt.Errorf("failed to get participant: %w", err)
+	}
+
+	if participant.HackId != hackId {
+		return ErrHackNotFound
+	}
+
+	// Обновляем данные участника
+	err = s.hackRepo.UpdateParticipant(ctx, participantId, hackId, roleId, skillIds, experience, additionalInfo)
+	if err != nil {
+		return fmt.Errorf("failed to update participant: %w", err)
+	}
+
+	return nil
+}
+
 func NewServiceImpl(formRepo repo.Form, authRepo repo.Auth, hackRepo repo.Hackathon, userRepo repo.User) *ServiceImpl {
 	return &ServiceImpl{
 		formRepo: formRepo,
@@ -239,6 +260,7 @@ func (s *ServiceImpl) LoginUser(ctx context.Context, code string, secret string)
 		ID:        authDTO.TelegramId,
 		FirstName: authDTO.FirstName,
 		LastName:  authDTO.LastName,
+		UserName:  authDTO.Username,
 		IsAdmin:   false,
 	}
 
@@ -251,6 +273,22 @@ func (s *ServiceImpl) LoginUser(ctx context.Context, code string, secret string)
 		}
 	} else if err != nil {
 		return "", "", fmt.Errorf("failed to read user: %w", err)
+	} else {
+		// Обновляем username при каждом логине, если он изменился
+		if userDto.UserName != "" {
+			updateDto := &repo.UserChange{
+				Id:       userDto.ID,
+				Username: userDto.UserName,
+			}
+			// Обновляем только username, если он изменился
+			existingUser, _ := s.userRepo.Read(ctx, userDto.ID)
+			if existingUser != nil && existingUser.UserName != userDto.UserName {
+				updateDto.FirstName = existingUser.FirstName
+				updateDto.LastName = existingUser.LastName
+				updateDto.Bio = existingUser.Bio
+				s.userRepo.Update(ctx, updateDto)
+			}
+		}
 	}
 
 	accessToken, err := jwt.NewToken(userDto, time.Hour, secret)

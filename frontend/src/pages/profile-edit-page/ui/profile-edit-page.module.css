@@ -78,6 +78,14 @@
 .inputGroup {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
 }
 
 select option {

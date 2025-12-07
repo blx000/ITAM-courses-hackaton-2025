@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { HackmateApi, AuthService } from "../../../api";
 import type {
   User,
@@ -19,6 +19,7 @@ type ParticipantData = {
 
 export function ProfilePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [teams, setTeams] = useState<TeamShort[]>([]);
   const [participantData, setParticipantData] =
@@ -28,7 +29,14 @@ export function ProfilePage() {
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  }, [location.pathname, location.state]);
+
+  // Перезагружаем данные при изменении state
+  useEffect(() => {
+    if (location.state?.refresh) {
+      loadProfile();
+    }
+  }, [location.state]);
 
   const loadProfile = async () => {
     try {
@@ -50,31 +58,60 @@ export function ProfilePage() {
         try {
           const hackathons = await HackmateApi.getHackathons();
 
-          // Ищем хакатоны, в которых пользователь участвует
-          for (const hackathon of hackathons) {
+          // Если передан participantId и hackathonId из state, загружаем напрямую
+          const state = location.state as { participantId?: number; hackathonId?: number } | null;
+          let participantLoaded = false;
+          
+          if (state?.participantId && state?.hackathonId) {
             try {
-              const participants = await HackmateApi.getHackathonParticipants(
-                hackathon.id
+              const participant = await HackmateApi.getParticipant(
+                state.hackathonId,
+                state.participantId
               );
-              const userParticipant = participants.find(
-                (p: Participant) =>
-                  p.first_name === userData.first_name &&
-                  p.last_name === userData.last_name
-              );
-
-              if (userParticipant) {
+              const hackathon = hackathons.find(h => h.id === state.hackathonId);
+              if (participant && hackathon) {
                 setParticipantData({
-                  participant: userParticipant,
+                  participant: participant,
                   hackathon: hackathon,
                 });
-                break; // Берем первый найденный
+                participantLoaded = true;
               }
             } catch (err) {
-              // Пропускаем, если не удалось загрузить участников
-              console.error(
-                `Не удалось загрузить участников для хакатона ${hackathon.id}:`,
-                err
-              );
+              console.error("Ошибка прямой загрузки участника:", err);
+              // Продолжаем обычный поиск
+            }
+          }
+
+          // Если данные не загружены напрямую, ищем по имени/фамилии
+          if (!participantLoaded) {
+            for (const hackathon of hackathons) {
+              try {
+                // Получаем список участников хакатона
+                const participants = await HackmateApi.getHackathonParticipants(
+                  hackathon.id
+                );
+                
+                // Ищем участника по имени и фамилии из обновленных данных пользователя
+                const userParticipant = participants.find(
+                  (p: Participant) =>
+                    p.first_name === userData.first_name &&
+                    p.last_name === userData.last_name
+                );
+
+                if (userParticipant) {
+                  setParticipantData({
+                    participant: userParticipant,
+                    hackathon: hackathon,
+                  });
+                  break; // Берем первый найденный
+                }
+              } catch (err) {
+                // Пропускаем, если не удалось загрузить участника
+                console.error(
+                  `Не удалось загрузить участников для хакатона ${hackathon.id}:`,
+                  err
+                );
+              }
             }
           }
         } catch (err) {
@@ -142,7 +179,7 @@ export function ProfilePage() {
         </div>
 
         <div className={styles.phone}>
-          <strong>Телеграм: </strong> @{user.login || "username"}
+          <strong>Телеграм: </strong> @{user.username || user.login || "username"}
         </div>
 
         {participantData && (
