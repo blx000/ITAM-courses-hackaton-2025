@@ -26,7 +26,6 @@
 .header {
   position: relative;
   z-index: 2;
-  padding: 24px;
   display: flex;
   align-items: center;
 }
@@ -218,6 +217,37 @@
   gap: 16px;
 }
 
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgba(249, 255, 238, 1);
+  font-size: 16px;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.searchInput::placeholder {
+  color: rgba(249, 255, 238, 0.5);
+}
+
 .participantsList,
 .teamsList {
   display: flex;
@@ -281,7 +311,7 @@
 }
 
 .participantRole {
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.8);
   font-family: "Roboto Flex", sans-serif;
 }
@@ -298,7 +328,7 @@
   color: #aceb4c;
   border: 1px solid rgba(172, 235, 76, 0.3);
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   font-family: "Roboto Flex", sans-serif;
 }
@@ -307,7 +337,7 @@
 .freeBadge {
   padding: 6px 12px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
@@ -327,7 +357,7 @@
 }
 
 .teamStats {
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.8);
   font-family: "Roboto Flex", sans-serif;
 }
@@ -339,7 +369,7 @@
 }
 
 .neededRoles strong {
-  font-size: 12px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.6);
   font-family: "Roboto Flex", sans-serif;
 }
@@ -356,7 +386,7 @@
   color: #aceb4c;
   border: 1px solid rgba(172, 235, 76, 0.3);
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   font-family: "Roboto Flex", sans-serif;
 }
@@ -393,7 +423,7 @@
 }
 
 .analyticsLabel {
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.8);
   font-family: "Roboto Flex", sans-serif;
 }
@@ -429,7 +459,7 @@
 }
 
 .roleStatName {
-  font-size: 14px;
+  font-size: 16px;
   color: #f9ffee;
 }
 

@@ -116,7 +116,7 @@
 }
 
 .statLabel {
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.8);
 }
 
@@ -192,7 +192,7 @@
 }
 
 .hackathonDescription {
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.8);
   margin: 0;
   overflow: hidden;
@@ -237,7 +237,7 @@
 }
 
 .hackathonDate {
-  font-size: 12px;
+  font-size: 16px;
   color: rgba(249, 255, 238, 0.7);
   margin: 0;
 }
@@ -315,7 +315,7 @@
   }
 
   .hackathonDate {
-    font-size: 11px;
+    font-size: 16px;
   }
 
   .statValue {
@@ -327,7 +327,7 @@
   }
 
   .headerWithIcon {
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .headerIcon {
