@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS hackmate.user (
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     bio TEXT NOT NULL,
-    username TEXT NOT NULL
+    username TEXT NOT NULL,
+    chat_id BIGINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hackmate.admin (

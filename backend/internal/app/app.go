@@ -8,10 +8,12 @@ import (
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/input/http/gen"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/input/http/handler"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/bot"
+	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/notifications"
 	"github.com/blx000/ITAM-courses-hackaton-2025/internal/usecases/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -42,14 +44,23 @@ func Start(cfg config.Config) error {
 	userRepo := postgres.NewUserRepo(pgPool)
 	hackRepo := postgres.NewHackRepo(pgPool)
 	formRepo := postgres.NewFormRepo(pgPool)
+	notRepo := postgres.NewNotificationRepo(pgPool)
 
-	tgBot := bot.NewTgBot(cfg.TgBot, authRepo)
+	tgBot, err := tgbotapi.NewBotAPI(cfg.TgBot.Token)
+	if err != nil {
+		return err
+	}
 
-	service := service.NewServiceImpl(formRepo, authRepo, hackRepo, userRepo)
+	tgBotService := bot.NewTgBot(tgBot, cfg.TgBot, authRepo)
 
-	go tgBot.Start(ctx)
+	serviceCase := service.NewServiceImpl(formRepo, authRepo, hackRepo, userRepo, notRepo)
 
-	server := handler.NewServer(service, cfg.SecretJWT)
+	notService := notifications.NewNotificationCase(tgBot, notRepo)
+
+	go tgBotService.Start(ctx)
+	go notService.Start(ctx)
+
+	server := handler.NewServer(serviceCase, cfg.SecretJWT)
 
 	strictHandler := gen.NewStrictHandler(server, nil)
 
