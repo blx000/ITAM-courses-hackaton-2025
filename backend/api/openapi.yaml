@@ -71,10 +71,19 @@ components:
       required:
         - id
         - team_id
+        - first_name
+        - last_name
+        - participant_id
       properties:
         id:
           type: integer
         team_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        participant_id:
           type: integer
 
     Invite:
@@ -83,13 +92,23 @@ components:
         - id
         - team_id
         - participant_id
+        - hack_id
+        - hack_name
+        - team_name
       properties:
         id:
           type: integer
         team_id:
           type: integer
-        participant:
-          $ref: '#/components/schemas/Participant'
+        participant_id:
+          type: integer
+        hack_id:
+          type: integer
+        hack_name:
+          type: string
+        team_name:
+          type: string
+
 
 
     HackathonPage:
@@ -352,6 +371,7 @@ components:
         access_token:
           type: string
 
+
 paths:
 
   /api/healthcheсk:
@@ -424,6 +444,24 @@ paths:
                 $ref: '#/components/schemas/UserChangeToken'
         '401':
           description: "Unauthorized"
+
+
+  /api/user/invites:
+    get:
+      summary: Get all invites of a user
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invite'
+        '401':
+          description: Unauthorized
 
   /api/login:
     post:
@@ -657,6 +695,36 @@ paths:
                   $ref: '#/components/schemas/Team'
         '400':
           description: Invalid input
+
+  /api/hacks/{hack_id}/teams/{team_id}/requests:
+    get:
+      summary: Get teams requests
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
 
   /api/hacks/{hack_id}/teams/{team_id}:
     get:

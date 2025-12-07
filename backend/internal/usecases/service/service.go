@@ -51,6 +51,9 @@ type Service interface {
 	CreateJoinRequest(ctx context.Context, hackId int, teamId int, userId int64) error
 	AcceptInvite(ctx context.Context, hackId int, inviteId int, userId int64) error
 	AcceptJoinRequest(ctx context.Context, hackId int, requestId int, userId int64) error
+
+	GetTeamsRequests(ctx context.Context, hackId int, teamId int, userId int64) ([]*repo.JoinRequest, error)
+	GetUsersInvites(ctx context.Context, userId int64) ([]*repo.Invitation, error)
 }
 
 var _ Service = (*ServiceImpl)(nil)
@@ -60,6 +63,24 @@ type ServiceImpl struct {
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+}
+
+func (s *ServiceImpl) GetUsersInvites(ctx context.Context, userId int64) ([]*repo.Invitation, error) {
+	return s.hackRepo.GetUsersInvites(ctx, userId)
+}
+
+func (s *ServiceImpl) GetTeamsRequests(ctx context.Context, hackId int, teamId int, userId int64) ([]*repo.JoinRequest, error) {
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	if participant.TeamId != teamId {
+		return nil, ErrUserWithoutTeam
+	}
+
+	return s.hackRepo.GetTeamRequests(ctx, teamId)
+
 }
 
 func (s *ServiceImpl) GetUserInfo(ctx context.Context, userId int64) (*repo.UserDTO, error) {

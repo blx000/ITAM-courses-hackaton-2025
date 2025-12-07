@@ -11,6 +11,8 @@ type Invitation struct {
 	TeamId        int
 	ParticipantId int
 	HackId        int
+	TeamName      string
+	HackName      string
 }
 
 type JoinRequest struct {
@@ -19,4 +21,7 @@ type JoinRequest struct {
 	CaptainId     int
 	ParticipantId int
 	HackId        int
+	FirstName     string
+	LastName      string
+	RoleName      string
 }
