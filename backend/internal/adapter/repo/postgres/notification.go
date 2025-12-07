@@ -31,6 +31,14 @@ func (n *NotificationRepo) Create(ctx context.Context, message string, participa
 }
 
 func (n *NotificationRepo) ReadBatch(ctx context.Context, batchSize int) ([]*repo.NotificationDto, error) {
+	// Начинаем транзакцию
+	tx, err := n.pgPool.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	// 1. Получаем уведомления с chat_id
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
 	query, args := sb.Select(
@@ -45,13 +53,14 @@ func (n *NotificationRepo) ReadBatch(ctx context.Context, batchSize int) ([]*rep
 		Limit(batchSize).
 		Build()
 
-	rows, err := n.pgPool.Query(ctx, query, args...)
+	rows, err := tx.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query notifications: %w", err)
 	}
 	defer rows.Close()
 
 	var notifications []*repo.NotificationDto
+	var notificationIDs []int
 
 	for rows.Next() {
 		var notification repo.NotificationDto
@@ -66,10 +75,37 @@ func (n *NotificationRepo) ReadBatch(ctx context.Context, batchSize int) ([]*rep
 		}
 
 		notifications = append(notifications, &notification)
+		notificationIDs = append(notificationIDs, notification.ID)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	// Если нет уведомлений, возвращаем пустой список
+	if len(notifications) == 0 {
+		return notifications, nil
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+
+	interfaceIDs := make([]interface{}, len(notificationIDs))
+	for i, id := range notificationIDs {
+		interfaceIDs[i] = id
+	}
+
+	deleteQuery, deleteArgs := sb2.DeleteFrom("hackmate.notifications").
+		Where(sb2.In("id", interfaceIDs...)).
+		Build()
+
+	_, err = tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete notifications: %w", err)
+	}
+
+	// Фиксируем транзакцию
+	if err = tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return notifications, nil
