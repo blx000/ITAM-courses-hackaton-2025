@@ -66,6 +66,7 @@ type ServiceImpl struct {
 	authRepo repo.Auth
 	hackRepo repo.Hackathon
 	userRepo repo.User
+	notRepo  repo.Notification
 }
 
 func (s *ServiceImpl) GetUsersInvites(ctx context.Context, userId int64) ([]*repo.Invitation, error) {
@@ -148,6 +149,20 @@ func (s *ServiceImpl) CreateInvite(ctx context.Context, hackId int, senderId int
 	if err != nil {
 		fmt.Println(err)
 		return err
+	}
+
+	hack, err := s.hackRepo.Read(ctx, hackId)
+	if err != nil {
+		fmt.Println(err)
+
+		return err
+	}
+
+	message := fmt.Sprintf("Вас пригласили в команду %s на хакатона %s", team.Name, hack.Name)
+
+	err = s.notRepo.Create(ctx, message, rectId)
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	return nil
@@ -281,12 +296,13 @@ func (s *ServiceImpl) UpdateParticipant(ctx context.Context, hackId int, partici
 	return nil
 }
 
-func NewServiceImpl(formRepo repo.Form, authRepo repo.Auth, hackRepo repo.Hackathon, userRepo repo.User) *ServiceImpl {
+func NewServiceImpl(formRepo repo.Form, authRepo repo.Auth, hackRepo repo.Hackathon, userRepo repo.User, notRepo repo.Notification) *ServiceImpl {
 	return &ServiceImpl{
 		formRepo: formRepo,
 		authRepo: authRepo,
 		hackRepo: hackRepo,
 		userRepo: userRepo,
+		notRepo:  notRepo,
 	}
 }
 

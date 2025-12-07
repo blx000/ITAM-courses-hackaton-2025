@@ -17,6 +17,28 @@ type UserRepo struct {
 	pool *pgxpool.Pool
 }
 
+func (u *UserRepo) UserChatIdByPartId(ctx context.Context, participantId int) (int64, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select("u.chat_id").
+		From("hackmate.user u").
+		Join("hackmate.participant p", "u.id = p.user_id").
+		Where(sb.Equal("p.id", participantId)).
+		Build()
+
+	var chatId int64
+
+	err := u.pool.QueryRow(ctx, query, args...).Scan(&chatId)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, fmt.Errorf("participant or user not found")
+		}
+		return 0, fmt.Errorf("failed to get user chat id: %w", err)
+	}
+
+	return chatId, nil
+}
+
 func (u *UserRepo) ReadAdmin(ctx context.Context, login string) (*repo.UserDTO, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 
@@ -55,8 +77,8 @@ func (u *UserRepo) Create(ctx context.Context, user *repo.UserDTO) error {
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 
 	ib.InsertInto("hackmate.user").
-		Cols("id", "first_name", "last_name", "bio", "username").
-		Values(user.ID, user.FirstName, user.LastName, user.Bio, user.UserName)
+		Cols("id", "first_name", "last_name", "bio", "username", "chat_id").
+		Values(user.ID, user.FirstName, user.LastName, user.Bio, user.UserName, user.ChatId)
 
 	sql, args := ib.Build()
 

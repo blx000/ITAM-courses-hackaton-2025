@@ -14,13 +14,13 @@ VALUES
     (1, 'SECOND HACK', 'SECOND HACK DESC', '07-12-2024', '07-20-2024', 15, 5, 558);
 
 --insert fake users
-insert into hackmate.user(id, first_name, last_name, bio, username)
+insert into hackmate.user(id, first_name, last_name, bio, username, chat_id)
 values
-    (1234556, 'Ivan', 'Ivanov', 'MyBio', '@ivan_ivanov');
+    (1234556, 'Ivan', 'Ivanov', 'MyBio', 'ivan_ivanov', 123456);
 
-insert into hackmate.user(id, first_name, last_name, bio, username)
+insert into hackmate.user(id, first_name, last_name, bio, username, chat_id)
 values
-    (1050682049, 'Semyon', 'Anikin', 'SA BIO', '@gachimansemen');
+    (1050682049, 'Semyon', 'Anikin', 'SA BIO', 'gachimansemen', 1050682049);
 
 insert into hackmate.participant(user_id, role_id, hack_id, experience, additional_info)
 values
@@ -30,13 +30,13 @@ insert into hackmate.participant(user_id, role_id, hack_id, experience, addition
 values
     (1050682049, 1, 1, 5, 'Joined first hack Semyon');
 
-insert into hackmate.auth(code, user_id, first_name, last_name, expires_at, username)
+insert into hackmate.auth(code, user_id, first_name, last_name, expires_at, username, chat_id)
 values
-    ('123456', 1234556, 'Ivan', 'Ivanov', '12-12-2025', '@ivan_ivanov');
+    ('123456', 1234556, 'Ivan', 'Ivanov', '12-12-2025', 'ivan_ivanov', 123456);
 
-insert into hackmate.auth(code, user_id, first_name, last_name, expires_at, username)
-values
-    ('228337', 1050682049, 'Semyon', 'Anikin', '12-12-2025', '@gachimansemen');
+-- insert into hackmate.auth(code, user_id, first_name, last_name, expires_at, username)
+-- values
+--     ('228337', 1050682049, 'Semyon', 'Anikin', '12-12-2025', 'gachimansemen');
 
 insert into hackmate.team(name, captain_id, hackathon_id, max_size)
 values
@@ -46,14 +46,14 @@ insert into hackmate.team_participant(participant_id, team_id)
 values
     (1, 1);
 
-insert into hackmate.join_request(team_id, participant_id)
-values
-    (1, 2);
-
-
-insert into hackmate.invite(team_id, participant_id)
-values
-    (1, 2);
+-- insert into hackmate.join_request(team_id, participant_id)
+-- values
+--     (1, 2);
+--
+--
+-- insert into hackmate.invite(team_id, participant_id)
+-- values
+--     (1, 2);
 
 -- +goose StatementEnd
 
