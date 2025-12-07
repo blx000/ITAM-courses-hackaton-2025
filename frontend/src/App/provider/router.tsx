@@ -22,6 +22,12 @@ import { TeamsListPage } from "../../pages/teams-list-page";
 import { CreateTeamPage } from "../../pages/create-team-page";
 import { ProfileEditPage } from "../../pages/profile-edit-page";
 import { ProtectedRoute } from "../../shared/components/protected-route";
+import { AdminProtectedRoute } from "../../shared/components/admin-protected-route";
+import { AdminLoginPage } from "../../pages/admin-login-page";
+import { AdminDashboardPage } from "../../pages/admin-dashboard-page";
+import { AdminHackathonCreatePage } from "../../pages/admin-hackathon-create-page";
+import { AdminHackathonDetailPage } from "../../pages/admin-hackathon-detail-page";
+import { AdminLayout } from "../layouts/admin-layout";
 
 export const appRouter = createBrowserRouter([
   {
@@ -182,5 +188,31 @@ export const appRouter = createBrowserRouter([
         <TeamProfilePage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: "/admin/login",
+    element: <AdminLoginPage />,
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminProtectedRoute>
+        <AdminLayout />
+      </AdminProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "hackathons/create",
+        element: <AdminHackathonCreatePage />,
+      },
+      {
+        path: "hackathons/:id",
+        element: <AdminHackathonDetailPage />,
+      },
+    ],
   },
 ]);

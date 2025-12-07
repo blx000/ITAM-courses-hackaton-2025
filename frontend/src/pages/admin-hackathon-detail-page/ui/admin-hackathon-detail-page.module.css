@@ -1,0 +1,425 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  padding: 16px 24px;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 18, 4, 0.3);
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.backButton {
+  padding: 10px 16px;
+  background: transparent;
+  color: #f9ffee;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 12px 20px;
+  background: transparent;
+  color: rgba(249, 255, 238, 0.6);
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: rgba(249, 255, 238, 0.9);
+}
+
+.tabActive {
+  color: #aceb4c;
+  border-bottom-color: #aceb4c;
+}
+
+.tabContent {
+  min-height: 400px;
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #f9ffee;
+}
+
+.error {
+  color: #fc8181;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.infoCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.infoTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0 0 12px 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.infoText {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.9);
+  line-height: 1.6;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.infoItem {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: rgba(249, 255, 238, 0.6);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.infoValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.participantsSection,
+.teamsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.participantsList,
+.teamsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.participantCard,
+.teamCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.participantContent,
+.teamContent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.participantIcon,
+.teamIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.participantIcon img,
+.teamIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.participantInfo,
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.participantName,
+.teamName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.participantRole {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.8);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.participantSkills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 4px 8px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.teamBadge,
+.freeBadge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.teamBadge {
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+}
+
+.freeBadge {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 255, 238, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.teamStats {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.8);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.neededRoles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.neededRoles strong {
+  font-size: 12px;
+  color: rgba(249, 255, 238, 0.6);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.neededRolesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roleTag {
+  padding: 4px 8px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.analyticsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.analyticsCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.analyticsValue {
+  font-size: 36px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.analyticsLabel {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.8);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.roleStatsCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.roleStatsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0 0 16px 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.roleStatsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roleStatItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.roleStatName {
+  font-size: 14px;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.roleStatCount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+@media (min-width: 768px) {
+  .participantsList,
+  .teamsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .participantsList,
+  .teamsList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+

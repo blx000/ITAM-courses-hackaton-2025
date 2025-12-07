@@ -218,6 +218,25 @@ func (s Server) GetApiUser(ctx context.Context, request gen.GetApiUserRequestObj
 		return gen.GetApiUser401Response{}, nil
 	}
 
+	// If user is admin, return data from token (admin is not in user table)
+	if userFromToken.IsAdmin {
+		firstName := userFromToken.FirstName
+		lastName := userFromToken.LastName
+		if firstName == "" {
+			firstName = "Admin"
+		}
+		userResponse := gen.User{
+			Id:        userFromToken.ID,
+			FirstName: firstName,
+			LastName:  lastName,
+			Bio:       "",
+			IsAdmin:   userFromToken.IsAdmin,
+			Login:     userFromToken.Login,
+			Username:  "",
+		}
+		return gen.GetApiUser200JSONResponse(userResponse), nil
+	}
+
 	userInfo, err := s.service.GetUserInfo(ctx, userFromToken.ID)
 	if err != nil {
 		fmt.Println(err)
@@ -304,6 +323,7 @@ func (s Server) PostApiAdminHacks(ctx context.Context, request gen.PostApiAdminH
 		EndDate:     request.Body.EndDate.Time,
 		Prize:       request.Body.Prize,
 		MaxTeamSize: request.Body.MaxTeamSize,
+		MaxTeams:    15, // Default value
 	}
 
 	hackId, err := s.service.CreateHack(ctx, hackDto)
@@ -352,12 +372,14 @@ func (s Server) GetApiHacks(ctx context.Context, request gen.GetApiHacksRequestO
 	fmt.Println("FINDING HACKS ", len(hacks))
 
 	for i := range hacks {
+		prize := hacks[i].Prize
 		hackResponse[i] = gen.HackathonShort{
 			Name:        hacks[i].Name,
 			Description: hacks[i].Desc,
 			StartDate:   openapi_types.Date{hacks[i].StartDate},
 			EndDate:     openapi_types.Date{hacks[i].EndDate},
 			Id:          hacks[i].Id,
+			Prize:       &prize,
 		}
 	}
 

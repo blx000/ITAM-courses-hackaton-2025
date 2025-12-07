@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import { AuthService, HackmateApi } from "../../../api";
 
-interface ProtectedRouteProps {
+interface AdminProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAdmin = async () => {
       if (!AuthService.isAuthenticated()) {
-        setIsAuthenticated(false);
         setIsAdmin(false);
         setLoading(false);
         return;
@@ -22,18 +20,16 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
       try {
         const user = await HackmateApi.getCurrentUser();
-        setIsAuthenticated(true);
         setIsAdmin(user.is_admin === true);
       } catch (err) {
-        console.error("Failed to check auth status:", err);
-        setIsAuthenticated(false);
+        console.error("Failed to check admin status:", err);
         setIsAdmin(false);
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
+    checkAdmin();
   }, []);
 
   if (loading) {
@@ -50,18 +46,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // If user is admin, redirect to admin panel
-  if (isAdmin) {
-    return <Navigate to="/admin" replace />;
+  if (!isAdmin) {
+    return <Navigate to="/admin/login" replace />;
   }
 
   return <>{children}</>;
 }
-
 
 
 

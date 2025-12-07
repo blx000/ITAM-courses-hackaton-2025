@@ -35,6 +35,7 @@ export type HackathonShort = {
   description: string;
   start_date: string;
   end_date: string;
+  prize?: number;
 }
 export type User = {
   id: number;
