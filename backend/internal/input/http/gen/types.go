@@ -64,9 +64,12 @@ type Health struct {
 
 // Invite defines model for Invite.
 type Invite struct {
-	Id          int          `json:"id"`
-	Participant *Participant `json:"participant,omitempty"`
-	TeamId      int          `json:"team_id"`
+	HackId        int    `json:"hack_id"`
+	HackName      string `json:"hack_name"`
+	Id            int    `json:"id"`
+	ParticipantId int    `json:"participant_id"`
+	TeamId        int    `json:"team_id"`
+	TeamName      string `json:"team_name"`
 }
 
 // Participant defines model for Participant.
@@ -82,8 +85,11 @@ type Participant struct {
 
 // Request defines model for Request.
 type Request struct {
-	Id     int `json:"id"`
-	TeamId int `json:"team_id"`
+	FirstName     string `json:"first_name"`
+	Id            int    `json:"id"`
+	LastName      string `json:"last_name"`
+	ParticipantId int    `json:"participant_id"`
+	TeamId        int    `json:"team_id"`
 }
 
 // Role defines model for Role.

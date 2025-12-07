@@ -37,6 +37,8 @@ type Hackathon interface {
 
 	GetTeamRoles(ctx context.Context, teamId int) ([]*Role, error)
 	UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error
+	GetTeamRequests(ctx context.Context, teamId int) ([]*JoinRequest, error)
+	GetUsersInvites(ctx context.Context, userId int64) ([]*Invitation, error)
 }
 
 var (
