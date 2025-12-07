@@ -16,19 +16,11 @@ type TgBot struct {
 	timeout  int
 }
 
-func NewTgBot(cfg config.TGBotConfig, repos repo.Auth) *TgBot {
-	bot, err := tgbotapi.NewBotAPI(cfg.Token)
-	if err != nil {
-		fmt.Printf("token not found: %s\n", cfg.Token)
-		log.Panic(err)
-	}
-
-	bot.Debug = true
-
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+func NewTgBot(tgBot *tgbotapi.BotAPI, cfg config.TGBotConfig, repos repo.Auth) *TgBot {
+	tgBot.Debug = true
 
 	return &TgBot{
-		bot:      bot,
+		bot:      tgBot,
 		authRepo: repos,
 		timeout:  cfg.Timeout,
 	}
@@ -84,7 +76,10 @@ func (t *TgBot) handleLoginCommand(ctx context.Context, message *tgbotapi.Messag
 		FirstName:  message.From.FirstName,
 		LastName:   message.From.LastName,
 		Username:   message.From.UserName,
+		ChatId:     message.Chat.ID,
 	}
+
+	fmt.Println("ChatID", message.Chat.ID)
 
 	err := t.authRepo.Create(ctx, dto)
 	if err != nil {

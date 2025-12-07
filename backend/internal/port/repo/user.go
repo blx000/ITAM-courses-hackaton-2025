@@ -20,6 +20,8 @@ type User interface {
 
 	Update(ctx context.Context, user *UserChange) error
 	Delete(ctx context.Context, id int64) error
+
+	UserChatIdByPartId(ctx context.Context, participantId int) (int64, error)
 }
 
 type UserDTO struct {
@@ -34,6 +36,7 @@ type UserDTO struct {
 	Login     string
 	PassHash  string
 	UserName  string
+	ChatId    int64
 }
 
 type Skill struct {

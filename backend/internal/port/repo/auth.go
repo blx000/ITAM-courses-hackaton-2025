@@ -24,4 +24,5 @@ type AuthDto struct {
 	LastName   string
 	ExpiresAt  time.Time
 	Username   string
+	ChatId     int64
 }
