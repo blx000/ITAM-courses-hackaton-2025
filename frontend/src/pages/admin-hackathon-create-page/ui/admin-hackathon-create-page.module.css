@@ -49,8 +49,8 @@
 .content {
   position: relative;
   z-index: 2;
-  max-width: 800px;
   margin: 0 auto;
+  max-width: 874px;
   display: flex;
   flex-direction: column;
   gap: 24px;

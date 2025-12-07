@@ -3,9 +3,11 @@ import { useParams, useNavigate, useLocation } from "react-router";
 import { HackmateApi } from "../../../api";
 import type { HackathonPage, Participant, Team } from "../../../api";
 import styles from "./admin-hackathon-detail-page.module.css";
-import bgImage from "/bg-image.png";
+import bgImage from "/admin-bg1.png";
 import profileIcon from "/profile-icon.svg";
 import teamIcon from "/team-icon.svg";
+import hackathonIcon from "/hackathon-photo.svg";
+import adminIcon from "/admin-icon.svg";
 
 type Tab = "info" | "participants" | "teams" | "analytics";
 
@@ -95,21 +97,21 @@ export function AdminHackathonDetailPage() {
       <div className={styles.backgroundImage}>
         <img src={bgImage} alt="background" />
       </div>
-      <div className={styles.overlay} />
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <button className={styles.backButton} onClick={() => navigate("/admin")}>
-            Назад
-          </button>
-          <h1 className={styles.title}>{hackathon.name}</h1>
-          <button
-            className={styles.editButton}
-            onClick={() => navigate(`/admin/hackathons/${hackathon.id}/edit`)}
-          >
-            Редактировать
-          </button>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <img
+            src={adminIcon}
+            alt="Admin"
+            className={styles.adminIcon}
+            onClick={() => navigate("/admin")}
+            style={{ cursor: "pointer" }}
+          />
+          <span className={styles.adminText}>
+            Hack <span>Mate</span> admin
+          </span>
         </div>
-
+      </div>
+      <div className={styles.content}>
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${activeTab === "info" ? styles.tabActive : ""}`}
@@ -140,41 +142,62 @@ export function AdminHackathonDetailPage() {
         <div className={styles.tabContent}>
           {activeTab === "info" && (
             <div className={styles.infoSection}>
-              <div className={styles.infoCard}>
-                <h3 className={styles.infoTitle}>Описание</h3>
-                <p className={styles.infoText}>{hackathon.description}</p>
+              <div className={styles.mainBlock}>
+                <div className={styles.iconContainer}>
+                  <img
+                    src={hackathonIcon}
+                    alt="hackathon"
+                    className={styles.hackathonIcon}
+                  />
+                </div>
+                <div className={styles.infoFields}>
+                  <div className={styles.infoField}>
+                    <span className={styles.infoLabel}>Название:</span>
+                    <span className={styles.infoValue}>{hackathon.name}</span>
+                  </div>
+                  <div className={styles.infoField}>
+                    <span className={styles.infoLabel}>Призовой фонд:</span>
+                    <span className={styles.infoValue}>
+                      {new Intl.NumberFormat("ru-RU").format(hackathon.prize || 0)} ₽
+                    </span>
+                  </div>
+                  <div className={styles.infoField}>
+                    <span className={styles.infoLabel}>Дата проведения:</span>
+                    <span className={styles.infoValue}>
+                      {new Date(hackathon.start_date).toLocaleDateString("ru-RU", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}{" "}
+                      -{" "}
+                      {new Date(hackathon.end_date).toLocaleDateString("ru-RU", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className={styles.infoField}>
+                    <span className={styles.infoLabel}>Максимальный размер команды:</span>
+                    <span className={styles.infoValue}>{hackathon.max_team_size}</span>
+                  </div>
+                </div>
               </div>
-              <div className={styles.infoGrid}>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Дата начала:</span>
-                  <span className={styles.infoValue}>
-                    {new Date(hackathon.start_date).toLocaleDateString("ru-RU", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
+
+              <div className={styles.additionalBlock}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Дополнительная информация</label>
+                  <div className={styles.textarea}>{hackathon.description}</div>
                 </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Дата окончания:</span>
-                  <span className={styles.infoValue}>
-                    {new Date(hackathon.end_date).toLocaleDateString("ru-RU", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Призовой фонд:</span>
-                  <span className={styles.infoValue}>
-                    {new Intl.NumberFormat("ru-RU").format(hackathon.prize || 0)} ₽
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Максимальный размер команды:</span>
-                  <span className={styles.infoValue}>{hackathon.max_team_size}</span>
-                </div>
+              </div>
+
+              <div className={styles.editButtonContainer}>
+                <button
+                  className={styles.editButton}
+                  onClick={() => navigate(`/admin/hackathons/${hackathon.id}/edit`)}
+                >
+                  Редактировать
+                </button>
               </div>
             </div>
           )}
@@ -304,6 +327,3 @@ export function AdminHackathonDetailPage() {
     </div>
   );
 }
-
-
-

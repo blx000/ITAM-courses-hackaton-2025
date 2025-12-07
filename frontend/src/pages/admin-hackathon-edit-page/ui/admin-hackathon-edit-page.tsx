@@ -173,7 +173,13 @@ export function AdminHackathonEditPage() {
       </div>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <img src={adminIcon} alt="Admin" className={styles.adminIcon} />
+          <img
+            src={adminIcon}
+            alt="Admin"
+            className={styles.adminIcon}
+            onClick={() => navigate("/admin")}
+            style={{ cursor: "pointer" }}
+          />
           <span className={styles.adminText}>
             Hack <span>Mate</span> admin
           </span>
