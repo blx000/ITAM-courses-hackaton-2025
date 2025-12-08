@@ -1,4 +1,3 @@
-```markdown
 # HackMate — Платформа для поиска и формирования команд на хакатонах
 ITAM Courses Hackathon 2025
 
@@ -32,36 +31,35 @@ HackMate — это web-платформа, которая помогает уч
 ## Технологический стек
 
 ### Frontend
-- React
-- TypeScript
-- Vite
-- Zustand/Redux (если используется)
-- Axios
+- React  
+- TypeScript  
+- Vite  
+- Zustand / Redux (если используется)  
+- Axios  
 
 ### Admin-panel
-- React
-- TypeScript
-- Таблицы/формы для управления хакатоном
+- React  
+- TypeScript  
+- Таблицы/формы для управления хакатоном  
 
 ### Backend
-- Node.js
-- NestJS / Express
-- PostgreSQL
-- Prisma / TypeORM
-- JWT
-- Telegram Auth
+- Node.js  
+- NestJS / Express  
+- PostgreSQL  
+- Prisma / TypeORM  
+- JWT  
+- Telegram Auth  
 
 ### Infrastructure
-- Docker / Docker Compose
-- Makefile
-- YAML-конфиги
+- Docker / Docker Compose  
+- Makefile  
+- YAML-конфиги  
 
 ---
 
 ## Структура проекта
 
-```
-
+```txt
 ITAM-courses-hackaton-2025/
 │
 ├── backend/               # Backend API (Nest/Express)
@@ -85,7 +83,6 @@ ITAM-courses-hackaton-2025/
 ├── docker-compose.yaml    # Оркестратор всех сервисов
 ├── Makefile               # Упрощённые команды деплоя
 └── README.md
-
 ````
 
 ---
@@ -97,7 +94,7 @@ ITAM-courses-hackaton-2025/
 ```bash
 git clone https://github.com/blx000/ITAM-courses-hackaton-2025.git
 cd ITAM-courses-hackaton-2025
-````
+```
 
 ### 2. Настройка конфигурации
 
@@ -105,7 +102,7 @@ cd ITAM-courses-hackaton-2025
 cp backend/config/local.example.yaml backend/config/local.yaml
 ```
 
-Важно: данные внутри local.yaml выдаются разработчиками проекта.
+Важно: данные внутри `local.yaml` выдаются разработчиками проекта.
 
 ---
 
@@ -125,13 +122,11 @@ make up
 make down
 ```
 
-Остановить сервисы и удалить данные базы данных:
+Остановить сервисы и удалить данные БД:
 
 ```bash
 make down-v
 ```
-
----
 
 ### Вариант 2: запуск через Docker Compose напрямую
 
@@ -170,7 +165,9 @@ docker compose down -v
 
 ## Команда проекта
 
-Product Manager — Левченков Артемий / tg:@blx000
-Frontend Developer — Мушкина Виктория / tg:@ViktoriaM06
-Backend Developer — Аникин Семён / tg:@gachimansemen
+Product Manager — Левченков Артемий / tg:@blx000  
+Frontend Developer — Мушкина Виктория / tg:@ViktoriaM06  
+Backend Developer — Аникин Семён / tg:@gachimansemen  
 UI/UX Designer — Хлыстова Анастасия / tg:@voshodn
+
+
