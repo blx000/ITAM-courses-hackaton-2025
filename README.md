@@ -1,7 +1,7 @@
 # HackMate — Платформа для поиска и формирования команд на хакатонах
 ITAM Courses Hackathon 2025
 
-HackMate — это web-платформа, которая помогает участникам хакатонов быстро находить команду, а организаторам — управлять процессом формирования команд, анализировать состав участников и снижать хаос, возникающий при использовании Telegram-чатов.
+HackMate — это web-платформа, которая помогает участникам хакатонов быстро находить команду, а организаторам — управлять процессом формирования команд, анализировать состав участников и снижать хаос, возникающий при использовании Telegram-чатов, а также других площадок.
 
 ---
 
@@ -52,6 +52,42 @@ HackMate — это web-платформа, которая помогает уч
 
 ---
 
+## Структура проекта
+
+```txt
+ITAM-courses-hackaton-2025/
+├── docker-compose.yaml
+├── Makefile
+├── README.md
+│
+├── backend                      # Backend (Golang)
+│   ├── api                      # Спецификация API
+│   ├── cmd                      # Точка входа в приложение
+│   ├── config                   # Конфиги
+│   ├── internal                 # Внутренняя логика
+│   │   ├── adapter
+│   │   ├── app
+│   │   ├── config
+│   │   ├── input
+│   │   ├── port
+│   │   └── usecases
+│   └── pkg
+│       ├── jwt
+│       ├── migrations
+│       └── postgres
+│
+├── frontend
+│   ├── public
+│   ├── src
+│   │   ├── api
+│   │   ├── App
+│   │   ├── modules
+│   │   ├── pages
+│   │   └── shared
+````
+
+---
+
 ## Установка и запуск
 
 ### 1. Клонирование репозитория
@@ -59,7 +95,7 @@ HackMate — это web-платформа, которая помогает уч
 ```bash
 git clone https://github.com/blx000/ITAM-courses-hackaton-2025.git
 cd ITAM-courses-hackaton-2025
-````
+```
 
 ### 2. Настройка конфигурации
 
@@ -132,8 +168,8 @@ docker compose down -v
 
 ## Команда проекта
 
-- Product Manager — Левченков Артемий / tg:@blx000
-- Frontend Developer — Мушкина Виктория / tg:@ViktoriaM06
-- Backend Developer — Аникин Семён / tg:@gachimansemen
-- UI/UX Designer — Хлыстова Анастасия / tg:@voshodn
+* Product Manager — Левченков Артемий / tg:@blx000
+* Frontend Developer — Мушкина Виктория / tg:@ViktoriaM06
+* Backend Developer — Аникин Семён / tg:@gachimansemen
+* UI/UX Designer — Хлыстова Анастасия / tg:@voshodn
 
