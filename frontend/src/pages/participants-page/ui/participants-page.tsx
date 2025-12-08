@@ -28,6 +28,8 @@ export function ParticipantsPage() {
     "participants" | "teams" | "create"
   >("participants");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
+  const [selectedTeamRoleIds, setSelectedTeamRoleIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (!id) {
@@ -38,6 +40,11 @@ export function ParticipantsPage() {
 
     loadData();
   }, [id]);
+
+  useEffect(() => {
+    // Reset role filter when switching tabs
+    setSelectedRoleIds([]);
+  }, [activeTab]);
 
   const loadData = async () => {
     if (!id) return;
@@ -154,30 +161,40 @@ export function ParticipantsPage() {
   const hasTeam =
     userParticipant && userParticipant.team_id && userParticipant.team_id > 0;
 
-  const filteredParticipants = searchQuery
-    ? participants.filter(
-        (p) =>
-          `${p.first_name} ${p.last_name}`
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          p.role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.skills?.some((s) =>
-            s.name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-      )
-    : participants;
+  const filteredParticipants = participants.filter((p) => {
+    // Filter by search query
+    const matchesSearch = !searchQuery ||
+      `${p.first_name} ${p.last_name}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      p.role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.skills?.some((s) =>
+        s.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
-  const filteredTeams = searchQuery
-    ? teams.filter(
-        (t) =>
-          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.members.some((m) =>
-            `${m.first_name} ${m.last_name}`
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
-      )
-    : teams;
+    // Filter by selected roles (multiple selection)
+    const matchesRole = selectedRoleIds.length === 0 || selectedRoleIds.includes(p.role.id);
+
+    return matchesSearch && matchesRole;
+  });
+
+  const filteredTeams = teams.filter((t) => {
+    // Filter by search query
+    const matchesSearch = !searchQuery ||
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.members.some((m) =>
+        `${m.first_name} ${m.last_name}`
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+
+    // Filter by selected roles (teams that need any of these roles)
+    const matchesRole =
+      selectedTeamRoleIds.length === 0 ||
+      (t.needed_roles || []).some((role) => selectedTeamRoleIds.includes(role.id));
+
+    return matchesSearch && matchesRole;
+  });
 
   const sortedParticipants = [...filteredParticipants].sort((a, b) => {
     if (userParticipant && a.id === userParticipant.id) return -1;
@@ -237,6 +254,16 @@ export function ParticipantsPage() {
                 : "Поиск команд..."
             }
             onSearchChange={setSearchQuery}
+            onRoleFilterChange={
+              activeTab === "participants"
+                ? setSelectedRoleIds
+                : setSelectedTeamRoleIds
+            }
+            selectedRoleIds={
+              activeTab === "participants"
+                ? selectedRoleIds
+                : selectedTeamRoleIds
+            }
           />
         </div>
         {activeTab === "participants" && (

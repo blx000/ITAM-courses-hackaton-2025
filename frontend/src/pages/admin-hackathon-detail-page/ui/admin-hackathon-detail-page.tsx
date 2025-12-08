@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
 import { HackmateApi } from "../../../api";
-import type { HackathonPage, Participant, Team } from "../../../api";
+import type { HackathonPage, Participant, Team, Role } from "../../../api";
 import styles from "./admin-hackathon-detail-page.module.css";
 import bgImage from "/admin-bg2.png";
 import bgImageParticipants from "/admin-bg3.png";
@@ -11,6 +11,7 @@ import teamIcon from "/team-icon.svg";
 import hackathonIcon from "/hackathon-photo.svg";
 import adminIcon from "/admin-icon.svg";
 import searchIcon from "/search-icon.svg";
+import sortIcon from "/sort-icon.svg";
 
 type Tab = "info" | "participants" | "teams" | "analytics";
 
@@ -26,6 +27,13 @@ export function AdminHackathonDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [participantSearchQuery, setParticipantSearchQuery] = useState("");
   const [teamSearchQuery, setTeamSearchQuery] = useState("");
+  const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
+  const [selectedTeamRoleIds, setSelectedTeamRoleIds] = useState<number[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [showTeamRoleDropdown, setShowTeamRoleDropdown] = useState(false);
+  const roleDropdownRef = useRef<HTMLDivElement>(null);
+  const teamRoleDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) {
@@ -34,8 +42,47 @@ export function AdminHackathonDetailPage() {
       return;
     }
     loadData();
+    loadRoles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, location.search]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        roleDropdownRef.current &&
+        !roleDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowRoleDropdown(false);
+      }
+      if (
+        teamRoleDropdownRef.current &&
+        !teamRoleDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowTeamRoleDropdown(false);
+      }
+    };
+
+    if (showRoleDropdown || showTeamRoleDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showRoleDropdown, showTeamRoleDropdown]);
+
+  const loadRoles = async () => {
+    try {
+      const rolesData = await HackmateApi.getRoles();
+      // Sort roles alphabetically by name
+      const sortedRoles = [...rolesData].sort((a, b) =>
+        a.name.localeCompare(b.name, "ru")
+      );
+      setRoles(sortedRoles);
+    } catch (err) {
+      console.error("Ошибка загрузки ролей:", err);
+    }
+  };
 
   const loadData = async () => {
     if (!id) return;
@@ -63,29 +110,80 @@ export function AdminHackathonDetailPage() {
   };
 
   const filteredParticipants = participants.filter((participant) => {
-    if (!participantSearchQuery.trim()) return true;
-    const searchLower = participantSearchQuery.toLowerCase();
-    const fullName =
-      `${participant.first_name} ${participant.last_name}`.toLowerCase();
-    const roleName = (participant.role?.name || "").toLowerCase();
-    const skillsText = (participant.skills || [])
-      .map((s) => s.name.toLowerCase())
-      .join(" ");
-    return (
-      fullName.includes(searchLower) ||
-      roleName.includes(searchLower) ||
-      skillsText.includes(searchLower)
-    );
+    // Filter by search query
+    const matchesSearch =
+      !participantSearchQuery.trim() ||
+      (() => {
+        const searchLower = participantSearchQuery.toLowerCase();
+        const fullName =
+          `${participant.first_name} ${participant.last_name}`.toLowerCase();
+        const roleName = (participant.role?.name || "").toLowerCase();
+        const skillsText = (participant.skills || [])
+          .map((s) => s.name.toLowerCase())
+          .join(" ");
+        return (
+          fullName.includes(searchLower) ||
+          roleName.includes(searchLower) ||
+          skillsText.includes(searchLower)
+        );
+      })();
+
+    // Filter by selected roles (multiple selection)
+    const matchesRole =
+      selectedRoleIds.length === 0 || (participant.role && selectedRoleIds.includes(participant.role.id));
+
+    return matchesSearch && matchesRole;
   });
 
+  const handleSortClick = () => {
+    setShowRoleDropdown(!showRoleDropdown);
+  };
+
+  const handleTeamSortClick = () => {
+    setShowTeamRoleDropdown(!showTeamRoleDropdown);
+  };
+
+  const handleRoleToggle = (roleId: number) => {
+    const newSelectedIds = selectedRoleIds.includes(roleId)
+      ? selectedRoleIds.filter((id) => id !== roleId)
+      : [...selectedRoleIds, roleId];
+    setSelectedRoleIds(newSelectedIds);
+  };
+
+  const handleClearAllRoles = () => {
+    setSelectedRoleIds([]);
+  };
+
+  const handleTeamRoleToggle = (roleId: number) => {
+    const newSelectedIds = selectedTeamRoleIds.includes(roleId)
+      ? selectedTeamRoleIds.filter((id) => id !== roleId)
+      : [...selectedTeamRoleIds, roleId];
+    setSelectedTeamRoleIds(newSelectedIds);
+  };
+
+  const handleClearAllTeamRoles = () => {
+    setSelectedTeamRoleIds([]);
+  };
+
   const filteredTeams = teams.filter((team) => {
-    if (!teamSearchQuery.trim()) return true;
-    const searchLower = teamSearchQuery.toLowerCase();
-    const teamName = team.name.toLowerCase();
-    const rolesText = (team.needed_roles || [])
-      .map((r) => r.name.toLowerCase())
-      .join(" ");
-    return teamName.includes(searchLower) || rolesText.includes(searchLower);
+    // Filter by search query
+    const matchesSearch =
+      !teamSearchQuery.trim() ||
+      (() => {
+        const searchLower = teamSearchQuery.toLowerCase();
+        const teamName = team.name.toLowerCase();
+        const rolesText = (team.needed_roles || [])
+          .map((r) => r.name.toLowerCase())
+          .join(" ");
+        return teamName.includes(searchLower) || rolesText.includes(searchLower);
+      })();
+
+    // Filter by selected roles (teams that need any of these roles)
+    const matchesRole =
+      selectedTeamRoleIds.length === 0 ||
+      (team.needed_roles || []).some((role) => selectedTeamRoleIds.includes(role.id));
+
+    return matchesSearch && matchesRole;
   });
 
   const analytics = {
@@ -160,7 +258,11 @@ export function AdminHackathonDetailPage() {
             className={`${styles.tab} ${
               activeTab === "info" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab("info")}
+            onClick={() => {
+              setActiveTab("info");
+              setSelectedRoleIds([]);
+              setSelectedTeamRoleIds([]);
+            }}
           >
             Информация
           </button>
@@ -176,7 +278,11 @@ export function AdminHackathonDetailPage() {
             className={`${styles.tab} ${
               activeTab === "teams" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab("teams")}
+            onClick={() => {
+              setActiveTab("teams");
+              setSelectedRoleIds([]);
+              setSelectedTeamRoleIds([]);
+            }}
           >
             Команды
           </button>
@@ -184,7 +290,11 @@ export function AdminHackathonDetailPage() {
             className={`${styles.tab} ${
               activeTab === "analytics" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab("analytics")}
+            onClick={() => {
+              setActiveTab("analytics");
+              setSelectedRoleIds([]);
+              setSelectedTeamRoleIds([]);
+            }}
           >
             Аналитика
           </button>
@@ -272,7 +382,7 @@ export function AdminHackathonDetailPage() {
 
           {activeTab === "participants" && (
             <div className={styles.participantsSection}>
-              <div className={styles.searchBox}>
+              <div className={styles.searchBox} ref={roleDropdownRef}>
                 <img
                   src={searchIcon}
                   alt="search"
@@ -285,6 +395,54 @@ export function AdminHackathonDetailPage() {
                   placeholder="Поиск участника"
                   className={styles.searchInput}
                 />
+                <button
+                  type="button"
+                  onClick={handleSortClick}
+                  className={styles.sortButton}
+                  title={
+                    selectedRoleIds.length > 0
+                      ? `Выбрано ролей: ${selectedRoleIds.length}`
+                      : "Фильтр по ролям"
+                  }
+                >
+                  <img src={sortIcon} alt="sort-icon" />
+                  {selectedRoleIds.length > 0 && (
+                    <span className={styles.roleCount}>{selectedRoleIds.length}</span>
+                  )}
+                </button>
+                {showRoleDropdown && (
+                  <div className={styles.roleDropdown}>
+                    <div className={styles.roleDropdownHeader}>
+                      <span>Выбор ролей</span>
+                      {selectedRoleIds.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAllRoles}
+                          className={styles.clearAllButton}
+                        >
+                          Очистить
+                        </button>
+                      )}
+                    </div>
+                    {roles.map((role) => (
+                      <div
+                        key={role.id}
+                        className={`${styles.roleOption} ${
+                          selectedRoleIds.includes(role.id) ? styles.selected : ""
+                        }`}
+                        onClick={() => handleRoleToggle(role.id)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedRoleIds.includes(role.id)}
+                          onChange={() => handleRoleToggle(role.id)}
+                          className={styles.roleCheckbox}
+                        />
+                        {role.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               {filteredParticipants.length === 0 ? (
                 <div className={styles.empty}>
@@ -339,7 +497,7 @@ export function AdminHackathonDetailPage() {
 
           {activeTab === "teams" && (
             <div className={styles.teamsSection}>
-              <div className={styles.searchBox}>
+              <div className={styles.searchBox} ref={teamRoleDropdownRef}>
                 <img
                   src={searchIcon}
                   alt="search"
@@ -352,6 +510,54 @@ export function AdminHackathonDetailPage() {
                   placeholder="Поиск команды"
                   className={styles.searchInput}
                 />
+                <button
+                  type="button"
+                  onClick={handleTeamSortClick}
+                  className={styles.sortButton}
+                  title={
+                    selectedTeamRoleIds.length > 0
+                      ? `Выбрано ролей: ${selectedTeamRoleIds.length}`
+                      : "Фильтр по искомым ролям"
+                  }
+                >
+                  <img src={sortIcon} alt="sort-icon" />
+                  {selectedTeamRoleIds.length > 0 && (
+                    <span className={styles.roleCount}>{selectedTeamRoleIds.length}</span>
+                  )}
+                </button>
+                {showTeamRoleDropdown && (
+                  <div className={styles.roleDropdown}>
+                    <div className={styles.roleDropdownHeader}>
+                      <span>Выбор ролей</span>
+                      {selectedTeamRoleIds.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAllTeamRoles}
+                          className={styles.clearAllButton}
+                        >
+                          Очистить
+                        </button>
+                      )}
+                    </div>
+                    {roles.map((role) => (
+                      <div
+                        key={role.id}
+                        className={`${styles.roleOption} ${
+                          selectedTeamRoleIds.includes(role.id) ? styles.selected : ""
+                        }`}
+                        onClick={() => handleTeamRoleToggle(role.id)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedTeamRoleIds.includes(role.id)}
+                          onChange={() => handleTeamRoleToggle(role.id)}
+                          className={styles.roleCheckbox}
+                        />
+                        {role.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               {filteredTeams.length === 0 ? (
                 <div className={styles.empty}>
