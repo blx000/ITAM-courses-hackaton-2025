@@ -1,0 +1,352 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  padding: 16px 24px;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adminText {
+  font-size: 32px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+}
+
+.adminText span {
+  color: rgba(172, 235, 76, 1);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  max-width: 874px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 24px 24px 24px;
+}
+
+.error {
+  background-color: rgba(254, 215, 215, 0.2);
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(252, 129, 129, 0.3);
+  font-size: 16px;
+}
+
+.mainBlock {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+}
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.additionalBlock {
+  margin-top: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  font-size: 16px;
+  color: #f9ffee;
+  transition: all 0.2s;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #aceb4c;
+}
+
+.input:disabled,
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input[type="date"] {
+  color: rgba(249, 255, 238, 1);
+}
+
+.input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.input[type="date"]::-webkit-datetime-edit-text,
+.input[type="date"]::-webkit-datetime-edit-month-field,
+.input[type="date"]::-webkit-datetime-edit-day-field,
+.input[type="date"]::-webkit-datetime-edit-year-field {
+  color: rgba(249, 255, 238, 1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.cancelButton,
+.deleteButton {
+  max-width: 136px;
+  width: 100%;
+  padding: 12px 24px;
+  background: transparent;
+  color: #f9ffee;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteButton:hover:not(:disabled),
+.cancelButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  max-width: 136px;
+  width: 100%;
+  padding: 12px 24px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleteButton {
+  color: rgba(172, 235, 76, 1);
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleteModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.deleteModalContent {
+  background: rgba(17, 18, 4, 0.25);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.deleteModalTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.deleteModalText {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+  margin: 0;
+}
+
+.deleteModalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.deleteConfirmButton {
+  max-width: 136px;
+  width: 100%;
+  padding: 12px 24px;
+  background: transparent;
+  color: rgba(172, 235, 76, 1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteConfirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleteCancelButton {
+  max-width: 136px;
+  width: 100%;
+  padding: 10px 20px;
+  background: transparent;
+  color: #f9ffee;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteConfirmButton:hover:not(:disabled),
+.deleteCancelButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.deleteCancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #f9ffee;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .mainBlock {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .iconContainer {
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .formIcon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .deleteModalContent {
+    padding: 24px;
+  }
+
+  .deleteModalActions {
+    flex-direction: column;
+  }
+
+  .deleteConfirmButton,
+  .deleteCancelButton {
+    width: 100%;
+  }
+}

@@ -1,0 +1,133 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: rgba(17, 18, 4, 1);
+}
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.loginForm {
+  border-radius: 37px;
+  border: 2px solid rgba(172, 235, 76, 1);
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.adminText {
+  font-size: 23px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+}
+.adminText span {
+  color: rgba(172, 235, 76, 1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  background: rgba(216, 218, 214, 1);
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s;
+  color: rgba(0, 0, 0, 1);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(172, 235, 76, 1);
+}
+
+.inputError {
+  background: #fed7d7;
+}
+
+.error {
+  background-color: #fed7d7;
+  color: #c53030;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+.submitButton {
+  width: 100%;
+  height: 40px;
+  background: rgba(172, 235, 76, 1);
+  color: rgba(17, 18, 4, 1);
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0px 0px 5.47px 0px rgba(172, 235, 76, 1),
+    0px 0px 10.94px 0px rgba(172, 235, 76, 1),
+    0px 0px 38.3px 0px rgba(172, 235, 76, 1),
+    0px 0px 76.6px 0px rgba(172, 235, 76, 1),
+    0px 0px 131.32px 0px rgba(172, 235, 76, 1),
+    0px 0px 229.8px 0px rgba(172, 235, 76, 1);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,0 +1,242 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 16px 24px;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.searchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.searchIcon img {
+  width: 20px;
+  height: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: #ffffff2b;
+  backdrop-filter: blur(12px);
+  color: rgba(249, 255, 238, 1);
+  font-size: 16px;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #aceb4c;
+}
+
+.searchInput::placeholder {
+  color: rgba(249, 255, 238, 1);
+}
+
+.results {
+  flex: 1;
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resultCard {
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(17, 18, 4, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resultCard:hover {
+  border-color: #aceb4c;
+  transform: translateY(-2px);
+}
+
+.resultCard h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.resultCard p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.7);
+}
+
+.hackathonCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hackathonCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
+}
+
+.hackathonContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.hackathonIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hackathonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hackathonTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonCompany {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonPrize {
+  background: #a0d949;
+  color: #f9ffee;
+  padding: 4px;
+  border-radius: 8px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 600;
+  width: 106px;
+  flex-shrink: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(249, 255, 238, 0.6);
+  font-size: 16px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aceb4c;
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: 24px 48px;
+    max-width: 768px;
+    margin: 0 auto;
+  }
+
+  .hackathonsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 32px 64px;
+    max-width: 1024px;
+  }
+
+  .hackathonsList {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .content {
+    padding: 40px 80px;
+    max-width: 1440px;
+  }
+
+  .hackathonsList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

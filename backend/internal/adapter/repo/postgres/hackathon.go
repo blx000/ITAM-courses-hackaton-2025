@@ -1,0 +1,1424 @@
+package postgres
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/blx000/ITAM-courses-hackaton-2025/internal/port/repo"
+	"github.com/huandu/go-sqlbuilder"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+var _ repo.Hackathon = (*HackRepo)(nil)
+
+type HackRepo struct {
+	pool *pgxpool.Pool
+}
+
+func (h *HackRepo) GetUsersInvites(ctx context.Context, userId int64) ([]*repo.Invitation, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"i.id",
+		"i.team_id",
+		"i.participant_id",
+		"t.hackathon_id as hack_id",
+		"t.name as team_name",
+		"h.name as hack_name",
+	).
+		From("hackmate.invite i").
+		Join("hackmate.team t", "i.team_id = t.id").
+		Join("hackmate.hackathon h", "t.hackathon_id = h.id").
+		Join("hackmate.participant p", "i.participant_id = p.id").
+		Where(sb.Equal("p.user_id", userId)).
+		OrderByDesc("i.id").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to query user's invites: %w", err)
+	}
+	defer rows.Close()
+
+	var invites []*repo.Invitation
+
+	for rows.Next() {
+		var invite repo.Invitation
+
+		err := rows.Scan(
+			&invite.Id,
+			&invite.TeamId,
+			&invite.ParticipantId,
+			&invite.HackId,
+			&invite.TeamName,
+			&invite.HackName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan invite: %w", err)
+		}
+
+		invites = append(invites, &invite)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return invites, nil
+}
+
+func (h *HackRepo) GetTeamInvites(ctx context.Context, teamId int) ([]*repo.Invitation, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"i.id",
+		"i.team_id",
+		"i.participant_id",
+		"t.hackathon_id as hack_id",
+		"t.name as team_name",
+		"h.name as hack_name",
+	).
+		From("hackmate.invite i").
+		Join("hackmate.team t", "i.team_id = t.id").
+		Join("hackmate.hackathon h", "t.hackathon_id = h.id").
+		Where(sb.Equal("i.team_id", teamId)).
+		OrderByDesc("i.id").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to query team invites: %w", err)
+	}
+	defer rows.Close()
+
+	var invites []*repo.Invitation
+
+	for rows.Next() {
+		var invite repo.Invitation
+
+		err := rows.Scan(
+			&invite.Id,
+			&invite.TeamId,
+			&invite.ParticipantId,
+			&invite.HackId,
+			&invite.TeamName,
+			&invite.HackName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan invite: %w", err)
+		}
+
+		invites = append(invites, &invite)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return invites, nil
+}
+
+func (h *HackRepo) GetTeamRequests(ctx context.Context, teamId int) ([]*repo.JoinRequest, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"jr.id",
+		"jr.team_id",
+		"jr.participant_id",
+		"t.captain_id",
+		"t.hackathon_id as hack_id",
+		"u.first_name",
+		"u.last_name",
+		"r.name as role_name",
+	).
+		From("hackmate.join_request jr").
+		Join("hackmate.team t", "jr.team_id = t.id").
+		Join("hackmate.participant p", "jr.participant_id = p.id").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		Where(sb.Equal("jr.team_id", teamId)).
+		OrderByDesc("jr.id").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team join requests: %w", err)
+	}
+	defer rows.Close()
+
+	var requests []*repo.JoinRequest
+
+	for rows.Next() {
+		var request repo.JoinRequest
+
+		err := rows.Scan(
+			&request.Id,
+			&request.TeamId,
+			&request.ParticipantId,
+			&request.CaptainId,
+			&request.HackId,
+			&request.FirstName,
+			&request.LastName,
+			&request.RoleName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan join request: %w", err)
+		}
+
+		requests = append(requests, &request)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return requests, nil
+}
+
+func (h *HackRepo) GetUsersTeams(ctx context.Context, userId int64) ([]*repo.TeamShort, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"t.id",
+		"t.name",
+		"t.captain_id",
+		"t.hackathon_id",
+		"t.max_size",
+		"COUNT(tp2.participant_id) as member_cnt",
+		"h.name",
+	).
+		From("hackmate.team t").
+		Join("hackmate.team_participant tp", "t.id = tp.team_id").
+		Join("hackmate.participant p", "tp.participant_id = p.id").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp2",
+			"t.id = tp2.team_id").
+		Join("hackmate.hackathon h", "h.id = t.hackathon_id").
+		Where(sb.Equal("p.user_id", userId)).
+		GroupBy(
+			"t.id",
+			"t.name",
+			"t.captain_id",
+			"t.hackathon_id",
+			"t.max_size",
+			"h.name",
+		).
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []*repo.TeamShort{}, nil
+		}
+		return nil, fmt.Errorf("failed to query user's teams: %w", err)
+	}
+	defer rows.Close()
+
+	var teams []*repo.TeamShort
+
+	for rows.Next() {
+		var team repo.TeamShort
+
+		err := rows.Scan(
+			&team.ID,
+			&team.Name,
+			&team.CaptainId,
+			&team.HackId,
+			&team.MaxTeamSize,
+			&team.MemberCnt,
+			&team.HackName,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan team: %w", err)
+		}
+
+		team.Members = []*repo.Participant{}
+
+		teams = append(teams, &team)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return teams, nil
+}
+
+func (h *HackRepo) CreateRequest(ctx context.Context, teamId int, senderId int) error {
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	query, args := sb.InsertInto("hackmate.join_request").
+		Cols("team_id", "participant_id").
+		Values(teamId, senderId).
+		Build()
+
+	_, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to create join request: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetRequest(ctx context.Context, requestId int) (*repo.JoinRequest, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"jr.id",
+		"jr.team_id",
+		"jr.participant_id",
+		"t.captain_id",
+		"t.hackathon_id as hack_id",
+	).
+		From("hackmate.join_request jr").
+		Join("hackmate.team t", "jr.team_id = t.id").
+		Where(sb.Equal("jr.id", requestId)).
+		Build()
+
+	var request repo.JoinRequest
+
+	err := h.pool.QueryRow(ctx, query, args...).Scan(
+		&request.Id,
+		&request.TeamId,
+		&request.ParticipantId,
+		&request.CaptainId,
+		&request.HackId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("join request not found")
+		}
+		return nil, fmt.Errorf("failed to get join request: %w", err)
+	}
+
+	return &request, nil
+}
+
+func (h *HackRepo) AcceptRequest(ctx context.Context, requestId int, teamId int, participantId int) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertQuery, insertArgs := sb.InsertInto("hackmate.team_participant").
+		Cols("participant_id", "team_id").
+		Values(participantId, teamId).
+		Build()
+
+	_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+	fmt.Println(participantId, teamId)
+
+	if err != nil {
+		return fmt.Errorf("failed to add participant to team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	deleteQuery, deleteArgs := sb2.DeleteFrom("hackmate.join_request").
+		Where(sb2.Equal("id", requestId)).
+		Build()
+
+	result, err := tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to delete join request: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return nil
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetUsersHacks(ctx context.Context, userId int64) ([]*repo.HackathonGeneralDTO, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"h.id",
+		"h.admin_id",
+		"h.name",
+		"h.start_date",
+		"h.end_date",
+	).
+		From("hackmate.hackathon h").
+		Join("hackmate.participant p", "h.id = p.hack_id").
+		Where(sb.Equal("p.user_id", userId)).
+		OrderByAsc("h.start_date").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []*repo.HackathonGeneralDTO{}, nil
+		}
+		return nil, fmt.Errorf("failed to query user's hackathons: %w", err)
+	}
+	defer rows.Close()
+
+	var hackathons []*repo.HackathonGeneralDTO
+
+	for rows.Next() {
+		var hackathon repo.HackathonGeneralDTO
+
+		err := rows.Scan(
+			&hackathon.Id,
+			&hackathon.AdminId,
+			&hackathon.Name,
+			&hackathon.StartDate,
+			&hackathon.EndDate,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan hackathon: %w", err)
+		}
+
+		hackathons = append(hackathons, &hackathon)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return hackathons, nil
+}
+
+func (h *HackRepo) AcceptInvite(ctx context.Context, inviteId int, teamId int, participantId int) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertQuery, insertArgs := sb.InsertInto("hackmate.team_participant").
+		Cols("participant_id", "team_id").
+		Values(participantId, teamId).
+		Build()
+
+	_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to add participant to team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	deleteQuery, deleteArgs := sb2.DeleteFrom("hackmate.invite").
+		Where(sb2.Equal("id", inviteId)).
+		Build()
+
+	result, err := tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to delete invite: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("invite not found")
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetParticipantGeneral(ctx context.Context, participantId int) (*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	participantQuery, participantArgs := sb.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"p.experience",
+		"p.additional_info",
+		"p.hack_id",
+		"COALESCE(tp.team_id, -1) as team_id",
+	).
+		From("hackmate.participant p").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp",
+			"p.id = tp.participant_id").
+		Where(sb.Equal("p.id", participantId)).
+		Build()
+
+	var participant repo.Participant
+
+	err := h.pool.QueryRow(ctx, participantQuery, participantArgs...).Scan(
+		&participant.Id,
+		&participant.FirstName,
+		&participant.LastName,
+		&participant.Role.ID,
+		&participant.Role.Name,
+		&participant.Experience,
+		&participant.AddInfo,
+		&participant.HackId,
+		&participant.TeamId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("participant not found")
+		}
+		return nil, fmt.Errorf("failed to get participant: %w", err)
+	}
+	fmt.Println(participant)
+
+	return &participant, nil
+}
+
+func (h *HackRepo) GetInvite(ctx context.Context, inviteId int) (*repo.Invitation, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"i.id",
+		"i.team_id",
+		"i.participant_id",
+		"t.hackathon_id as hack_id",
+	).
+		From("hackmate.invite i").
+		Join("hackmate.team t", "i.team_id = t.id").
+		Where(sb.Equal("i.id", inviteId)).
+		Build()
+
+	var invite repo.Invitation
+
+	err := h.pool.QueryRow(ctx, query, args...).Scan(
+		&invite.Id,
+		&invite.TeamId,
+		&invite.ParticipantId,
+		&invite.HackId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("invite not found")
+		}
+		return nil, fmt.Errorf("failed to get invite: %w", err)
+	}
+
+	return &invite, nil
+}
+
+func (h *HackRepo) CreateInvite(ctx context.Context, teamId int, recId int) error {
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	query, args := sb.InsertInto("hackmate.invite").
+		Cols("team_id", "participant_id").
+		Values(teamId, recId).
+		Build()
+
+	_, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to create invite: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) CreateHack(ctx context.Context, dto *repo.HackathonGeneralDTO) (int, error) {
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	fmt.Println(dto)
+	query, args := sb.InsertInto("hackmate.hackathon").
+		Cols(
+			"admin_id",
+			"name",
+			"description",
+			"start_date",
+			"end_date",
+			"max_teams",
+			"max_team_size",
+			"prize",
+		).
+		Values(
+			dto.AdminId,
+			dto.Name,
+			dto.Desc,
+			dto.StartDate,
+			dto.EndDate,
+			dto.MaxTeams,
+			dto.MaxTeamSize,
+			dto.Prize,
+		).
+		Returning("id").
+		Build()
+
+	var hackId int
+
+	err := h.pool.QueryRow(ctx, query, args...).Scan(&hackId)
+	if err != nil {
+		fmt.Println(err)
+		return 0, fmt.Errorf("failed to create hackathon: %w", err)
+	}
+
+	return hackId, nil
+}
+
+func (h *HackRepo) UpdateHack(ctx context.Context, hackId int, dto *repo.HackathonGeneralDTO) error {
+	sb := sqlbuilder.PostgreSQL.NewUpdateBuilder()
+	
+	query, args := sb.Update("hackmate.hackathon").
+		Set(
+			sb.Assign("name", dto.Name),
+			sb.Assign("description", dto.Desc),
+			sb.Assign("start_date", dto.StartDate),
+			sb.Assign("end_date", dto.EndDate),
+			sb.Assign("max_team_size", dto.MaxTeamSize),
+			sb.Assign("prize", dto.Prize),
+		).
+		Where(sb.Equal("id", hackId)).
+		Build()
+
+	result, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update hackathon: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return repo.ErrHackathonNotFound
+	}
+
+	return nil
+}
+
+func (h *HackRepo) DeleteHack(ctx context.Context, hackId int) error {
+	sb := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	
+	query, args := sb.DeleteFrom("hackmate.hackathon").
+		Where(sb.Equal("id", hackId)).
+		Build()
+
+	result, err := h.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to delete hackathon: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return repo.ErrHackathonNotFound
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetParticipantProfile(ctx context.Context, participantId int) (*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	participantQuery, participantArgs := sb.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"p.experience",
+		"p.additional_info",
+		"p.hack_id",
+		"COALESCE(tp.team_id, -1) as team_id",
+	).
+		From("hackmate.participant p").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp",
+			"p.id = tp.participant_id").
+		Where(sb.Equal("p.id", participantId)).
+		Build()
+
+	var participant repo.Participant
+
+	err := h.pool.QueryRow(ctx, participantQuery, participantArgs...).Scan(
+		&participant.Id,
+		&participant.FirstName,
+		&participant.LastName,
+		&participant.Role.ID,
+		&participant.Role.Name,
+		&participant.Experience,
+		&participant.AddInfo,
+		&participant.HackId,
+		&participant.TeamId,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("participant not found")
+		}
+		return nil, fmt.Errorf("failed to get participant: %w", err)
+	}
+	fmt.Println(participant)
+	sb2 := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	skillsQuery, skillsArgs := sb2.Select(
+		"s.id",
+		"s.name",
+	).
+		From("hackmate.skill s").
+		Join("hackmate.participant_skill ps", "s.id = ps.skill_id").
+		Where(sb2.Equal("ps.participant_id", participantId)).
+		Build()
+
+	rows, err := h.pool.Query(ctx, skillsQuery, skillsArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query participant skills: %w", err)
+	}
+	defer rows.Close()
+
+	var skills []repo.Skill
+
+	for rows.Next() {
+		var skill repo.Skill
+
+		err := rows.Scan(
+			&skill.ID,
+			&skill.Name,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan skill: %w", err)
+		}
+
+		skills = append(skills, skill)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	participant.Skills = skills
+
+	return &participant, nil
+}
+
+func (h *HackRepo) UpdateParticipant(ctx context.Context, participantId int, hackId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder()
+	ub.Update("hackmate.participant")
+	
+	hasUpdates := false
+
+	if roleId != nil {
+		ub.Set(ub.Assign("role_id", *roleId))
+		hasUpdates = true
+	}
+
+	if experience != nil {
+		ub.Set(ub.Assign("experience", *experience))
+		hasUpdates = true
+	}
+
+	if additionalInfo != nil {
+		ub.Set(ub.Assign("additional_info", *additionalInfo))
+		hasUpdates = true
+	}
+
+	if hasUpdates {
+		ub.Where(ub.Equal("id", participantId))
+		ub.Where(ub.Equal("hack_id", hackId))
+
+		updateQuery, updateArgs := ub.Build()
+
+		_, err = tx.Exec(ctx, updateQuery, updateArgs...)
+		if err != nil {
+			return fmt.Errorf("failed to update participant: %w", err)
+		}
+	}
+
+	if skillIds != nil {
+		db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+		deleteQuery, deleteArgs := db.DeleteFrom("hackmate.participant_skill").
+			Where(db.Equal("participant_id", participantId)).
+			Build()
+
+		_, err = tx.Exec(ctx, deleteQuery, deleteArgs...)
+		if err != nil {
+			return fmt.Errorf("failed to delete old skills: %w", err)
+		}
+
+		if len(skillIds) > 0 {
+			ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+			ib.InsertInto("hackmate.participant_skill").
+				Cols("participant_id", "skill_id")
+
+			for _, skillId := range skillIds {
+				ib.Values(participantId, skillId)
+			}
+
+			insertQuery, insertArgs := ib.Build()
+			_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+			if err != nil {
+				return fmt.Errorf("failed to insert skills: %w", err)
+			}
+		}
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetTeamProfile(ctx context.Context, teamId int) (*repo.TeamShort, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	teamQuery, teamArgs := sb.Select(
+		"t.id",
+		"t.name",
+		"t.captain_id",
+		"t.hackathon_id",
+		"h.max_team_size",
+		"COUNT(DISTINCT tp.participant_id) as member_count",
+	).
+		From("hackmate.team t").
+		Where(sb.Equal("t.id", teamId)).
+		Join("hackmate.hackathon h", "h.id = t.hackathon_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant tp", "t.id = tp.team_id").
+		GroupBy("t.id", "t.name", "t.captain_id", "t.hackathon_id", "h.max_team_size").
+		Build()
+
+	var team repo.TeamShort
+	var memberCount int
+
+	err := h.pool.QueryRow(ctx, teamQuery, teamArgs...).Scan(
+		&team.ID,
+		&team.Name,
+		&team.CaptainId,
+		&team.HackId,
+		&team.MaxTeamSize,
+		&memberCount,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("team not found")
+		}
+		return nil, fmt.Errorf("failed to get team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	membersQuery, membersArgs := sb2.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"p.experience",
+		"p.additional_info",
+		"p.hack_id",
+	).
+		From("hackmate.participant p").
+		Join("hackmate.user u", "p.user_id = u.id").
+		Join("hackmate.role r", "p.role_id = r.id").
+		Join("hackmate.team_participant tp", "p.id = tp.participant_id").
+		Where(sb2.Equal("tp.team_id", teamId)).
+		Build()
+
+	rows, err := h.pool.Query(ctx, membersQuery, membersArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team members: %w", err)
+	}
+	defer rows.Close()
+
+	var members []*repo.Participant
+
+	for rows.Next() {
+		var member repo.Participant
+		var roleID int
+		var roleName string
+
+		err := rows.Scan(
+			&member.Id,
+			&member.FirstName,
+			&member.LastName,
+			&roleID,
+			&roleName,
+			&member.Experience,
+			&member.AddInfo,
+			&member.TeamId,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan member: %w", err)
+		}
+
+		member.Role = repo.Role{
+			ID:   roleID,
+			Name: roleName,
+		}
+
+		member.Skills = []repo.Skill{}
+
+		members = append(members, &member)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	team.Members = members
+	team.MemberCnt = memberCount
+
+	sb3 := sqlbuilder.PostgreSQL.NewSelectBuilder()
+	rolesQuery, rolesArgs := sb3.Select(
+		"r.id",
+		"r.name",
+	).
+		From("hackmate.team_role tr").
+		Join("hackmate.role r", "tr.role_id = r.id").
+		Where(sb3.Equal("tr.team_id", teamId)).
+		Build()
+
+	rolesRows, err := h.pool.Query(ctx, rolesQuery, rolesArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team roles: %w", err)
+	}
+	defer rolesRows.Close()
+
+	var neededRoles []*repo.Role
+	for rolesRows.Next() {
+		var role repo.Role
+		err := rolesRows.Scan(&role.ID, &role.Name)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan role: %w", err)
+		}
+		neededRoles = append(neededRoles, &role)
+	}
+
+	team.NeededRoles = neededRoles
+
+	return &team, nil
+}
+
+func (h *HackRepo) CreateTeam(ctx context.Context, participantId int, hackId int, name string) (int, error) {
+	const defaultMaxSize = 5
+
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	sb := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertTeamQuery, insertTeamArgs := sb.InsertInto("hackmate.team").
+		Cols("name", "captain_id", "hackathon_id", "max_size").
+		Values(name, participantId, hackId, defaultMaxSize).
+		SQL("RETURNING id").
+		Build()
+
+	var teamId int
+	err = tx.QueryRow(ctx, insertTeamQuery, insertTeamArgs...).Scan(&teamId)
+	if err != nil {
+		return 0, fmt.Errorf("failed to create team: %w", err)
+	}
+
+	sb2 := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	insertParticipantQuery, insertParticipantArgs := sb2.InsertInto("hackmate.team_participant").
+		Cols("participant_id", "team_id").
+		Values(participantId, teamId).
+		Build()
+
+	_, err = tx.Exec(ctx, insertParticipantQuery, insertParticipantArgs...)
+	if err != nil {
+		return 0, fmt.Errorf("failed to add captain to team: %w", err)
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return 0, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return teamId, nil
+}
+
+func (h *HackRepo) ListParticipants(ctx context.Context, hackId int) ([]*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select("p.id", "u.first_name", "u.last_name", "p.experience", "p.additional_info", "COALESCE(tp.team_id, -1) as team_id, r.id, r.name").
+		From("hackmate.participant p").
+		Where(sb.Equal("p.hack_id", hackId)).
+		Join("hackmate.user u", "u.id = p.user_id").
+		Join("hackmate.role r", "r.id = p.role_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant tp", "tp.participant_id = p.id")
+
+	sql, args := sb.Build()
+
+	rows, err := h.pool.Query(ctx, sql, args...)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrHackathonNotFound
+		}
+		return nil, err
+	}
+	defer rows.Close()
+	participants := make([]*repo.Participant, 0)
+	var (
+		roleId   int
+		roleName string
+	)
+	for rows.Next() {
+		var participant repo.Participant
+		err := rows.Scan(&participant.Id,
+			&participant.FirstName,
+			&participant.LastName,
+			&participant.Experience,
+			&participant.AddInfo,
+			&participant.TeamId,
+			&roleId,
+			&roleName)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan hackathon: %w", err)
+		}
+
+		participant.Role = repo.Role{
+			ID:   roleId,
+			Name: roleName,
+		}
+
+		skills, err := h.getParticipantSkills(ctx, participant.Id)
+		if err != nil {
+			fmt.Printf("Failed to get skills for participant %d: %v\n", participant.Id, err)
+			participant.Skills = []repo.Skill{}
+		} else {
+			participant.Skills = skills
+		}
+
+		participants = append(participants, &participant)
+		fmt.Println(participant)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("error iterating hackathons rows: %w", err)
+	}
+
+	return participants, nil
+}
+
+func (h *HackRepo) ListTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"t.id",
+		"t.name",
+		"t.captain_id",
+		"t.hackathon_id",
+		"COUNT(tp.participant_id) as member_cnt",
+		"MAX(h.max_team_size) as max_team_size",
+	).
+		From("hackmate.team t").
+		JoinWithOption(sqlbuilder.LeftJoin,
+			"hackmate.team_participant tp",
+			"t.id = tp.team_id").
+		Join("hackmate.hackathon h", "t.hackathon_id = h.id").
+		Where(sb.Equal("t.hackathon_id", hackId)).
+		GroupBy("t.id", "h.max_team_size").
+		OrderByAsc("t.id").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to query teams: %w", err)
+	}
+	defer rows.Close()
+
+	var teams []*repo.TeamShort
+
+	for rows.Next() {
+		var team repo.TeamShort
+
+		err := rows.Scan(
+			&team.ID,
+			&team.Name,
+			&team.CaptainId,
+			&team.HackId,
+			&team.MemberCnt,
+			&team.MaxTeamSize,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("failed to scan team: %w", err)
+		}
+
+		team.Members = []*repo.Participant{}
+
+		roles, err := h.GetTeamRoles(ctx, team.ID)
+		if err != nil {
+			team.NeededRoles = []*repo.Role{}
+		} else {
+			team.NeededRoles = roles
+		}
+
+		teams = append(teams, &team)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return teams, nil
+}
+
+func (h *HackRepo) GetTeamRoles(ctx context.Context, teamId int) ([]*repo.Role, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+	
+	query, args := sb.Select(
+		"r.id",
+		"r.name",
+	).
+		From("hackmate.team_role tr").
+		Join("hackmate.role r", "tr.role_id = r.id").
+		Where(sb.Equal("tr.team_id", teamId)).
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team roles: %w", err)
+	}
+	defer rows.Close()
+
+	var roles []*repo.Role
+	for rows.Next() {
+		var role repo.Role
+		err := rows.Scan(&role.ID, &role.Name)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan role: %w", err)
+		}
+		roles = append(roles, &role)
+	}
+
+	return roles, nil
+}
+
+func (h *HackRepo) UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	db := sqlbuilder.PostgreSQL.NewDeleteBuilder()
+	deleteQuery, deleteArgs := db.DeleteFrom("hackmate.team_role").
+		Where(db.Equal("team_id", teamId)).
+		Build()
+
+	_, err = tx.Exec(ctx, deleteQuery, deleteArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to delete old roles: %w", err)
+	}
+
+	if len(roleIds) > 0 {
+		ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+		ib.InsertInto("hackmate.team_role").
+			Cols("team_id", "role_id")
+
+		for _, roleId := range roleIds {
+			ib.Values(teamId, roleId)
+		}
+
+		insertQuery, insertArgs := ib.Build()
+		_, err = tx.Exec(ctx, insertQuery, insertArgs...)
+		if err != nil {
+			return fmt.Errorf("failed to insert roles: %w", err)
+		}
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func NewHackRepo(pool *pgxpool.Pool) *HackRepo {
+	return &HackRepo{
+		pool: pool,
+	}
+}
+
+func (h *HackRepo) AddParticipant(ctx context.Context, hackId int, create repo.FormCreate) error {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	var participantId int64
+	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	ib.InsertInto("hackmate.participant").
+		Cols("user_id", "role_id", "hack_id", "experience", "additional_info").
+		Values(create.UserId, create.Role.ID, hackId, create.Experience, create.AddInfo).
+		Returning("id")
+
+	sql, args := ib.Build()
+
+	err = tx.QueryRow(ctx, sql, args...).Scan(&participantId)
+	if err != nil {
+		return fmt.Errorf("failed to insert participant: %w", err)
+	}
+
+	if len(create.SKills) > 0 {
+		err = h.insertParticipantSkills(ctx, tx, participantId, create.SKills)
+		if err != nil {
+			return fmt.Errorf("failed to insert participant skills: %w", err)
+		}
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) insertParticipantSkills(ctx context.Context, tx pgx.Tx, participantId int64, skills []repo.Skill) error {
+	if len(skills) == 0 {
+		return nil
+	}
+
+	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+	ib.InsertInto("hackmate.participant_skill").
+		Cols("participant_id", "skill_id")
+
+	for _, skill := range skills {
+		ib.Values(participantId, skill.ID)
+	}
+
+	ib.SQL("ON CONFLICT (participant_id, skill_id) DO NOTHING")
+
+	sql, args := ib.Build()
+
+	_, err := tx.Exec(ctx, sql, args...)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("failed to insert participant skills: %w", err)
+	}
+
+	return nil
+}
+
+func (h *HackRepo) GetParticipant(ctx context.Context, hackId int, userId int64) (*repo.Participant, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select(
+		"p.id",
+		"u.first_name",
+		"u.last_name",
+		"r.id as role_id",
+		"r.name as role_name",
+		"COALESCE(tp.team_id, -1) as team_id",
+		"p.additional_info",
+		"p.hack_id",
+		"p.experience",
+	).
+		From("hackmate.participant as p").
+		Join("hackmate.user as u", "p.user_id = u.id").
+		Join("hackmate.role as r", "p.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_participant as tp", "p.id = tp.participant_id").
+		Where(sb.Equal("p.user_id", userId)).
+		Where(sb.Equal("p.hack_id", hackId))
+
+	sql, args := sb.Build()
+
+	var participant repo.Participant
+	var roleId int
+	var roleName string
+
+	err := h.pool.QueryRow(ctx, sql, args...).Scan(
+		&participant.Id,
+		&participant.FirstName,
+		&participant.LastName,
+		&roleId,
+		&roleName,
+		&participant.TeamId,
+		&participant.AddInfo,
+		&participant.HackId,
+		&participant.Experience,
+	)
+
+	fmt.Println(participant)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrParticipantNotFound
+		}
+		return nil, fmt.Errorf("failed to get participant: %w", err)
+	}
+
+	participant.Role = repo.Role{
+		ID:   roleId,
+		Name: roleName,
+	}
+
+	skills, err := h.getParticipantSkills(ctx, participant.Id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get participant skills: %w", err)
+	}
+	participant.Skills = skills
+
+	return &participant, nil
+}
+
+func (h *HackRepo) getParticipantSkills(ctx context.Context, participantId int) ([]repo.Skill, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select("s.id", "s.name").
+		From("hackmate.participant_skill as ps").
+		Join("hackmate.skill as s", "ps.skill_id = s.id").
+		Where(sb.Equal("ps.participant_id", participantId))
+
+	sql, args := sb.Build()
+
+	rows, err := h.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query participant skills: %w", err)
+	}
+	defer rows.Close()
+
+	var skills []repo.Skill
+	for rows.Next() {
+		var skill repo.Skill
+		if err := rows.Scan(&skill.ID, &skill.Name); err != nil {
+			return nil, fmt.Errorf("failed to scan skill: %w", err)
+		}
+		skills = append(skills, skill)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating skills rows: %w", err)
+	}
+
+	return skills, nil
+}
+
+func (h *HackRepo) Read(ctx context.Context, hackId int) (*repo.HackathonGeneralDTO, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select(
+		"id",
+		"admin_id",
+		"name",
+		"description",
+		"start_date",
+		"end_date",
+		"max_teams",
+		"max_team_size",
+		"prize",
+	).
+		From("hackmate.hackathon").
+		Where(sb.Equal("id", hackId))
+
+	sql, args := sb.Build()
+
+	var hackathon repo.HackathonGeneralDTO
+
+	err := h.pool.QueryRow(ctx, sql, args...).Scan(
+		&hackathon.Id,
+		&hackathon.AdminId,
+		&hackathon.Name,
+		&hackathon.Desc,
+		&hackathon.StartDate,
+		&hackathon.EndDate,
+		&hackathon.MaxTeams,
+		&hackathon.MaxTeamSize,
+		&hackathon.Prize,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrHackathonNotFound
+		}
+		return nil, fmt.Errorf("failed to get hackathon by id %d: %w", hackId, err)
+	}
+
+	return &hackathon, nil
+}
+
+func (h *HackRepo) List(ctx context.Context) ([]*repo.HackathonGeneralDTO, error) {
+	sb := sqlbuilder.NewSelectBuilder()
+
+	sb.Select(
+		"id",
+		"admin_id",
+		"name",
+		"description",
+		"start_date",
+		"end_date",
+		"max_teams",
+		"max_team_size",
+		"prize",
+	).
+		From("hackmate.hackathon").
+		OrderByDesc("start_date")
+
+	sql, args := sb.Build()
+
+	rows, err := h.pool.Query(ctx, sql, args...)
+	defer rows.Close()
+	if err != nil {
+		return nil, fmt.Errorf("failed to query hackathons: %w", err)
+	}
+
+	var hackathons []*repo.HackathonGeneralDTO
+	for rows.Next() {
+		var hackathon repo.HackathonGeneralDTO
+
+		err := rows.Scan(
+			&hackathon.Id,
+			&hackathon.AdminId,
+			&hackathon.Name,
+			&hackathon.Desc,
+			&hackathon.StartDate,
+			&hackathon.EndDate,
+			&hackathon.MaxTeams,
+			&hackathon.MaxTeamSize,
+			&hackathon.Prize,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan hackathon: %w", err)
+		}
+
+		hackathons = append(hackathons, &hackathon)
+		fmt.Println(hackathon)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating hackathons rows: %w", err)
+	}
+
+	return hackathons, nil
+}

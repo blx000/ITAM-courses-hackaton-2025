@@ -1,0 +1,142 @@
+.container {
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(12px);
+}
+.icons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.icons img {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+  transition: all 0.2s;
+}
+
+.icons img:hover {
+  opacity: 0.8;
+}
+
+.profileMenu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profileMenu button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileMenu img {
+  width: 48px;
+  height: 48px;
+  filter: none;
+}
+
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(17, 18, 4, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebarOverlayVisible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menuDropdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.menuDropdownOpen {
+  transform: translateX(0);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  color: #f9ffee;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.menuItems {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  gap: 8px;
+}
+
+.menuItem {
+  text-align: left;
+  width: 100%;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+}
+
+.menuItem:hover {
+  background: rgba(172, 235, 76, 0.1);
+  transform: translateX(4px);
+}
+
+.menuItemLabel {
+  color: #f9ffee;
+}

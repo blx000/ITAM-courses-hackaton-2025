@@ -1,0 +1,33 @@
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+}
+.container {
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.icons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.icons img {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s;
+}
+
+.icons img:hover {
+  opacity: 0.8;
+}

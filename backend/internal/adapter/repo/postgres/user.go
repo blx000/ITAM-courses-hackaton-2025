@@ -1,0 +1,309 @@
+package postgres
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/blx000/ITAM-courses-hackaton-2025/internal/port/repo"
+	"github.com/huandu/go-sqlbuilder"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"strings"
+)
+
+var _ repo.User = (*UserRepo)(nil)
+
+type UserRepo struct {
+	pool *pgxpool.Pool
+}
+
+func (u *UserRepo) UserChatIdByPartId(ctx context.Context, participantId int) (int64, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select("u.chat_id").
+		From("hackmate.user u").
+		Join("hackmate.participant p", "u.id = p.user_id").
+		Where(sb.Equal("p.id", participantId)).
+		Build()
+
+	var chatId int64
+
+	err := u.pool.QueryRow(ctx, query, args...).Scan(&chatId)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, fmt.Errorf("participant or user not found")
+		}
+		return 0, fmt.Errorf("failed to get user chat id: %w", err)
+	}
+
+	return chatId, nil
+}
+
+func (u *UserRepo) ReadAdmin(ctx context.Context, login string) (*repo.UserDTO, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select(
+		"a.id",
+		"a.login",
+		"a.password_hash",
+	).
+		From("hackmate.admin as a").
+		Where(sb.Equal("a.login", login))
+
+	sql, args := sb.Build()
+
+	var admin repo.UserDTO
+
+	err := u.pool.QueryRow(ctx, sql, args...).Scan(
+		&admin.ID,
+		&admin.Login,
+		&admin.PassHash,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to get admin by login: %w", err)
+	}
+
+	admin.IsAdmin = true
+	admin.TeamId = 0
+
+	return &admin, nil
+}
+
+func (u *UserRepo) Create(ctx context.Context, user *repo.UserDTO) error {
+	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
+
+	ib.InsertInto("hackmate.user").
+		Cols("id", "first_name", "last_name", "bio", "username", "chat_id").
+		Values(user.ID, user.FirstName, user.LastName, user.Bio, user.UserName, user.ChatId)
+
+	sql, args := ib.Build()
+
+	_, err := u.pool.Exec(ctx, sql, args...)
+	if err != nil {
+		errStr := err.Error()
+		if strings.Contains(errStr, "duplicate key") ||
+			strings.Contains(errStr, "23505") {
+			return repo.ErrUserAlreadyExists
+		}
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return nil
+}
+
+func NewUserRepo(pool *pgxpool.Pool) *UserRepo {
+	return &UserRepo{
+		pool: pool,
+	}
+}
+
+func (u *UserRepo) Read(ctx context.Context, id int64) (*repo.UserDTO, error) {
+	//TODO implement me
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	sb.Select("first_name", "last_name", "bio", "username").
+		From("hackmate.user").
+		Where(sb.Equal("id", id))
+
+	sql, args := sb.Build()
+
+	fmt.Println(sql)
+	fmt.Println(args...)
+
+	var (
+		firstName string
+		lastName  string
+		bio       string
+		username  string
+	)
+
+	err := u.pool.
+		QueryRow(ctx, sql, args...).
+		Scan(
+			&firstName,
+			&lastName,
+			&bio,
+			&username,
+		)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repo.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to read user %w", err)
+	}
+
+	return &repo.UserDTO{
+		ID:        id,
+		FirstName: firstName,
+		LastName:  lastName,
+		Bio:       bio,
+		UserName:  username,
+	}, nil
+}
+
+func (u *UserRepo) ReadByTeam(ctx context.Context, teamId int64) ([]*repo.UserDTO, error) {
+	sb := sqlbuilder.NewSelectBuilder()
+
+	sb.Select(
+		"u.id",
+		"u.first_name",
+		"u.last_name",
+		"u.photo_url",
+		"u.bio",
+		"f.experience",
+		"f.additional_info",
+		"COALESCE(array_agg(DISTINCT r.name) FILTER (WHERE r.name IS NOT NULL), '{}') as roles",
+	).
+		From("hackmate.team_form as tf").
+		Join("hackmate.form as f", "tf.form_id = f.id").
+		Join("hackmate.user as u", "f.user_id = u.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.form_role as fr", "f.id = fr.form_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.role as r", "fr.role_id = r.id").
+		Where(sb.Equal("tf.team_id", teamId)).
+		GroupBy("u.id", "u.first_name", "u.last_name", "u.photo_url", "u.bio",
+			"f.experience", "f.additional_info")
+
+	sql, args := sb.Build()
+
+	rows, err := u.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query team members: %w", err)
+	}
+	defer rows.Close()
+
+	var users []*repo.UserDTO
+	for rows.Next() {
+		var user repo.UserDTO
+		var roles []string
+		var experience int
+		var additionalInfo string
+
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.LastName,
+			&user.PhotoURL,
+			&user.Bio,
+			&experience,
+			&additionalInfo,
+			&roles,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user: %w", err)
+		}
+
+		user.Skills = roles
+		user.TeamId = teamId // Устанавливаем ID команды
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating team members rows: %w", err)
+	}
+
+	return users, nil
+}
+
+func (u *UserRepo) ReadByHack(ctx context.Context, hackathonId int64) ([]*repo.UserDTO, error) {
+	sb := sqlbuilder.NewSelectBuilder()
+
+	sb.Select(
+		"u.id",
+		"u.first_name",
+		"u.last_name",
+		"u.photo",
+		"u.bio",
+		"COALESCE(array_agg(DISTINCT r.name) FILTER (WHERE r.name IS NOT NULL), '{}') as roles",
+		"COALESCE(tf.team_id, 0) as team_id",
+		"f.experience",
+		"f.additional_info",
+	).
+		From("hackmate.form as f").
+		Join("hackmate.user as u", "f.user_id = u.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.form_role as fr", "f.id = fr.form_id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.role as r", "fr.role_id = r.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "hackmate.team_form as tf", "f.id = tf.form_id").
+		Where(sb.Equal("f.hack_id", hackathonId)).
+		GroupBy("u.id", "u.first_name", "u.last_name", "u.photo_url", "u.bio",
+			"tf.team_id", "f.experience", "f.additional_info") // Сначала без команды
+
+	sql, args := sb.Build()
+
+	rows, err := u.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query hackathon participants: %w", err)
+	}
+	defer rows.Close()
+
+	var users []*repo.UserDTO
+	for rows.Next() {
+		var user repo.UserDTO
+		var roles []string
+		var experience int
+		var additionalInfo string
+		var teamID int64 // Используем NullInt64 для nullable поля
+
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.LastName,
+			&user.PhotoURL,
+			&user.Bio,
+			&roles,
+			&teamID,
+			&experience,
+			&additionalInfo,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user: %w", err)
+		}
+
+		user.Skills = roles
+		user.TeamId = teamID
+
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating participants rows: %w", err)
+	}
+
+	return users, nil
+}
+
+func (u *UserRepo) Update(ctx context.Context, user *repo.UserChange) error {
+	sb := sqlbuilder.PostgreSQL.NewUpdateBuilder()
+
+	query, args := sb.Update("hackmate.user").
+		Set(
+			sb.Assign("first_name", user.FirstName),
+			sb.Assign("last_name", user.LastName),
+			sb.Assign("bio", user.Bio),
+			sb.Assign("username", user.Username),
+		).
+		Where(sb.Equal("id", user.Id)).
+		Build()
+
+	result, err := u.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return repo.ErrUserNotFound
+	}
+
+	return nil
+}
+
+func (u *UserRepo) Delete(ctx context.Context, id int64) error {
+	//TODO implement me
+	panic("implement me")
+}

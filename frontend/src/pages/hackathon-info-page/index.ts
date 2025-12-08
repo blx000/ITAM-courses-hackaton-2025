@@ -1,0 +1,1 @@
+export {HackathonInfoPage} from './ui/hackathon-info'

@@ -1,0 +1,75 @@
+package repo
+
+import (
+	"context"
+	"errors"
+	"time"
+)
+
+// список хакатонов
+// список участников хака
+// список команд хака
+
+type Hackathon interface {
+	List(ctx context.Context) ([]*HackathonGeneralDTO, error)
+	Read(ctx context.Context, id int) (*HackathonGeneralDTO, error)
+	AddParticipant(ctx context.Context, hackId int, create FormCreate) error
+	GetParticipant(ctx context.Context, hackId int, userId int64) (*Participant, error)
+	ListParticipants(ctx context.Context, hackId int) ([]*Participant, error)
+	ListTeams(ctx context.Context, hackId int) ([]*TeamShort, error)
+	CreateTeam(ctx context.Context, participantId int, hackId int, name string) (int, error)
+	GetTeamProfile(ctx context.Context, teamId int) (*TeamShort, error)
+	GetParticipantProfile(ctx context.Context, participantId int) (*Participant, error)
+	UpdateParticipant(ctx context.Context, participantId int, hackId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
+	CreateHack(ctx context.Context, dto *HackathonGeneralDTO) (int, error)
+	UpdateHack(ctx context.Context, hackId int, dto *HackathonGeneralDTO) error
+	DeleteHack(ctx context.Context, hackId int) error
+	GetParticipantGeneral(ctx context.Context, participantId int) (*Participant, error)
+
+	GetUsersHacks(ctx context.Context, userId int64) ([]*HackathonGeneralDTO, error)
+	GetUsersTeams(ctx context.Context, userId int64) ([]*TeamShort, error)
+
+	CreateInvite(ctx context.Context, teamId int, recId int) error
+	GetInvite(ctx context.Context, inviteId int) (*Invitation, error)
+	AcceptInvite(ctx context.Context, inviteId int, teamId int, participantId int) error
+
+	CreateRequest(ctx context.Context, teamId int, senderId int) error
+	GetRequest(ctx context.Context, requestId int) (*JoinRequest, error)
+	AcceptRequest(ctx context.Context, requestId int, teamId int, participantId int) error
+
+	GetTeamRoles(ctx context.Context, teamId int) ([]*Role, error)
+	UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error
+	GetTeamRequests(ctx context.Context, teamId int) ([]*JoinRequest, error)
+	GetUsersInvites(ctx context.Context, userId int64) ([]*Invitation, error)
+	GetTeamInvites(ctx context.Context, teamId int) ([]*Invitation, error)
+}
+
+var (
+	ErrHackathonNotFound   = errors.New("Hackathon Not Found")
+	ErrParticipantNotFound = errors.New("Participant Not Found")
+)
+
+type HackathonDTO struct {
+	Id          int
+	AdminId     int64
+	Name        string
+	Desc        string
+	StartDate   time.Time
+	EndDate     time.Time
+	MaxTeams    int
+	MaxTeamSize int
+	Teams       []*Team
+	Users       []*User
+}
+
+type HackathonGeneralDTO struct {
+	Id          int
+	AdminId     int64
+	Name        string
+	Desc        string
+	Prize       int
+	StartDate   time.Time
+	EndDate     time.Time
+	MaxTeams    int
+	MaxTeamSize int
+}

@@ -1,0 +1,285 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 16px 24px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.backButton {
+  background: transparent;
+  border: none;
+  color: #f9ffee;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  font-family: "Roboto Flex", sans-serif;
+  padding: 8px 0;
+}
+
+.backButton:hover {
+  opacity: 0.8;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #f9ffee;
+}
+
+.error {
+  color: #fc8181;
+}
+
+.info {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.photo {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.textBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.surname {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #f9ffee;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 0.8);
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.role {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.experience {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.addBox {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  min-height: 176px;
+  width: 100%;
+}
+
+.addBox h2 {
+  margin-bottom: 12px;
+  color: #f9ffee;
+  font-size: 16px;
+}
+
+.text {
+  color: #f9ffee;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.skillsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 10px 12px;
+  border: 2px solid #f9ffee;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+  background: transparent;
+}
+
+.teamBadgeContainer,
+.freeBadgeContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.teamBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
+}
+
+.freeBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 255, 238, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
+}
+
+.errorMessage {
+  background-color: rgba(254, 215, 215, 0.2);
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(252, 129, 129, 0.3);
+}
+
+.inviteButton {
+  width: 100%;
+  padding: 10px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.inviteButton:hover:not(:disabled) {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.inviteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.invitationSent {
+  width: 100%;
+  padding: 10px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+
+
+

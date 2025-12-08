@@ -1,0 +1,403 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 18, 4, 0.3);
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 16px 24px;
+  padding-bottom: 100px;
+  max-width: 1200px;
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #f9ffee;
+}
+
+.error {
+  color: #fc8181;
+}
+
+.searchContainer {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.navigation {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.navButton {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 0.8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.navButton.active {
+  background: #aceb4c;
+  color: #111204;
+  border-color: #aceb4c;
+}
+.teamBtn {
+  border-radius: 24px;
+  padding: 10px;
+}
+.listContainer {
+  margin-top: 0;
+  width: 100%;
+}
+
+.participantsGrid,
+.teamsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+}
+
+.participantCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.currentUserCard {
+  background: rgba(192, 254, 98, 0.17);
+  border: 1px solid rgba(192, 254, 98, 0.5);
+}
+
+.teamCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.teamContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.teamIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.teamIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.currentUserTeamCard {
+  background: rgba(192, 254, 98, 0.17);
+  border: 1px solid rgba(192, 254, 98, 0.5);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.participantCard:hover,
+.teamCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(172, 235, 76, 0.2);
+}
+
+.participantContent {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.participantIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.participantIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.participantInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.participantHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  gap: 12px;
+}
+
+.participantHeader h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.teamBadge {
+  padding: 6px 12px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.freeBadge {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 255, 238, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.role {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 0.9);
+}
+
+.skills {
+  font-size: 14px;
+  color: rgba(249, 255, 238, 1);
+}
+
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+  transition: all 0.2s;
+}
+
+.teamName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.teamMembers {
+  font-size: 14px;
+  color: #f9ffee;
+}
+
+.teamMembers strong {
+  font-weight: 600;
+}
+
+.membersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.memberTag {
+  padding: 4px 10px;
+  background: rgba(172, 235, 76, 0.2);
+  color: #aceb4c;
+  border: 1px solid #aceb4c;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.neededRoles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.neededRoles strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 0.8);
+}
+
+.neededRolesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.neededRoleTag {
+  padding: 4px 10px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.createTeamButton {
+  width: 100%;
+  padding: 12px 24px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 20px;
+}
+
+.createTeamButton:hover {
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: 24px 48px;
+    max-width: 768px;
+  }
+
+  .participantsGrid,
+  .teamsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 32px 64px;
+    max-width: 1024px;
+  }
+
+  .participantsGrid,
+  .teamsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .content {
+    padding: 40px 80px;
+    max-width: 1440px;
+  }
+
+  .participantsGrid,
+  .teamsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

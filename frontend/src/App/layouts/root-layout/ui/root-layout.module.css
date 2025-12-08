@@ -1,0 +1,34 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .main {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .main {
+    max-width: 1440px;
+  }
+}

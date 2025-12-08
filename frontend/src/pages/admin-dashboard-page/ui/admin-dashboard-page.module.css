@@ -1,0 +1,337 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+.headerWithIcon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #f9ffee;
+  font-size: 18px;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  grid-template-areas: "add-button stats stats stats";
+  align-items: flex-end;
+}
+
+.stats {
+  grid-area: stats;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.addButton {
+  grid-area: add-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(249, 255, 238, 1);
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: fit-content;
+}
+
+.addButton:hover {
+  transform: translateY(-2px);
+}
+
+.addButton img {
+  width: 20px;
+  height: 20px;
+}
+
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.statLabel {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #f9ffee;
+  font-size: 18px;
+}
+
+.hackathonsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hackathonCard {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-areas: "info participants teams prize";
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hackathonContent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.hackathonIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hackathonIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hackathonInfo {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+}
+
+.hackathonTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonDescription {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hackathonPrize {
+  color: rgba(249, 255, 238, 1);
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hackathonIcon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hackathonIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hackathonDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hackathonTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+}
+
+.hackathonDate {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.7);
+  margin: 0;
+}
+
+.prizeBadge {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.hackathonStats {
+  display: contents;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.statItem:nth-child(1) {
+  grid-area: participants;
+}
+
+.statItem:nth-child(2) {
+  grid-area: teams;
+}
+
+.statItem:nth-child(3) {
+  grid-area: prize;
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .gridContainer {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "add-button"
+      "stats"
+      "hackathon-1"
+      "hackathon-2"
+      "hackathon-3";
+  }
+
+  .hackathonCard {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "info"
+      "participants"
+      "teams"
+      "prize";
+  }
+
+  .stats {
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 768px) {
+  .hackathonIcon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .hackathonTitle {
+    font-size: 16px;
+  }
+
+  .hackathonDate {
+    font-size: 16px;
+  }
+
+  .statValue {
+    font-size: 16px;
+  }
+
+  .prizeBadge {
+    font-size: 16px;
+  }
+
+  .headerWithIcon {
+    font-size: 16px;
+  }
+
+  .headerIcon {
+    width: 24px;
+    height: 24px;
+  }
+}

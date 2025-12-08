@@ -1,0 +1,1054 @@
+openapi: 3.0.1
+info:
+  title: Hackmate API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8090
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT токен в формате: Bearer {token}"
+      
+  schemas:
+    Health:
+      type: object
+      required:
+        - resp
+      properties:
+        resp:
+          type: string
+
+    HackCreate:
+      type: object
+      required:
+        - name
+        - description
+        - prize
+        - start_date
+        - end_date
+        - max_team_size
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        prize:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        max_team_size:
+          type: integer
+
+    UserLogin:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+
+    AdminLogin:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+
+    Request:
+      type: object
+      required:
+        - id
+        - team_id
+        - first_name
+        - last_name
+        - participant_id
+      properties:
+        id:
+          type: integer
+        team_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        participant_id:
+          type: integer
+
+    Invite:
+      type: object
+      required:
+        - id
+        - team_id
+        - participant_id
+        - hack_id
+        - hack_name
+        - team_name
+      properties:
+        id:
+          type: integer
+        team_id:
+          type: integer
+        participant_id:
+          type: integer
+        hack_id:
+          type: integer
+        hack_name:
+          type: string
+        team_name:
+          type: string
+
+
+
+    HackathonPage:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - max_team_size
+        - prize
+        - start_date
+        - end_date
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        max_team_size:
+          type: integer
+        prize:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+
+    Participant:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - role
+        - team_id
+        - skills
+        - add_info
+        - experience
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+        team_id:
+          type: integer
+        add_info:
+          type: string
+        experience:
+          type: integer
+          description: Количество хакатонов
+
+    HackathonShort:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - start_date
+        - end_date
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        prize:
+          type: integer
+
+    User:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - bio
+        - login
+        - is_admin
+        - username
+      properties:
+        id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name:
+          type: string
+        bio:
+          type: string
+        is_admin:
+          type: boolean
+        login:
+          type: string
+        username:
+          type: string
+
+    Team:
+      type: object
+      required:
+        - id
+        - name
+        - members
+        - captain_id
+        - max_size
+        - cur_size
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        captain_id:
+          type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+        max_size:
+          type: integer
+        cur_size:
+          type: integer
+        needed_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+
+    TeamShort:
+      type: object
+      required:
+        - id
+        - name
+        - hack_id
+        - hack_name
+        - max_size
+        - cur_size
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        hack_id:
+          type: integer
+        hack_name:
+          type: string
+        max_size:
+          type: integer
+        cur_size:
+          type: integer
+
+    FormCreate:
+      type: object
+      required:
+        - role
+        - skills
+        - additional_info
+        - experience
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+        additional_info:
+          type: string
+        experience:
+          type: integer
+          description: Количество хакатонов
+
+    ParticipantUpdate:
+      type: object
+      properties:
+        role_id:
+          type: integer
+        skill_ids:
+          type: array
+          items:
+            type: integer
+        experience:
+          type: integer
+        additional_info:
+          type: string
+
+    TeamCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        role_ids:
+          type: array
+          items:
+            type: integer
+
+    TeamRolesUpdate:
+      type: object
+      required:
+        - role_ids
+      properties:
+        role_ids:
+          type: array
+          items:
+            type: integer
+
+    Role:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Skill:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Token:
+      type: object
+      required:
+        - access_token
+        - refresh_token
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+
+    UserPatch:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - bio
+        - username
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        bio:
+          type: string
+        username:
+          type: string
+
+    UserChangeToken:
+      type: object
+      required:
+        - access_token
+      properties:
+        access_token:
+          type: string
+
+
+paths:
+
+  /api/healthcheсk:
+    get:
+      summary: check if service if healthy
+      responses:
+        '200':
+          description: Successful resp
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+
+  /api/roles:
+    get:
+      summary: Get all roles
+      responses:
+        '200':
+          description: Successful resp
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+
+  /api/skills:
+    get:
+      summary: Get all skills
+      responses:
+        '200':
+          description: Successful resp
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+
+  /api/user:
+    get:
+      summary: Get user info
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+    patch:
+      summary: Patch user info
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
+      responses:
+        '200':
+          description: Successful patch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChangeToken'
+        '401':
+          description: "Unauthorized"
+
+
+  /api/user/invites:
+    get:
+      summary: Get all invites of a user
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invite'
+        '401':
+          description: Unauthorized
+
+  /api/login:
+    post:
+      summary: login user with a code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Successful auth
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Auth failed
+
+  /api/admin/login:
+    post:
+      summary: login user with a login/password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+      responses:
+        '200':
+          description: Successful auth
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Auth failed
+
+  /api/admin/hacks:
+    post:
+      summary: Create hack
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+      responses:
+        '200':
+          description: Successful create
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackathonShort'
+        '403':
+          description: Permission denied
+
+  /api/admin/hacks/{hack_id}:
+    patch:
+      summary: Update hack
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackathonShort'
+        '403':
+          description: Permission denied
+        '404':
+          description: Hack not found
+    delete:
+      summary: Delete hack
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful deletion
+        '403':
+          description: Permission denied
+        '404':
+          description: Hack not found
+
+  /api/users/{user_id}:
+    get:
+      summary: Get user information
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+  /api/users/{user_id}/teams:
+    get:
+      summary: Get user teams
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamShort'
+        '404':
+          description: User not found
+
+  /api/hacks:
+    get:
+      summary: Get hackathon list
+#      security:
+#        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HackathonShort'
+        '404':
+          description: Hack's teams not found
+
+  /api/hacks/{hack_id}:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackathonPage'
+        '404':
+          description: Hack's info not found
+
+  /api/hacks/{hack_id}/enter:
+    post:
+      summary: Enter hack
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormCreate'
+      responses:
+        '201':
+          description: Successful create
+        '400':
+          description: Invalid input
+        '409':
+          description: User already joined hackathon
+
+  /api/hacks/my:
+    get:
+      summary: Get users hackathons
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HackathonShort'
+        '401':
+          description: Unauthorized
+
+  /api/hacks/{hack_id}/teams:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '404':
+          description: Hack id not found
+    post:
+      summary: Create team
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamCreate'
+      responses:
+        '201':
+          description: Successful create
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '400':
+          description: Invalid input
+
+  /api/hacks/{hack_id}/teams/{team_id}/requests:
+    get:
+      summary: Get teams requests
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/hacks/{hack_id}/teams/{team_id}:
+    get:
+      summary: Get team info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Team id not found
+    patch:
+      summary: Update team roles
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRolesUpdate'
+      responses:
+        '200':
+          description: Successful update
+        '401':
+          description: Unauthorized
+        '403':
+          description: Permission denied
+        '404':
+          description: Team not found
+
+  /api/hacks/{hack_id}/participants:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+        '404':
+          description: Hack id not found
+
+  /api/hacks/{hack_id}/participants/{participant_id}:
+    get:
+      summary: Get hackathon info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+        '404':
+          description: Hack id not found
+    patch:
+      summary: Update participant info
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantUpdate'
+      responses:
+        '200':
+          description: Successful update
+        '401':
+          description: Unauthorized
+        '404':
+          description: Participant not found
+
+  /api/hacks/{hack_id}/teams/{team_id}/request:
+    post:
+      summary: Попроситься в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Successful request
+        '403':
+          description: Permission denied
+
+  /api/hacks/{hack_id}/requests:
+    get:
+      summary: Все запросы в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+
+  /api/hacks/{hack_id}/requests/{request_id}/accept:
+    post:
+      summary: Принять в команду участника
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+        '403':
+          description: Permission denied
+
+  /api/hacks/{hack_id}/participants/{participants_id}/invite:
+    post:
+      summary: Приласить в команду участника
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: participants_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Successful invite
+        '403':
+          description: Permission denied
+
+  /api/hacks/{hack_id}/invitations:
+    get:
+      summary: Все приглашения в команду
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invite'
+
+  /api/hacks/{hack_id}/invitations/{invite_id}/accept:
+    get:
+      summary: Принять приглашение
+      parameters:
+        - name: hack_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: invite_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+          '201':
+            description: Successful invite
+          '403':
+            description: Permission denied
+

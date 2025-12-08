@@ -1,0 +1,1 @@
+export {ParticipantsPage} from './ui/participants-page'

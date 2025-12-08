@@ -1,0 +1,612 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #111204;
+  padding: 16px 24px;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adminText {
+  font-size: 32px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+  margin: 0 auto;
+  max-width: 874px;
+}
+
+.adminText span {
+  color: rgba(172, 235, 76, 1);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 24px 24px 24px;
+  max-width: 874px;
+  margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 36px;
+  justify-content: center;
+}
+
+.tab {
+  max-width: 360px;
+  width: 100%;
+  padding: 12px 24px;
+  background: transparent;
+  color: #f9ffee;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Roboto Flex", sans-serif;
+  white-space: nowrap;
+}
+
+.tab:hover:not(.tabActive) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.tabActive {
+  background: #aceb4c;
+  color: #111204;
+  border-color: #aceb4c;
+}
+
+.tabActive:hover {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.tabContent {
+  min-height: 400px;
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #f9ffee;
+}
+
+.error {
+  color: #fc8181;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mainBlock {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+}
+
+.infoFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.infoField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.infoLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.infoValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+}
+
+.additionalBlock {
+  margin-top: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9ffee;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.9);
+  line-height: 1.6;
+  min-height: 100px;
+}
+
+.editButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.editButton {
+  max-width: 360px;
+  width: 100%;
+  padding: 12px 24px;
+  background: #aceb4c;
+  color: #111204;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editButton:hover {
+  background: #9dd83a;
+  transform: translateY(-2px);
+}
+
+.participantsSection,
+.teamsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgba(249, 255, 238, 1);
+  font-size: 16px;
+  font-family: "Roboto Flex", sans-serif;
+  padding-right: 40px;
+}
+
+.searchInput::placeholder {
+  color: rgba(249, 255, 238, 0.5);
+}
+
+.sortButton {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  min-width: 27px;
+  height: 24px;
+  z-index: 2;
+}
+
+.sortButton:hover {
+  opacity: 0.7;
+}
+
+.sortButton img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.roleCount {
+  background: #aceb4c;
+  color: #111204;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 16px;
+  text-align: center;
+}
+
+.roleDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: rgba(17, 18, 4, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 0;
+  min-width: 220px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.roleDropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(249, 255, 238, 1);
+}
+
+.clearAllButton {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: rgba(249, 255, 238, 0.8);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clearAllButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.roleOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: rgba(249, 255, 238, 1);
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.roleOption:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.roleOption.selected {
+  background-color: rgba(172, 235, 76, 0.2);
+  color: #aceb4c;
+}
+
+.roleCheckbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #aceb4c;
+}
+
+.participantsList,
+.teamsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.participantCard,
+.teamCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.participantContent,
+.teamContent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.participantIcon,
+.teamIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.participantIcon img,
+.teamIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.participantInfo,
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.participantName,
+.teamName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.participantRole {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.participantSkills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 4px 8px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.teamBadge,
+.freeBadge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.teamBadge {
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.5);
+}
+
+.freeBadge {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 255, 238, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.teamStats {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.neededRoles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.neededRoles strong {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.6);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.neededRolesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roleTag {
+  padding: 4px 8px;
+  background: rgba(172, 235, 76, 0.15);
+  color: #aceb4c;
+  border: 1px solid rgba(172, 235, 76, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.analyticsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.analyticsCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.analyticsValue {
+  font-size: 36px;
+  font-weight: 600;
+  color: #aceb4c;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.analyticsLabel {
+  font-size: 16px;
+  color: rgba(249, 255, 238, 0.8);
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.roleStatsCard {
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.roleStatsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9ffee;
+  margin: 0 0 16px 0;
+  font-family: "Roboto Flex", sans-serif;
+}
+
+.roleStatsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roleStatItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.roleStatName {
+  font-size: 16px;
+  color: #f9ffee;
+}
+
+.roleStatCount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #aceb4c;
+}
+
+@media (max-width: 768px) {
+  .mainBlock {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .iconContainer {
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .hackathonIcon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .infoRow {
+    grid-template-columns: 1fr;
+  }
+
+  .participantsList,
+  .teamsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .participantsList,
+  .teamsList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

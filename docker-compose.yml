@@ -1,0 +1,53 @@
+﻿services:
+  backend:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: backend
+    ports:
+      - "8090:8090"
+    environment:
+      - CONFIG_PATH=./config/local.yaml
+    volumes:
+      - ./backend/config:/app/config:ro
+    networks:
+      - hackmate-network
+
+  postgres:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=hackmate
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d hackmate"]
+      interval: 3s
+      timeout: 2s
+      retries: 2
+    networks:
+      - hackmate-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - hackmate-network
+
+volumes:
+  postgres:
+
+networks:
+  hackmate-network:
+    driver: bridge

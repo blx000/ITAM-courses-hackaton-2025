@@ -1,9 +1,13 @@
 import styles from "./navigation.module.css";
 import { NavLink } from "react-router";
+import homeIcon from "/home-icon.svg";
+import homeIconBlack from "/home-icon-black.svg";
+import calendarIcon from "/calendar-icon.svg";
+import calendarIconBlack from "/calendar-icon-black.svg";
 
 const navItems = [
-  { to: "/", label: "Главная", end: true },
-  { to: "/calendar", label: "Календарь" },
+  { to: "/", icon: homeIcon, iconActive: homeIconBlack, end: true },
+  { to: "/calendar", icon: calendarIcon, iconActive: calendarIconBlack },
 ];
 export function Navigation() {
   const getLinkClassName = ({ isActive }: { isActive: boolean }) => {
@@ -12,14 +16,21 @@ export function Navigation() {
   return (
     <nav className={styles.menu}>
       {navItems.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          className={getLinkClassName}
-        >
-          {item.label}
-        </NavLink>
+        <div key={item.to} className={styles.item}>
+          <NavLink
+            to={item.to}
+            end={item.end}
+            className={getLinkClassName}
+          >
+            {({ isActive }) => (
+              <img 
+                src={isActive ? item.iconActive : item.icon} 
+                className={styles.icon} 
+                alt="icon" 
+              />
+            )}
+          </NavLink>
+        </div>
       ))}
     </nav>
   );

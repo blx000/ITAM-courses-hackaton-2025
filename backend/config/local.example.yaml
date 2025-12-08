@@ -1,0 +1,9 @@
+port:
+postgres:
+  dsn:
+  max_open_conns:
+  max_lifetime:
+  max_idle_time:
+tg:
+  token:
+  timeout: 

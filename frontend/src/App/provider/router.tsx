@@ -1,11 +1,40 @@
 import { createBrowserRouter } from "react-router";
 import { RootLayout } from "../layouts/root-layout";
+import { ProfileLayout } from "../layouts/profile-layout";
+import { FormLayout } from "../layouts/form-layout";
+import { HelpLayout } from "../layouts/help-layout";
+import { TeamLayout } from "../layouts/team-layout";
 import { NotFoundPage } from "../../pages/not-found-page";
 import { HomePage } from "../../pages/home-page";
 import { CalendarPage } from "../../pages/calendar-page";
 import { ProfilePage } from "../../pages/profile-page";
+import { FormPage } from "../../pages/form-page";
+import { HelpPage } from "../../pages/help-page";
+import { NotificationPage } from "../../pages/notification-page";
+import { HackathonInfoPage } from "../../pages/hackathon-info-page";
+import { SearchPage } from "../../pages/search-page";
+import { MyComandPage } from "../../pages/my-comands-page";
+import { LoginPage } from "../../pages/login-page";
+import { ParticipantsPage } from "../../pages/participants-page";
+import { ParticipantProfilePage } from "../../pages/participant-profile-page";
+import { TeamProfilePage } from "../../pages/team-profile-page";
+import { TeamsListPage } from "../../pages/teams-list-page";
+import { CreateTeamPage } from "../../pages/create-team-page";
+import { ProfileEditPage } from "../../pages/profile-edit-page";
+import { ProtectedRoute } from "../../shared/components/protected-route";
+import { AdminProtectedRoute } from "../../shared/components/admin-protected-route";
+import { AdminLoginPage } from "../../pages/admin-login-page";
+import { AdminDashboardPage } from "../../pages/admin-dashboard-page";
+import { AdminHackathonCreatePage } from "../../pages/admin-hackathon-create-page";
+import { AdminHackathonDetailPage } from "../../pages/admin-hackathon-detail-page";
+import { AdminHackathonEditPage } from "../../pages/admin-hackathon-edit-page";
+import { AdminLayout } from "../layouts/admin-layout";
 
 export const appRouter = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
   {
     path: "/",
     element: <RootLayout />,
@@ -13,19 +42,181 @@ export const appRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: "/profile",
-        element: <ProfilePage />,
+        path: "calendar",
+        element: (
+          <ProtectedRoute>
+            <CalendarPage />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: "/calendar",
-        element: <CalendarPage />,
+        path: "notifications",
+        element: (
+          <ProtectedRoute>
+            <NotificationPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id",
+        element: (
+          <ProtectedRoute>
+            <HackathonInfoPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "hackathons/:id/help",
+        element: (
+          <ProtectedRoute>
+            <HelpPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "*",
         element: <NotFoundPage />,
+      },
+    ],
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute>
+        <ProfileLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <ProfilePage />,
+      },
+      {
+        path: "edit",
+        element: <ProfileEditPage />,
+      },
+    ],
+  },
+  {
+    path: "/form",
+    element: (
+      <ProtectedRoute>
+        <FormLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <FormPage />,
+      },
+    ],
+  },
+  {
+    path: "/help",
+    element: <HelpLayout />,
+    children: [
+      {
+        index: true,
+        element: <HelpPage />,
+      },
+    ],
+  },
+  {
+    path: "/comands",
+    element: (
+      <ProtectedRoute>
+        <TeamLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <MyComandPage />,
+      },
+    ],
+  },
+  {
+    path: "/search",
+    element: (
+      <ProtectedRoute>
+        <SearchPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/participants",
+    element: (
+      <ProtectedRoute>
+        <ParticipantsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/participants/:participantId",
+    element: (
+      <ProtectedRoute>
+        <ParticipantProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/teams",
+    element: (
+      <ProtectedRoute>
+        <TeamsListPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/teams/create",
+    element: (
+      <ProtectedRoute>
+        <CreateTeamPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "hackathons/:id/teams/:teamId",
+    element: (
+      <ProtectedRoute>
+        <TeamProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/login",
+    element: <AdminLoginPage />,
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminProtectedRoute>
+        <AdminLayout />
+      </AdminProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "hackathons/create",
+        element: <AdminHackathonCreatePage />,
+      },
+      {
+        path: "hackathons/:id",
+        element: <AdminHackathonDetailPage />,
+      },
+      {
+        path: "hackathons/:id/edit",
+        element: <AdminHackathonEditPage />,
       },
     ],
   },
