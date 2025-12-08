@@ -69,6 +69,58 @@ func (h *HackRepo) GetUsersInvites(ctx context.Context, userId int64) ([]*repo.I
 	return invites, nil
 }
 
+func (h *HackRepo) GetTeamInvites(ctx context.Context, teamId int) ([]*repo.Invitation, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+
+	query, args := sb.Select(
+		"i.id",
+		"i.team_id",
+		"i.participant_id",
+		"t.hackathon_id as hack_id",
+		"t.name as team_name",
+		"h.name as hack_name",
+	).
+		From("hackmate.invite i").
+		Join("hackmate.team t", "i.team_id = t.id").
+		Join("hackmate.hackathon h", "t.hackathon_id = h.id").
+		Where(sb.Equal("i.team_id", teamId)).
+		OrderByDesc("i.id").
+		Build()
+
+	rows, err := h.pool.Query(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to query team invites: %w", err)
+	}
+	defer rows.Close()
+
+	var invites []*repo.Invitation
+
+	for rows.Next() {
+		var invite repo.Invitation
+
+		err := rows.Scan(
+			&invite.Id,
+			&invite.TeamId,
+			&invite.ParticipantId,
+			&invite.HackId,
+			&invite.TeamName,
+			&invite.HackName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan invite: %w", err)
+		}
+
+		invites = append(invites, &invite)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return invites, nil
+}
+
 func (h *HackRepo) GetTeamRequests(ctx context.Context, teamId int) ([]*repo.JoinRequest, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
 

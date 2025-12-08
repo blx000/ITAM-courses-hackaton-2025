@@ -98,8 +98,7 @@ export function ParticipantProfilePage() {
                 );
                 const hasInvite = invitations.some(
                   (inv) =>
-                    (inv.participant?.id === participantData.id ||
-                      inv.participant_id === participantData.id) &&
+                    inv.participant_id === participantData.id &&
                     inv.team_id === userParticipant.team_id
                 );
                 setHasInvitation(hasInvite);
@@ -135,6 +134,22 @@ export function ParticipantProfilePage() {
       await HackmateApi.inviteParticipant(hackathonId, partId);
       setToast({ message: "Приглашение успешно отправлено!", type: "success" });
       setHasInvitation(true);
+      
+      // Обновляем список приглашений после отправки
+      if (isCaptain && userTeamId) {
+        try {
+          const invitations = await HackmateApi.getInvitations(hackathonId);
+          const hasInvite = invitations.some(
+            (inv) =>
+              inv.participant_id === partId &&
+              inv.team_id === userTeamId
+          );
+          setHasInvitation(hasInvite);
+        } catch (err) {
+          console.error("Ошибка обновления приглашений:", err);
+        }
+      }
+      
       loadParticipant();
     } catch (err: any) {
       console.error("Ошибка отправки приглашения:", err);

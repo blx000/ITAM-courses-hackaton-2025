@@ -561,8 +561,59 @@ func (s Server) PostApiHacksHackIdEnter(ctx context.Context, request gen.PostApi
 }
 
 func (s Server) GetApiHacksHackIdInvitations(ctx context.Context, request gen.GetApiHacksHackIdInvitationsRequestObject) (gen.GetApiHacksHackIdInvitationsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	bearer, ok := ctx.Value(AuthorizationHeader).(string)
+	if !ok {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("unauthorized")
+	}
+
+	token := strings.Split(bearer, " ")[1]
+	if token == "" {
+		fmt.Println("Empty token")
+		return nil, fmt.Errorf("unauthorized")
+	}
+
+	user, err := jwt.ValidateToken(token, s.hmacSecret)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("unauthorized")
+	}
+
+	// Получаем участника пользователя по userId
+	participant, err := s.service.GetParticipant(ctx, request.HackId, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to get participant: %w", err)
+	}
+
+	// Проверяем, что пользователь состоит в команде
+	if participant.TeamId == service.TeamNull {
+		return gen.GetApiHacksHackIdInvitations200JSONResponse([]gen.Invite{}), nil
+	}
+
+	// Получаем приглашения, отправленные командой
+	invites, err := s.service.GetTeamInvites(ctx, request.HackId, participant.TeamId, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		if errors.Is(err, service.ErrUserWithoutTeam) {
+			return gen.GetApiHacksHackIdInvitations200JSONResponse([]gen.Invite{}), nil
+		}
+		return nil, fmt.Errorf("get team invites: %w", err)
+	}
+
+	response := make([]gen.Invite, len(invites))
+	for i, invite := range invites {
+		response[i] = gen.Invite{
+			Id:            invite.Id,
+			ParticipantId: invite.ParticipantId,
+			HackId:        invite.HackId,
+			HackName:      invite.HackName,
+			TeamId:        invite.TeamId,
+			TeamName:      invite.TeamName,
+		}
+	}
+
+	return gen.GetApiHacksHackIdInvitations200JSONResponse(response), nil
 }
 
 func (s Server) GetApiHacksHackIdInvitationsInviteIdAccept(ctx context.Context, request gen.GetApiHacksHackIdInvitationsInviteIdAcceptRequestObject) (gen.GetApiHacksHackIdInvitationsInviteIdAcceptResponseObject, error) {

@@ -41,6 +41,7 @@ type Service interface {
 	ListHackTeams(ctx context.Context, hackId int) ([]*repo.TeamShort, error)
 	GetTeam(ctx context.Context, hackId int, teamId int) (*repo.TeamShort, error)
 	CreateTeam(ctx context.Context, userId int64, hackId int, name string, roleIds []int) error
+	GetParticipant(ctx context.Context, hackId int, userId int64) (*repo.Participant, error)
 	GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error)
 	UpdateParticipant(ctx context.Context, hackId int, participantId int, roleId *int, skillIds []int, experience *int, additionalInfo *string) error
 
@@ -58,6 +59,7 @@ type Service interface {
 	UpdateTeamRoles(ctx context.Context, teamId int, roleIds []int) error
 	GetTeamsRequests(ctx context.Context, hackId int, teamId int, userId int64) ([]*repo.JoinRequest, error)
 	GetUsersInvites(ctx context.Context, userId int64) ([]*repo.Invitation, error)
+	GetTeamInvites(ctx context.Context, hackId int, teamId int, userId int64) ([]*repo.Invitation, error)
 }
 
 var _ Service = (*ServiceImpl)(nil)
@@ -72,6 +74,19 @@ type ServiceImpl struct {
 
 func (s *ServiceImpl) GetUsersInvites(ctx context.Context, userId int64) ([]*repo.Invitation, error) {
 	return s.hackRepo.GetUsersInvites(ctx, userId)
+}
+
+func (s *ServiceImpl) GetTeamInvites(ctx context.Context, hackId int, teamId int, userId int64) ([]*repo.Invitation, error) {
+	participant, err := s.hackRepo.GetParticipant(ctx, hackId, userId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	if participant.TeamId != teamId {
+		return nil, ErrUserWithoutTeam
+	}
+
+	return s.hackRepo.GetTeamInvites(ctx, teamId)
 }
 
 func (s *ServiceImpl) GetTeamsRequests(ctx context.Context, hackId int, teamId int, userId int64) ([]*repo.JoinRequest, error) {
@@ -185,6 +200,25 @@ func (s *ServiceImpl) CreateJoinRequest(ctx context.Context, hackId int, teamId 
 		return fmt.Errorf("failed to create request")
 	}
 
+	// Отправляем уведомление капитану команды
+	team, err := s.hackRepo.GetTeamProfile(ctx, teamId)
+	if err != nil {
+		fmt.Println(err)
+		// Не критично, продолжаем без уведомления
+	} else {
+		hack, err := s.hackRepo.Read(ctx, hackId)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			message := fmt.Sprintf("Новая заявка на вступление в команду %s на хакатоне %s от %s %s", 
+				team.Name, hack.Name, participant.FirstName, participant.LastName)
+			err = s.notRepo.Create(ctx, message, team.CaptainId)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -211,6 +245,26 @@ func (s *ServiceImpl) AcceptInvite(ctx context.Context, hackId int, inviteId int
 		fmt.Println(err)
 		return err
 	}
+
+	// Отправляем уведомление капитану команды о принятии приглашения
+	team, err := s.hackRepo.GetTeamProfile(ctx, invite.TeamId)
+	if err != nil {
+		fmt.Println(err)
+		// Не критично, продолжаем без уведомления
+	} else {
+		hack, err := s.hackRepo.Read(ctx, hackId)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			message := fmt.Sprintf("%s %s принял(а) ваше приглашение в команду %s на хакатоне %s", 
+				participant.FirstName, participant.LastName, team.Name, hack.Name)
+			err = s.notRepo.Create(ctx, message, team.CaptainId)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -241,6 +295,25 @@ func (s *ServiceImpl) AcceptJoinRequest(ctx context.Context, hackId int, request
 		return fmt.Errorf("failed to accept join request %w", err)
 	}
 
+	// Отправляем уведомление участнику, чья заявка была принята
+	team, err := s.hackRepo.GetTeamProfile(ctx, joinReq.TeamId)
+	if err != nil {
+		fmt.Println(err)
+		// Не критично, продолжаем без уведомления
+	} else {
+		hack, err := s.hackRepo.Read(ctx, hackId)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			message := fmt.Sprintf("Ваша заявка на вступление в команду %s на хакатоне %s была принята!", 
+				team.Name, hack.Name)
+			err = s.notRepo.Create(ctx, message, joinReq.ParticipantId)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -269,6 +342,10 @@ func (s *ServiceImpl) UpdateHack(ctx context.Context, hackId int, hack *repo.Hac
 
 func (s *ServiceImpl) DeleteHack(ctx context.Context, hackId int) error {
 	return s.hackRepo.DeleteHack(ctx, hackId)
+}
+
+func (s *ServiceImpl) GetParticipant(ctx context.Context, hackId int, userId int64) (*repo.Participant, error) {
+	return s.hackRepo.GetParticipant(ctx, hackId, userId)
 }
 
 func (s *ServiceImpl) GetParticipantProfile(ctx context.Context, hackId int, participantId int) (*repo.Participant, error) {
