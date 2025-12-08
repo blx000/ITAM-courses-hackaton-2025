@@ -8,82 +8,47 @@ HackMate — это web-платформа, которая помогает уч
 ## Функциональность проекта
 
 ### Для участников
-- Авторизация через Telegram-код
-- Выбор хакатона
-- Создание анкеты (роль, навыки, опыт)
-- Просмотр участников и команд
-- Фильтры по ролям и стеку
-- Отправка и приём приглашений
-- Создание команды
-- Управление составом команды
+- Авторизация через Telegram-код  
+- Выбор хакатона  
+- Создание анкеты (роль, навыки, опыт)  
+- Просмотр участников и команд  
+- Фильтры по ролям и стеку  
+- Отправка и приём приглашений  
+- Создание команды  
+- Управление составом команды  
 
 ### Для организаторов
-- Вход через email и пароль
-- Создание / редактирование хакатонов
-- Просмотр участников
-- Просмотр команд
-- Ручное распределение участников
-- Экспорт данных (.csv)
-- Базовая аналитика по ролям, навыкам и статусам
+- Вход через email и пароль  
+- Создание / редактирование хакатонов  
+- Просмотр участников  
+- Просмотр команд  
+- Базовая аналитика по ролям, навыкам и статусам  
 
 ---
 
 ## Технологический стек
 
 ### Frontend
-- React  
-- TypeScript  
-- Vite  
-- Zustand / Redux (если используется)  
-- Axios  
-
-### Admin-panel
-- React  
-- TypeScript  
-- Таблицы/формы для управления хакатоном  
+• React — UI-библиотека  
+• TypeScript — типизация  
+• React Router — маршрутизация  
+• Vite — сборщик и dev-сервер  
+• Axios — HTTP-запросы  
+• CSS Modules — модульные стили  
 
 ### Backend
-- Node.js  
-- NestJS / Express  
-- PostgreSQL  
-- Prisma / TypeORM  
-- JWT  
-- Telegram Auth  
+• Golang  
+• Chi — HTTP-роутер  
+• Chi CORS — middleware для CORS  
+• PostgreSQL — СУБД  
+• Goose — миграции БД  
+• OpenAPI — спецификация API  
 
-### Infrastructure
-- Docker / Docker Compose  
-- Makefile  
-- YAML-конфиги  
+### Аутентификация
+• JWT (JSON Web Tokens)  
 
----
-
-## Структура проекта
-
-```txt
-ITAM-courses-hackaton-2025/
-│
-├── backend/               # Backend API (Nest/Express)
-│   ├── src/
-│   ├── config/
-│   ├── Dockerfile
-│   └── ...
-│
-├── frontend/              # Web-клиент для участников
-│   ├── src/
-│   ├── public/
-│   ├── Dockerfile
-│   └── ...
-│
-├── admin/                 # Админ-панель
-│   ├── src/
-│   ├── public/
-│   ├── Dockerfile
-│   └── ...
-│
-├── docker-compose.yaml    # Оркестратор всех сервисов
-├── Makefile               # Упрощённые команды деплоя
-└── README.md
-````
+### Design
+• Figma  
 
 ---
 
@@ -94,7 +59,7 @@ ITAM-courses-hackaton-2025/
 ```bash
 git clone https://github.com/blx000/ITAM-courses-hackaton-2025.git
 cd ITAM-courses-hackaton-2025
-```
+````
 
 ### 2. Настройка конфигурации
 
@@ -127,6 +92,8 @@ make down
 ```bash
 make down-v
 ```
+
+---
 
 ### Вариант 2: запуск через Docker Compose напрямую
 
@@ -165,9 +132,8 @@ docker compose down -v
 
 ## Команда проекта
 
-Product Manager — Левченков Артемий / tg:@blx000  
-Frontend Developer — Мушкина Виктория / tg:@ViktoriaM06  
-Backend Developer — Аникин Семён / tg:@gachimansemen  
-UI/UX Designer — Хлыстова Анастасия / tg:@voshodn
-
+- Product Manager — Левченков Артемий / tg:@blx000
+- Frontend Developer — Мушкина Виктория / tg:@ViktoriaM06
+- Backend Developer — Аникин Семён / tg:@gachimansemen
+- UI/UX Designer — Хлыстова Анастасия / tg:@voshodn
 
