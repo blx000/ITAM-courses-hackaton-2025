@@ -42,7 +42,6 @@ export function ParticipantsPage() {
   }, [id]);
 
   useEffect(() => {
-    // Reset role filter when switching tabs
     setSelectedRoleIds([]);
   }, [activeTab]);
 
@@ -162,7 +161,6 @@ export function ParticipantsPage() {
     userParticipant && userParticipant.team_id && userParticipant.team_id > 0;
 
   const filteredParticipants = participants.filter((p) => {
-    // Filter by search query
     const matchesSearch = !searchQuery ||
       `${p.first_name} ${p.last_name}`
         .toLowerCase()
@@ -172,14 +170,12 @@ export function ParticipantsPage() {
         s.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
-    // Filter by selected roles (multiple selection)
     const matchesRole = selectedRoleIds.length === 0 || selectedRoleIds.includes(p.role.id);
 
     return matchesSearch && matchesRole;
   });
 
   const filteredTeams = teams.filter((t) => {
-    // Filter by search query
     const matchesSearch = !searchQuery ||
       t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.members.some((m) =>
@@ -188,7 +184,6 @@ export function ParticipantsPage() {
           .includes(searchQuery.toLowerCase())
       );
 
-    // Filter by selected roles (teams that need any of these roles)
     const matchesRole =
       selectedTeamRoleIds.length === 0 ||
       (t.needed_roles || []).some((role) => selectedTeamRoleIds.includes(role.id));

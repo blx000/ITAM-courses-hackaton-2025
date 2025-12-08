@@ -49,7 +49,6 @@ export function ParticipantSearch({
   const loadRoles = async () => {
     try {
       const rolesData = await HackmateApi.getRoles();
-      // Sort roles alphabetically by name
       const sortedRoles = [...rolesData].sort((a, b) =>
         a.name.localeCompare(b.name, "ru")
       );

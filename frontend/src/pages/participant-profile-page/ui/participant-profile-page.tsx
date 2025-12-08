@@ -135,7 +135,6 @@ export function ParticipantProfilePage() {
       setToast({ message: "Приглашение успешно отправлено!", type: "success" });
       setHasInvitation(true);
       
-      // Обновляем список приглашений после отправки
       if (isCaptain && userTeamId) {
         try {
           const invitations = await HackmateApi.getInvitations(hackathonId);

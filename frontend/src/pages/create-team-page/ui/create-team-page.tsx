@@ -60,7 +60,6 @@ export function CreateTeamPage() {
         role_ids: selectedRoles.map((r) => r.id),
       });
 
-      // После создания команды перенаправляем на страницу участников
       navigate(`/hackathons/${id}/participants`);
     } catch (err: any) {
       console.error("Ошибка создания команды:", err);

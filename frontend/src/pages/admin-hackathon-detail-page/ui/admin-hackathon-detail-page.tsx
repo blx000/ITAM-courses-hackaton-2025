@@ -43,7 +43,6 @@ export function AdminHackathonDetailPage() {
     }
     loadData();
     loadRoles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, location.search]);
 
   useEffect(() => {
@@ -74,7 +73,6 @@ export function AdminHackathonDetailPage() {
   const loadRoles = async () => {
     try {
       const rolesData = await HackmateApi.getRoles();
-      // Sort roles alphabetically by name
       const sortedRoles = [...rolesData].sort((a, b) =>
         a.name.localeCompare(b.name, "ru")
       );
@@ -110,7 +108,6 @@ export function AdminHackathonDetailPage() {
   };
 
   const filteredParticipants = participants.filter((participant) => {
-    // Filter by search query
     const matchesSearch =
       !participantSearchQuery.trim() ||
       (() => {
@@ -128,7 +125,6 @@ export function AdminHackathonDetailPage() {
         );
       })();
 
-    // Filter by selected roles (multiple selection)
     const matchesRole =
       selectedRoleIds.length === 0 || (participant.role && selectedRoleIds.includes(participant.role.id));
 
@@ -166,7 +162,6 @@ export function AdminHackathonDetailPage() {
   };
 
   const filteredTeams = teams.filter((team) => {
-    // Filter by search query
     const matchesSearch =
       !teamSearchQuery.trim() ||
       (() => {
@@ -178,7 +173,6 @@ export function AdminHackathonDetailPage() {
         return teamName.includes(searchLower) || rolesText.includes(searchLower);
       })();
 
-    // Filter by selected roles (teams that need any of these roles)
     const matchesRole =
       selectedTeamRoleIds.length === 0 ||
       (team.needed_roles || []).some((role) => selectedTeamRoleIds.includes(role.id));

@@ -54,7 +54,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  // If user is admin, redirect to admin panel
   if (isAdmin) {
     return <Navigate to="/admin" replace />;
   }

@@ -81,7 +81,6 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
       const dayDate = new Date(year, month, i);
       const isToday = isSameDay(dayDate, today);
 
-      // Проверяем, является ли дата началом хакатона (только начало, не весь диапазон)
       const hackathonsStartingOnDate = hackathons.filter((hack) => {
         const startDate = new Date(hack.start_date);
         return isSameDay(dayDate, startDate);

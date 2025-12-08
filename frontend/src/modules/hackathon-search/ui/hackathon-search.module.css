@@ -4,7 +4,6 @@
   height: 44px;
 }
 
-/* Адаптивные стили для использования на других страницах */
 .adaptive {
   width: 100% !important;
   height: auto !important;
