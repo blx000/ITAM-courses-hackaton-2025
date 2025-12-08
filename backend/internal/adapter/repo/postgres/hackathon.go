@@ -1336,6 +1336,7 @@ func (h *HackRepo) Read(ctx context.Context, hackId int) (*repo.HackathonGeneral
 		"end_date",
 		"max_teams",
 		"max_team_size",
+		"prize",
 	).
 		From("hackmate.hackathon").
 		Where(sb.Equal("id", hackId))
@@ -1353,6 +1354,7 @@ func (h *HackRepo) Read(ctx context.Context, hackId int) (*repo.HackathonGeneral
 		&hackathon.EndDate,
 		&hackathon.MaxTeams,
 		&hackathon.MaxTeamSize,
+		&hackathon.Prize,
 	)
 
 	if err != nil {
@@ -1377,6 +1379,7 @@ func (h *HackRepo) List(ctx context.Context) ([]*repo.HackathonGeneralDTO, error
 		"end_date",
 		"max_teams",
 		"max_team_size",
+		"prize",
 	).
 		From("hackmate.hackathon").
 		OrderByDesc("start_date")
@@ -1402,6 +1405,7 @@ func (h *HackRepo) List(ctx context.Context) ([]*repo.HackathonGeneralDTO, error
 			&hackathon.EndDate,
 			&hackathon.MaxTeams,
 			&hackathon.MaxTeamSize,
+			&hackathon.Prize,
 		)
 
 		if err != nil {

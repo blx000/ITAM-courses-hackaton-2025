@@ -220,13 +220,7 @@ export function ParticipantProfilePage() {
             {participant.experience !== undefined &&
               participant.experience !== null && (
                 <div className={styles.experience}>
-                  {`${participant.experience} ${
-                    participant.experience === 1
-                      ? "хакатон"
-                      : participant.experience < 5
-                      ? "хакатона"
-                      : "хакатонов"
-                  }`}
+                  {participant.experience}
                 </div>
               )}
             <div className={styles.role}>

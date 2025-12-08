@@ -186,13 +186,7 @@ export function ProfilePage() {
               <div className={styles.experience}>
                 {participantData.participant.experience !== undefined &&
                 participantData.participant.experience !== null
-                  ? `${participantData.participant.experience} ${
-                      participantData.participant.experience === 1
-                        ? "хакатон"
-                        : participantData.participant.experience < 5
-                        ? "хакатона"
-                        : "хакатонов"
-                    }`
+                  ? `${participantData.participant.experience}`
                   : "Не указано"}
               </div>
             </div>

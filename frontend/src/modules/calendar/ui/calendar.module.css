@@ -134,22 +134,23 @@
   z-index: 3;
 }
 
-.hasHackathons {
-  background: rgba(172, 235, 76, 0.3);
+.startDate {
+  background: rgba(172, 235, 76, 0.25) !important;
+  border: 1px solid rgba(172, 235, 76, 1);
+  color: rgba(249, 255, 238, 1);
 }
 
-.hasHackathons .dayNumber {
-  color: #d9d9d9;
+.startDate .dayNumber {
+  color: rgba(249, 255, 238, 1);
+  font-weight: 700;
 }
 
-.hasHackathons.today {
-  background: #aceb4c;
+.startDate.today {
+  background: rgba(172, 235, 76, 0.25) !important;
+  border: 1px solid rgba(172, 235, 76, 1);
+  color: rgba(249, 255, 238, 1);
 }
 
-.hasHackathons.today .dayNumber {
-  color: #111204;
-}
-
-.hasHackathons.today .hackathonIndicator {
-  background: #111204;
+.startDate.today .dayNumber {
+  color: rgba(249, 255, 238, 1);
 }

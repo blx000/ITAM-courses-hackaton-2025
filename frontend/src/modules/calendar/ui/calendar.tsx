@@ -39,10 +39,6 @@ const isSameDay = (date1: Date, date2: Date): boolean => {
   );
 };
 
-const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
-  return date >= startDate && date <= endDate;
-};
-
 interface DayInfo {
   date: Date;
   dayNumber: number;
@@ -50,6 +46,8 @@ interface DayInfo {
   isToday: boolean;
   hasHackathons: boolean;
   hackathons: HackathonShort[];
+  isStartDate: boolean;
+  isEndDate: boolean;
 }
 
 export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
@@ -73,6 +71,8 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
         isToday: false,
         hasHackathons: false,
         hackathons: [],
+        isStartDate: false,
+        isEndDate: false,
       });
     }
 
@@ -80,26 +80,24 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
     for (let i = 1; i <= daysInMonth; i++) {
       const dayDate = new Date(year, month, i);
       const isToday = isSameDay(dayDate, today);
-      
-      const hasHackathons = hackathons.some((hack) => {
+
+      // Проверяем, является ли дата началом хакатона (только начало, не весь диапазон)
+      const hackathonsStartingOnDate = hackathons.filter((hack) => {
         const startDate = new Date(hack.start_date);
-        const endDate = new Date(hack.end_date);
-        return isDateInRange(dayDate, startDate, endDate);
+        return isSameDay(dayDate, startDate);
       });
-      
-      const hackathonsOnDate = hackathons.filter((hack) => {
-        const startDate = new Date(hack.start_date);
-        const endDate = new Date(hack.end_date);
-        return isDateInRange(dayDate, startDate, endDate);
-      });
-      
+
+      const isStartDate = hackathonsStartingOnDate.length > 0;
+
       days.push({
         date: dayDate,
         dayNumber: i,
         isCurrentMonth: true,
         isToday,
-        hasHackathons,
-        hackathons: hackathonsOnDate,
+        hasHackathons: isStartDate,
+        hackathons: hackathonsStartingOnDate,
+        isStartDate,
+        isEndDate: false,
       });
     }
 
@@ -114,6 +112,8 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
         isToday: false,
         hasHackathons: false,
         hackathons: [],
+        isStartDate: false,
+        isEndDate: false,
       });
     }
     return days;
@@ -161,7 +161,7 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
             className={`${styles.day} ${
               day.isCurrentMonth ? styles.currentMonthDay : styles.otherMonthDay
             } ${day.isToday ? styles.today : ""} ${
-              day.hasHackathons ? styles.hasHackathons : ""
+              day.isStartDate ? styles.startDate : ""
             }`}
             onClick={() => {
               if (day.isCurrentMonth && onDateClick) {
@@ -176,9 +176,6 @@ export function Calendar({ hackathons = [], onDateClick }: CalendarProps) {
           >
             <div className={styles.dayNumber}>{day.dayNumber}</div>
             {day.isToday && <div className={styles.todayIndicator} />}
-            {day.hasHackathons && (
-              <div className={styles.hackathonIndicator} />
-            )}
           </div>
         ))}
       </div>
